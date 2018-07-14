@@ -6,7 +6,8 @@
 
     <groupId>io.github.polarizedions.polarizedbot</groupId>
     <artifactId>polarizedbot</artifactId>
-    <version>0.1</version>
+    <version>0.1.1</version>
+    <packaging>jar</packaging>
     <build>
         <plugins>
             <plugin>
@@ -16,6 +17,31 @@
                     <source>8</source>
                     <target>8</target>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>
+                                        io.github.polarizedions.polarizedbot.Bot
+                                    </mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

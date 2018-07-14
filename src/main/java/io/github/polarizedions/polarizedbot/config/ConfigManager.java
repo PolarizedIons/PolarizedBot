@@ -47,6 +47,7 @@ public class ConfigManager {
         }
 
         File globalFile = Paths.get(configDirStr, "bot.toml").toFile();
+        globalFile.createNewFile();
         logger.info("Loading global config from: {}", globalFile);
         Toml globalToml = new Toml(defaultGlobal).read(globalFile);
         globalConfig = globalToml.to(GlobalConfig.class);
@@ -57,6 +58,7 @@ public class ConfigManager {
 
     public GuildConfig loadGuildConfig(String guildId) throws IOException {
         File guildConfigFile = Paths.get(configDir.getAbsolutePath(), "guilds", guildId + ".toml").toFile();
+        guildConfigFile.createNewFile();
 
         logger.info("Loading Guild Config from: {}", guildConfigFile);
         Toml guildConfigToml = new Toml(defaultGuild).read(guildConfigFile);

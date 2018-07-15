@@ -27,6 +27,7 @@ public class AnnouncerManager {
         this.timer = new Timer();
 
         registerAnnouncer(new AnnouncerMcNotifier());
+        registerAnnouncer(new AnnouncerGW2Update());
     }
 
     private void registerAnnouncer(IAnnouncer announcer) {

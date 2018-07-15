@@ -3,6 +3,7 @@ package io.github.polarizedions.polarizedbot.commands;
 import io.github.polarizedions.polarizedbot.Bot;
 import io.github.polarizedions.polarizedbot.announcer.AnnouncerManager;
 import io.github.polarizedions.polarizedbot.announcer.IAnnouncer;
+import io.github.polarizedions.polarizedbot.util.UserRank;
 import io.github.polarizedions.polarizedbot.wrappers.CommandMessage;
 import sx.blah.discord.handle.obj.IChannel;
 
@@ -17,6 +18,11 @@ public class CommandAnnoucer implements ICommand {
     @Override
     public String getHelp() {
         return null;
+    }
+
+    @Override
+    public UserRank getRequiredRank() {
+        return UserRank.GUILD_ADMIN;
     }
 
     @Override
@@ -40,7 +46,7 @@ public class CommandAnnoucer implements ICommand {
                 this.listAnnouncements(command);
                 break;
             default:
-                command.replyLocalized("command.announce.error.unknown_subcommand", "subscribe, unsubscribe, list");
+                command.replyLocalized("command.announce.error.unknown_subcommand", subcommand, "subscribe, unsubscribe, list");
         }
     }
 

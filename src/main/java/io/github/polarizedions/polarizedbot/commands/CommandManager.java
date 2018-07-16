@@ -20,6 +20,7 @@ public class CommandManager {
         this.registerCommand(new CommandGuild());
         this.registerCommand(new CommandAnnoucer());
         this.registerCommand(new CommandShutdown());
+        this.registerCommand(new CommandWolframAlpha());
     }
 
     public void registerCommand(ICommand command) {

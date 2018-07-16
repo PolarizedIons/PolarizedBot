@@ -1,6 +1,5 @@
 package io.github.polarizedions.polarizedbot.commands;
 
-import io.github.polarizedions.polarizedbot.util.UserRank;
 import io.github.polarizedions.polarizedbot.wrappers.CommandMessage;
 import io.github.polarizedions.polarizedbot.wrappers.Message;
 import org.apache.logging.log4j.LogManager;
@@ -16,11 +15,12 @@ public class CommandManager {
     private HashMap<String, ICommand> commands = new HashMap<>();
 
     public CommandManager() {
-        this.registerCommand(new CommandPing());
-        this.registerCommand(new CommandGuild());
         this.registerCommand(new CommandAnnoucer());
-        this.registerCommand(new CommandShutdown());
+        this.registerCommand(new CommandGuild());
+        this.registerCommand(new CommandIgnore());
+        this.registerCommand(new CommandPing());
         this.registerCommand(new CommandWolframAlpha());
+        this.registerCommand(new CommandShutdown());
     }
 
     public void registerCommand(ICommand command) {
@@ -42,12 +42,12 @@ public class CommandManager {
         }
 
         CommandMessage commandMsg = message.getAsCommand();
-        if (commandMsg.getUserRank() == UserRank.IGNORED) {
+        if (commandMsg.getGuild().getConfig().disabledCommands.contains(commandMsg.getCommand())) {
+            commandMsg.replyLocalized("error.command.disabled");
             return;
         }
 
-        if (commandMsg.getGuild().getConfig().disabledCommands.contains(commandMsg.getCommand())) {
-            commandMsg.replyLocalized("error.command.disabled");
+        if (commandMsg.getGuild().getConfig().ignoredUsers.contains(commandMsg.getAuthor().getLongId())) {
             return;
         }
 

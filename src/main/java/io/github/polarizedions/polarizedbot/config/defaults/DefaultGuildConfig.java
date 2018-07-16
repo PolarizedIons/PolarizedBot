@@ -10,6 +10,7 @@ public class DefaultGuildConfig extends GuildConfig {
         lang = "en";
         commandPrefix = "!";
         disabledCommands = new ArrayList<>();
+        ignoredUsers = new ArrayList<>();
         rank = new HashMap<>();
     }
 }

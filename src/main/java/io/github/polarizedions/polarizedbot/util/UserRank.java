@@ -8,8 +8,7 @@ import java.util.List;
 public enum UserRank {
     BOT_OWNER(100, ""),
     GUILD_ADMIN(50, "admin"),
-    DEFAULT(10, "none"),
-    IGNORED(-9999, "ignored");
+    DEFAULT(10, "none");
 
     public int rank;
     public String rankName;

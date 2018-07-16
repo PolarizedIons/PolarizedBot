@@ -30,6 +30,10 @@ public class User {
         return wrappedUser.getStringID();
     }
 
+    public long getLongId() {
+        return wrappedUser.getLongID();
+    }
+
     @Override
     public String toString() {
         return "User[Name: " + getFullName() + ", ID:" + getId() + "]";

@@ -13,6 +13,7 @@ public class GuildConfig {
     public String commandPrefix;
     public Map<String, UserRank> rank = new HashMap<>();
     public List<String> disabledCommands = new ArrayList<>();
+    public List<Long> ignoredUsers;
 
     public UserRank getUserRank(User user) {
         return this.rank.getOrDefault(user.getId(), UserRank.DEFAULT);

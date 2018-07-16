@@ -6,7 +6,7 @@
 
     <groupId>io.github.polarizedions.polarizedbot</groupId>
     <artifactId>polarizedbot</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <packaging>jar</packaging>
     <build>
         <plugins>

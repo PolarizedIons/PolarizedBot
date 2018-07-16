@@ -39,9 +39,9 @@ public class Bot {
             System.exit(1);
         }
 
+        this.localizer = new Localizer();
         this.announcerManager = new AnnouncerManager();
         this.commandManager = new CommandManager();
-        this.localizer = new Localizer();
     }
 
     public void run() {

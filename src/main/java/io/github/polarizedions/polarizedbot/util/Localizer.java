@@ -55,17 +55,17 @@ public class Localizer {
         langData.put(langCode, lang);
     }
 
-    public String localize(String lang, String key, String... values) {
+    public String localize(String lang, String key, Object... values) {
         Properties langFile = langData.get(lang);
         String translated = langFile == null ? null : (langFile.getProperty(key));
         if (translated == null) {
             logger.debug("Unable to translate '{}' for lang {}", key, lang);
             translated = key;
         }
-        return String.format(translated, (Object[]) values);
+        return String.format(translated, values);
     }
 
-    public String localize(Guild guild, String key, String... values) {
+    public String localize(Guild guild, String key, Object... values) {
         return localize(guild.getConfig().lang, key, values);
     }
 }

@@ -19,12 +19,12 @@ public class AnnouncerManager {
     private static final Logger logger = LogManager.getLogger("AnnouncerManager");
     private Map<String, IAnnouncer> announcers;
     private Map<IAnnouncer, List<IChannel>> subData;
-    private Timer timer;
+    private List<Timer> timers;
 
     public AnnouncerManager() {
         this.announcers = new HashMap<>();
         this.subData = new HashMap<>();
-        this.timer = new Timer();
+        this.timers = new ArrayList<>();
 
         registerAnnouncer(new AnnouncerMcNotifier());
         registerAnnouncer(new AnnouncerGW2Update());
@@ -43,15 +43,22 @@ public class AnnouncerManager {
                         return;
                     }
 
-                    boolean result = announcer.check();
-                    logger.debug("Checking announcer '{}': {}", announcer.getName(), result);
-                    if (result) {
-                        announcer.execute(getSubData(announcer));
+                    try {
+                        boolean result = announcer.check();
+                        logger.debug("Checking announcer '{}': {}", announcer.getName(), result);
+                        if (result) {
+                            announcer.execute(getSubData(announcer));
+                        }
+                    }
+                    catch (Exception e) {
+                        logger.debug("Exception while executing announcer " + announcer.getName(), e);
                     }
                 }
             };
 
+            Timer timer = new Timer();
             timer.scheduleAtFixedRate(task, 500, announcer.updateFrequency());
+            this.timers.add(timer);
         }
     }
 
@@ -83,6 +90,7 @@ public class AnnouncerManager {
         return subData.getOrDefault(announcer, Collections.emptyList());
     }
 
+    @SuppressWarnings("unchecked")
     public void load() {
         File saveFile = Paths.get(ConfigManager.configDir.getAbsolutePath(), "announcements.toml").toFile();
 
@@ -115,7 +123,15 @@ public class AnnouncerManager {
                 continue;
             }
 
-            subData.put(announcer, data.parallelStream().map(client::getChannelByID).collect(Collectors.toList()));
+            List<IChannel> channels = new ArrayList<>();
+            for (Long channelID : data) {
+                IChannel channel = client.getChannelByID(channelID);
+                if (channel == null) {
+                    logger.error("Unable to get channel from id ({}) while loading announcement data for {}, dropping.", channelID, announcer.getName());
+                }
+            }
+
+            subData.put(announcer, channels);
         }
     }
 
@@ -137,6 +153,8 @@ public class AnnouncerManager {
     }
 
     public void stop() {
-        this.timer.cancel();
+        for (Timer timer : this.timers) {
+            timer.cancel();
+        }
     }
 }

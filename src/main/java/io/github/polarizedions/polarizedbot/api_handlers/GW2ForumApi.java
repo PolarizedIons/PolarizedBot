@@ -3,14 +3,10 @@ package io.github.polarizedions.polarizedbot.api_handlers;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import io.github.polarizedions.polarizedbot.util.WebHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,7 +21,7 @@ public class GW2ForumApi {
 
     public static List<GW2UpdateLising> fetchUpdates() {
         logger.debug("Fetching latest release notes from forum");
-        JsonObject listingsJson = getUrl(RELEASE_NOTES_FORUM_CATAGORY_URL);
+        JsonObject listingsJson = WebHelper.fetchJson(RELEASE_NOTES_FORUM_CATAGORY_URL);
         if (listingsJson == null) {
             return null;
         }
@@ -38,18 +34,20 @@ public class GW2ForumApi {
             GW2UpdateLising listing = new GW2UpdateLising();
             listing.id = listingJson.get("DiscussionID").getAsInt();
             listing.title = listingJson.get("Name").getAsString();
+
             JsonElement date = listingJson.get("DateUpdated");
-            if (date == null) {
+            if (date.isJsonNull()) {
                 date = listingJson.get("DateInserted");
             }
             try {
-                listing.date = dateFormat.parse(date.toString());
+                listing.date = dateFormat.parse(date.getAsString());
             } catch (ParseException e) {
                 logger.error("Error parsing date '{}'", date.getAsString());
             }
-            listing.lastComment = listingJson.get("LastCommentID").getAsInt();
+            JsonElement lastCommentId = listingJson.get("LastCommentID");
+            listing.lastComment = lastCommentId.isJsonNull() ? -1 : lastCommentId.getAsInt();
             listing.body = listingJson.get("Body").getAsString();
-            listing.user = listingJson.get("InsertName").getAsString();
+            listing.user = listingJson.get("FirstName").getAsString();
 
             updates.add(listing);
         }
@@ -59,7 +57,7 @@ public class GW2ForumApi {
 
     public static List<GW2Comment> fetchComments(int postId) {
         logger.debug("Fetching comments for post {}", postId);
-        JsonObject postJson = getUrl(String.format(DISCUSSION_URL_PART, postId));
+        JsonObject postJson = WebHelper.fetchJson(String.format(DISCUSSION_URL_PART, postId));
         if (postJson == null) {
             return null;
         }
@@ -85,27 +83,6 @@ public class GW2ForumApi {
         }
 
         return comments;
-    }
-
-
-    private static JsonObject getUrl(String uri) {
-        URL url;
-        try {
-            url = new URL(uri);
-        } catch (MalformedURLException e) {
-            logger.error("Error fetching url: Malformed url!", e);
-            return null;
-        }
-
-        InputStreamReader reader;
-        try {
-            reader = new InputStreamReader(url.openStream());
-        } catch (IOException e) {
-            logger.error("Error fetching url: Can't open stream!", e);
-            return null;
-        }
-
-        return new JsonParser().parse(reader).getAsJsonObject();
     }
 
     public static class GW2UpdateLising {

@@ -6,8 +6,8 @@ import io.github.polarizedions.polarizedbot.wrappers.CommandMessage;
 
 public class CommandShutdown implements ICommand {
     @Override
-    public String getCommand() {
-        return "exit";
+    public String[] getCommand() {
+        return new String[] {"exit"};
     }
 
     @Override

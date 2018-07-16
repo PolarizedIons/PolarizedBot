@@ -25,8 +25,8 @@ public class CommandGuild implements ICommand {
     }
 
     @Override
-    public String getCommand() {
-        return "guild";
+    public String[] getCommand() {
+        return new String[] {"guild"};
     }
 
     @Override

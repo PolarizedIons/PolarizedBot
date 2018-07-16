@@ -16,8 +16,8 @@ public class CommandPing implements ICommand {
     }
 
     @Override
-    public String getCommand() {
-        return "ping";
+    public String[] getCommand() {
+        return new String[] {"ping", "pong"};
     }
 
     @Override
@@ -27,15 +27,19 @@ public class CommandPing implements ICommand {
 
     @Override
     public void exec(CommandMessage command) {
+        String replyKey = "command.ping.reply";
+        if (command.getCommand().equals("pong")) {
+            replyKey += "_alt";
+        }
         Instant ping = Instant.now();
 //        command.replyLocalized("command.ping.reply", command.getAuthor().getPingString());
-        String msgText = localizer.localize(command.getGuild(), "command.ping.reply.1", command.getAuthor().getPingString());
+        String msgText = localizer.localize(command.getGuild(), replyKey + ".1", command.getAuthor().getPingString());
 
         IMessage msg = command.getWrappedMessage().getChannel().sendMessage(msgText);
 
         Instant pong = msg.getTimestamp();
         Duration duration = Duration.between(ping, pong);
-        String msgText2 = localizer.localize(command.getGuild(), "command.ping.reply.2", command.getAuthor().getPingString(), duration.toMillis());
+        String msgText2 = localizer.localize(command.getGuild(), replyKey + ".2", command.getAuthor().getPingString(), duration.toMillis());
         msg.edit(msgText2);
     }
 }

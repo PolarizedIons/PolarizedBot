@@ -11,8 +11,8 @@ import java.util.function.BiConsumer;
 
 public class CommandAnnoucer implements ICommand {
     @Override
-    public String getCommand() {
-        return "announce";
+    public String[] getCommand() {
+        return new String[] {"announce"};
     }
 
     @Override

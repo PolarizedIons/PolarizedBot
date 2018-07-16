@@ -24,7 +24,9 @@ public class CommandManager {
     }
 
     public void registerCommand(ICommand command) {
-        this.commands.put(command.getCommand(), command);
+        for (String alias : command.getCommand()) {
+            this.commands.put(alias, command);
+        }
     }
 
     public void registerListeners(IDiscordClient discordClient) {

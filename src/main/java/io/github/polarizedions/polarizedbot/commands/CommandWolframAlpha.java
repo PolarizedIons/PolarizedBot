@@ -8,8 +8,8 @@ import java.util.Map;
 
 public class CommandWolframAlpha implements ICommand {
     @Override
-    public String getCommand() {
-        return "wolf";
+    public String[] getCommand() {
+        return new String[] {"wolf", "calc"};
     }
 
     @Override

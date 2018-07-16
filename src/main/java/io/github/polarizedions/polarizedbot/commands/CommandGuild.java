@@ -92,9 +92,10 @@ public class CommandGuild implements ICommand {
             return;
         }
 
+        person = person.replaceAll("\\D+","");
         IUser user = null;
         for (IUser mentionedUser : command.getWrappedMessage().getMentions()) {
-            if (mentionedUser.toString().equals(person)) {
+            if (mentionedUser.getStringID().equals(person)) {
                 user = mentionedUser;
                 break;
             }

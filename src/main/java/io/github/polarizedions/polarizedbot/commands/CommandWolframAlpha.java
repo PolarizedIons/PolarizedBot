@@ -3,6 +3,7 @@ package io.github.polarizedions.polarizedbot.commands;
 import io.github.polarizedions.polarizedbot.api_handlers.WolframAlphaApi;
 import io.github.polarizedions.polarizedbot.wrappers.CommandMessage;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,16 @@ public class CommandWolframAlpha implements ICommand {
             return;
         }
 
-        StringBuilder response = new StringBuilder();
+        if (command.getCommand().equals("wolf")) {
+            replyFull(command, data);
+        }
+        else if (command.getCommand().equals("calc")) {
+            replyShort(command, data);
+        }
+    }
+
+    private void replyFull(CommandMessage command, Map<String, List<String>> data) {
+        StringBuilder responseBuilder = new StringBuilder();
         for (Map.Entry<String, List<String>> entry : data.entrySet()) {
             String podName = entry.getKey();
             List<String> values = entry.getValue();
@@ -43,19 +53,76 @@ public class CommandWolframAlpha implements ICommand {
                 continue;
             }
 
-            response.append("**").append(podName).append("**");
+            responseBuilder.append("**").append(podName).append("**");
 
             if (values.size() == 1) {
-                response.append(": ").append(values.get(0).replaceAll("\\*", "\\\\*"));
+                responseBuilder.append(": ").append(values.get(0).replaceAll("\\*", "\\\\*"));
             }
             else {
                 for (String value : values) {
-                    response.append("\n  -> ").append(value.replaceAll("\\*", "\\\\*"));
+                    responseBuilder.append("\n  -> ").append(value.replaceAll("\\*", "\\\\*"));
                 }
             }
-            response.append("\n");
+            responseBuilder.append("\n");
         }
 
-        command.getChannel().sendMessage(response.toString());
+        String response = responseBuilder.toString();
+
+        List<String> messages = new LinkedList<>();
+        if (response.length() <= 2000) { // Discord message char limit
+            messages.add(response);
+        }
+        else {
+            String[] responseParts = response.split("(?=\n\\*\\*)");
+            String currentMsg = "";
+            for (String part : responseParts) {
+                if ((currentMsg.length() + part.length()) <= 2000) {
+                    currentMsg += part;
+                }
+                else {
+                    messages.add(currentMsg);
+                    currentMsg = part;
+                }
+            }
+
+            if (currentMsg.length() > 0) {
+                messages.add(currentMsg);
+            }
+        }
+
+        for (String msg : messages) {
+            command.getChannel().sendMessage(msg);
+        }
+    }
+
+
+    private void replyShort(CommandMessage command, Map<String, List<String>> data) {
+        int i = 0;
+
+        StringBuilder responseBuilder = new StringBuilder();
+        for (Map.Entry<String, List<String>> entry : data.entrySet()) {
+            String podName = entry.getKey();
+            List<String> values = entry.getValue();
+            if (values.size() == 0) {
+                continue;
+            }
+
+            if (i >= 2) {
+                break;
+            }
+
+            responseBuilder.append("**").append(podName).append("**");
+            if (values.size() == 1) {
+                responseBuilder.append(": ").append(values.get(0).replaceAll("\\*", "\\\\*"));
+            } else {
+                for (String value : values) {
+                    responseBuilder.append("\n  -> ").append(value.replaceAll("\\*", "\\\\*"));
+                }
+            }
+            responseBuilder.append("\n");
+            i++;
+        }
+
+        command.getChannel().sendMessage(responseBuilder.toString());
     }
 }

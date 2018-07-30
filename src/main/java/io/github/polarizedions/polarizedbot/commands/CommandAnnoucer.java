@@ -17,7 +17,7 @@ public class CommandAnnoucer implements ICommand {
 
     @Override
     public String getHelp() {
-        return null;
+        return "announce things";
     }
 
     @Override

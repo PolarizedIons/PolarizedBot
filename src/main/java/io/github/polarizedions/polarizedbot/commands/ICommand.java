@@ -1,16 +1,11 @@
 package io.github.polarizedions.polarizedbot.commands;
 
-import io.github.polarizedions.polarizedbot.util.UserRank;
-import io.github.polarizedions.polarizedbot.wrappers.CommandMessage;
+import io.github.polarizedions.polarizedbot.commands.builder.CommandTree;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public interface ICommand {
-    String[] getCommand();
+    Logger logger = LogManager.getLogger(ICommand.class.getSimpleName());
 
-    String getHelp();
-
-    default UserRank getRequiredRank() {
-        return UserRank.DEFAULT;
-    }
-
-    void exec(CommandMessage command);
+    CommandTree getCommand();
 }

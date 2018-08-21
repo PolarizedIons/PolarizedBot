@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum UserRank {
+
     BOT_OWNER(100, ""),
     GUILD_ADMIN(50, "admin"),
     DEFAULT(10, "none");

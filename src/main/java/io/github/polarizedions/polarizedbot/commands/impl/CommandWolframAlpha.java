@@ -1,50 +1,69 @@
-package io.github.polarizedions.polarizedbot.commands;
+package io.github.polarizedions.polarizedbot.commands.impl;
 
 import io.github.polarizedions.polarizedbot.api_handlers.WolframAlphaApi;
-import io.github.polarizedions.polarizedbot.wrappers.CommandMessage;
+import io.github.polarizedions.polarizedbot.commands.ICommand;
+import io.github.polarizedions.polarizedbot.commands.builder.CommandBuilder;
+import io.github.polarizedions.polarizedbot.commands.builder.CommandTree;
+import io.github.polarizedions.polarizedbot.util.Localizer;
+import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class CommandWolframAlpha implements ICommand {
-    @Override
-    public String[] getCommand() {
-        return new String[] {"wolf", "calc"};
-    }
 
     @Override
-    public String getHelp() {
-        return "wolfram alpha stuff";
+    public CommandTree getCommand() {
+        return CommandBuilder.create("WolframAlpha")
+                .command("wolf", wolf -> wolf
+                    .swallow(false)
+                    .onExecute(this::replyFull)
+                    .onFail(this::fail)
+                )
+                .command("calc", calc -> calc
+                    .swallow(false)
+                    .onExecute(this::replyShort)
+                    .onFail(this::fail)
+                )
+                .buildCommand();
     }
 
-    @Override
-    public void exec(CommandMessage command) {
+    private void fail(IMessage message, List<Object> parsedArgs, List<String> unparsedArgs) {
+        if (parsedArgs.size() == 1) {
+            message.getChannel().sendMessage(Localizer.localize("command.wolfram.error.no_arg"));
+        }
+        else {
+            message.getChannel().sendMessage(Localizer.localize("command.wolfram.error.unknown"));
+        }
+    }
+
+    private Map<String, List<String>> get(IMessage message, List<Object> args) {
         if (!WolframAlphaApi.hasApiKey()) {
-            command.replyLocalized("command.wolfram.error.no_api_key");
-            return;
+            message.getChannel().sendMessage(Localizer.localize("command.wolfram.error.no_api_key"));
+            return null;
         }
 
-        Map<String, List<String>> data = WolframAlphaApi.fetch(String.join(" ", command.getArgs()));
+        Map<String, List<String>> data = WolframAlphaApi.fetch((String) args.get(1));
         if (data == null) {
-            command.replyLocalized("command.wolfram.error.connection");
-            return;
+            message.getChannel().sendMessage(Localizer.localize("command.wolfram.error.connection"));
+            return null;
         }
 
         if (data.size() == 0) {
-            command.replyLocalized("command.wolfram.error.no_reply");
+            message.getChannel().sendMessage(Localizer.localize("command.wolfram.error.no_reply"));
+            return null;
+        }
+
+        return data;
+    }
+
+    private void replyFull(IMessage message, List<Object> args) {
+        Map<String, List<String>> data = this.get(message, args);
+        if (data == null) {
             return;
         }
 
-        if (command.getCommand().equals("wolf")) {
-            replyFull(command, data);
-        }
-        else if (command.getCommand().equals("calc")) {
-            replyShort(command, data);
-        }
-    }
-
-    private void replyFull(CommandMessage command, Map<String, List<String>> data) {
         StringBuilder responseBuilder = new StringBuilder();
         for (Map.Entry<String, List<String>> entry : data.entrySet()) {
             String podName = entry.getKey();
@@ -74,29 +93,33 @@ public class CommandWolframAlpha implements ICommand {
         }
         else {
             String[] responseParts = response.split("(?=\n\\*\\*)");
-            String currentMsg = "";
+            StringBuilder currentMsg = new StringBuilder();
             for (String part : responseParts) {
                 if ((currentMsg.length() + part.length()) <= 2000) {
-                    currentMsg += part;
+                    currentMsg.append(part);
                 }
                 else {
-                    messages.add(currentMsg);
-                    currentMsg = part;
+                    messages.add(currentMsg.toString());
+                    currentMsg = new StringBuilder(part);
                 }
             }
 
             if (currentMsg.length() > 0) {
-                messages.add(currentMsg);
+                messages.add(currentMsg.toString());
             }
         }
 
         for (String msg : messages) {
-            command.getChannel().sendMessage(msg);
+            message.getChannel().sendMessage(msg);
         }
     }
 
 
-    private void replyShort(CommandMessage command, Map<String, List<String>> data) {
+    private void replyShort(IMessage message, List<Object> args) {
+        Map<String, List<String>> data = this.get(message, args);
+        if (data == null) {
+            return;
+        }
         int i = 0;
 
         StringBuilder responseBuilder = new StringBuilder();
@@ -123,6 +146,6 @@ public class CommandWolframAlpha implements ICommand {
             i++;
         }
 
-        command.getChannel().sendMessage(responseBuilder.toString());
+        message.getChannel().sendMessage(responseBuilder.toString());
     }
 }

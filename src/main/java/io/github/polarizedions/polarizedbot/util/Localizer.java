@@ -1,46 +1,44 @@
 package io.github.polarizedions.polarizedbot.util;
 
-import io.github.polarizedions.polarizedbot.wrappers.Guild;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 public class Localizer {
     private static final Logger logger = LogManager.getLogger("Localizer");
-    private static final String[] AVAILABLE_LANGS = new String[] {
+    public static final String[] AVAILABLE_LANGS = new String[] {
             "en",
-            "nl"
     };
-    private Map<String, Properties> langData;
+    private static Map<String, Properties> langData;
+    private static String currentLang = AVAILABLE_LANGS[0];
 
-    public Localizer() {
+    public static void init() {
         langData = new HashMap<>();
-
         for (String langCode : AVAILABLE_LANGS) {
             loadLangFile(langCode);
         }
     }
 
-    public boolean supports(String langCode) {
-        langCode = langCode.toLowerCase().trim();
+    public static boolean supports(String langCode) {
         for (String lc : AVAILABLE_LANGS) {
-            if (lc.equals(langCode)) {
+            if (lc.equalsIgnoreCase(langCode)) {
                 return true;
             }
         }
         return false;
     }
 
-    private void loadLangFile(String langCode) {
+    private static void loadLangFile(String langCode) {
         String path = "/lang/" + langCode + ".properties";
-        InputStream is = getClass().getResourceAsStream(path);
+        InputStream is = Localizer.class.getResourceAsStream(path);
         if (is == null) {
-            logger.error("Failed to load language file {}", path);
+            logger.error("Failed to loadGlobalConfig language file {}", path);
             return;
         }
 
@@ -55,17 +53,23 @@ public class Localizer {
         langData.put(langCode, lang);
     }
 
-    public String localize(String lang, String key, Object... values) {
-        Properties langFile = langData.get(lang);
+    public static String localize(String key, Object... values) {
+        Properties langFile = langData.get(currentLang);
         String translated = langFile == null ? null : (langFile.getProperty(key));
         if (translated == null) {
-            logger.debug("Unable to translate '{}' for lang {}", key, lang);
-            translated = key;
+            String context = Arrays.toString(values);
+            logger.warn("Unable to translate '{}' for lang {}. Context: {}", key, currentLang, context);
+            translated = key + (values.length == 0 ? "" : "#" + context);
         }
         return String.format(translated, values);
     }
 
-    public String localize(Guild guild, String key, Object... values) {
-        return localize(guild.getConfig().lang, key, values);
+    public static void setCurrentLang(String newLang) {
+        for (String lang : AVAILABLE_LANGS) {
+            if (lang.equalsIgnoreCase(newLang)) {
+                currentLang = lang;
+                return;
+            }
+        }
     }
 }

@@ -3,7 +3,7 @@ package io.github.polarizedions.polarizedbot.announcer;
 import com.moandjiezana.toml.Toml;
 import com.moandjiezana.toml.TomlWriter;
 import io.github.polarizedions.polarizedbot.Bot;
-import io.github.polarizedions.polarizedbot.config.ConfigManager;
+import io.github.polarizedions.polarizedbot.util.ConfigManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sx.blah.discord.api.IDiscordClient;

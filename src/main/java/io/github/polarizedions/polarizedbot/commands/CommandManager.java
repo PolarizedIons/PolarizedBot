@@ -1,21 +1,27 @@
 package io.github.polarizedions.polarizedbot.commands;
 
-import io.github.polarizedions.polarizedbot.wrappers.CommandMessage;
-import io.github.polarizedions.polarizedbot.wrappers.Message;
+import io.github.polarizedions.polarizedbot.commands.builder.CommandTree;
+import io.github.polarizedions.polarizedbot.commands.impl.*;
+import io.github.polarizedions.polarizedbot.config.GuildConfig;
+import io.github.polarizedions.polarizedbot.exceptions.CommandException;
+import io.github.polarizedions.polarizedbot.util.GuildManager;
+import io.github.polarizedions.polarizedbot.util.Localizer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.MissingPermissionsException;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class CommandManager {
     private Logger logger = LogManager.getLogger("CommandManager");
-    private HashMap<String, ICommand> commands = new HashMap<>();
+    private Map<String, CommandTree> commands = new HashMap<>();
 
     public CommandManager() {
         this.registerCommand(new CommandAnnoucer());
@@ -24,12 +30,15 @@ public class CommandManager {
         this.registerCommand(new CommandPing());
         this.registerCommand(new CommandWolframAlpha());
         this.registerCommand(new CommandShutdown());
-        this.registerCommand(new CommandHelp());
+//        this.registerCommand(new CommandHelp());
+        this.registerCommand(new CommandSay());
+        this.registerCommand(new CommandRestart());
     }
 
     public void registerCommand(ICommand command) {
-        for (String alias : command.getCommand()) {
-            this.commands.put(alias, command);
+        CommandTree tree = command.getCommand();
+        for (String alias : tree.getCommands()) {
+            this.commands.put(alias, tree);
         }
     }
 
@@ -38,41 +47,84 @@ public class CommandManager {
     }
 
     public void messageHandler(MessageReceivedEvent event) {
-        Message message = new Message(event.getMessage());
-        logger.debug("Received {}", message);
+        IMessage message = event.getMessage();
+        logger.debug("[UserID: {}, GuildID: {}, MessageID: {}, User: {}]: {}", message.getAuthor().getStringID(), message.getGuild().getStringID(), message.getStringID(), message.getAuthor().getName() + "#" + message.getAuthor().getDiscriminator(), message.getContent());
 
-        if (!message.isCommand()) {
+        IUser user = message.getAuthor();
+        IGuild guild = message.getGuild();
+
+        if (guild == null) {
+            message.getChannel().sendMessage(Localizer.localize("error.pm_not_supported"));
             return;
         }
 
-        CommandMessage commandMsg = message.getAsCommand();
-        if (commandMsg.getGuild().getConfig().disabledCommands.contains(commandMsg.getCommand())) {
-            commandMsg.replyLocalized("error.command.disabled");
+        GuildConfig guildConfig = GuildManager.getConfig(guild);
+
+        if (guildConfig.ignoredUsers.contains(user.getLongID())) {
+            logger.debug("From ignored user");
             return;
         }
 
-        if (commandMsg.getGuild().getConfig().ignoredUsers.contains(commandMsg.getAuthor().getLongId())) {
+        if (!message.getContent().startsWith(guildConfig.commandPrefix)) {
+            logger.debug("not command");
             return;
         }
 
-        ICommand command = commands.get(commandMsg.getCommand());
-        if (command == null) {
-            commandMsg.replyLocalized("error.command.not_found");
+
+        List<String> commandFragments = new ArrayList<>();
+        Collections.addAll(commandFragments, message.getContent().split(" "));
+        String command = commandFragments.get(0).substring(guildConfig.commandPrefix.length());
+        commandFragments.set(0, command);
+
+        CommandTree commandTree = this.commands.get(command);
+        if (commandTree == null) {
+            logger.debug("no command found");
+            message.getChannel().sendMessage("no command found");
             return;
         }
 
-        if (command.getRequiredRank().rank > commandMsg.getUserRank().rank) {
-            commandMsg.replyLocalized("error.command.no_permission");
+        if (guildConfig.disabledCommands.contains(command)) {
+            message.getChannel().sendMessage(Localizer.localize("error.command_disabled", commandTree.getName()));
             return;
         }
 
-        logger.debug("Running command {}", commandMsg.getCommand());
-        command.exec(commandMsg);
+        Localizer.setCurrentLang(guildConfig.lang);
+        logger.debug("Running command {}, alias {}, fragments: {}", commandTree.getName(), command, commandFragments);
+        try {
+            commandTree.execute(commandFragments, message);
+        }
+        catch (CommandException ex) {
+            logger.warn("Failed to handle command: threw {}", ex.getClass().getSimpleName());
+            message.getChannel().sendMessage(ex.getError());
+        }
+        catch (MissingPermissionsException ex) {
+            logger.error("No permission", ex.getMissingPermissions());
+            try {
+                message.getChannel().sendMessage(Localizer.localize("error.no_permission", ex.getMissingPermissions()));
+            } catch(Exception e) {
+                try {
+                message.getAuthor().getOrCreatePMChannel().sendMessage(Localizer.localize("error.no_permission", ex.getErrorMessage()));}catch(Exception exc) {}
+            }
+        }
+        catch (DiscordException ex) {
+            logger.error("Discord exception!", ex);
+            try {
+                message.getChannel().sendMessage(Localizer.localize("error.discord_error", ex.getErrorMessage()));
+            } catch(Exception e) {}
+        }
+        catch (Exception ex) {
+            logger.error("I f'ed up", ex);
+            try {
+                message.getChannel().sendMessage(Localizer.localize("error.misc_error", ex.getClass().getCanonicalName() + ": " + ex.getMessage()));
+            } catch(Exception e) {}
+        }
     }
 
-    public Set<ICommand> getCommands() {
-        TreeSet<ICommand> commands = new TreeSet<>(Comparator.comparing(c -> c.getCommand()[0]));
-        commands.addAll(this.commands.values());
-        return commands;
+    public Set<CommandTree> getCommands() {
+        return new HashSet<>(this.commands.values());
+    }
+
+    public CommandTree get(String alias) {
+        return this.commands.get(alias);
     }
 }

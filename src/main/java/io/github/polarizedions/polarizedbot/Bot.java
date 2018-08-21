@@ -2,11 +2,10 @@ package io.github.polarizedions.polarizedbot;
 
 import io.github.polarizedions.polarizedbot.announcer.AnnouncerManager;
 import io.github.polarizedions.polarizedbot.commands.CommandManager;
-import io.github.polarizedions.polarizedbot.config.ConfigManager;
 import io.github.polarizedions.polarizedbot.config.GlobalConfig;
-import io.github.polarizedions.polarizedbot.config.GuildConfig;
+import io.github.polarizedions.polarizedbot.util.ConfigManager;
+import io.github.polarizedions.polarizedbot.util.GuildManager;
 import io.github.polarizedions.polarizedbot.util.Localizer;
-import io.github.polarizedions.polarizedbot.wrappers.Guild;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sx.blah.discord.api.ClientBuilder;
@@ -24,27 +23,26 @@ public class Bot {
     private IDiscordClient client;
     private AnnouncerManager announcerManager;
     private CommandManager commandManager;
-    private ConfigManager configManager;
-    private Localizer localizer;
 
     private Bot() {
         logger.info("Starting bot...");
         instance = this;
 
         try {
-            this.configManager = new ConfigManager().load();
+            ConfigManager.loadGlobalConfig();
         }
         catch (IOException e) {
             logger.error("Error loading config", e);
             System.exit(1);
         }
 
-        this.localizer = new Localizer();
+        Localizer.init();
+        GuildManager.init();
         this.announcerManager = new AnnouncerManager();
         this.commandManager = new CommandManager();
     }
 
-    public void run() {
+    private void run() {
         this.client = createClient();
 
         this.client.getDispatcher().registerListener((IListener<ReadyEvent>) readyEvent -> {
@@ -88,16 +86,17 @@ public class Bot {
         this.client.logout();
     }
 
+    public void softRestart() {
+        Thread thread = new Thread(() -> {
+            this.shutdown();
+            new Bot().run();
+        }, "restart thread");
+        thread.setDaemon(false);
+        thread.start();
+    }
+
     public GlobalConfig getGlobalConfig() {
-        return configManager.getGlobalConfig();
-    }
-
-    public GuildConfig getConfigForGuild(Guild guild) {
-        return configManager.getConfigForGuild(guild);
-    }
-
-    public ConfigManager getConfigManager() {
-        return configManager;
+        return ConfigManager.getGlobalConfig();
     }
 
     public IDiscordClient getClient() {
@@ -106,10 +105,6 @@ public class Bot {
 
     public CommandManager getCommandManager() {
         return commandManager;
-    }
-
-    public Localizer getLocalizer() {
-        return localizer;
     }
 
     public AnnouncerManager getAnnouncerManager() {

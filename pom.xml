@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.polarizedions.polarizedbot</groupId>
+    <groupId>net.polarizedions.polarizedbot</groupId>
     <artifactId>polarizedbot</artifactId>
     <version>0.1.2</version>
     <packaging>jar</packaging>
@@ -32,7 +32,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        io.github.polarizedions.polarizedbot.Bot
+                                        net.polarizedions.polarizedbot.Bot
                                     </mainClass>
                                 </manifest>
                             </archive>

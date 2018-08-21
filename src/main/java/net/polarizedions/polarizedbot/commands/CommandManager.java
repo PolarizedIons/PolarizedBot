@@ -90,6 +90,7 @@ public class CommandManager {
 
         Localizer.setCurrentLang(guildConfig.lang);
         logger.debug("Running command {}, alias {}, fragments: {}", commandTree.getName(), command, commandFragments);
+        message.getChannel().setTypingStatus(true);
         try {
             commandTree.execute(commandFragments, message);
         }
@@ -118,6 +119,8 @@ public class CommandManager {
                 message.getChannel().sendMessage(Localizer.localize("error.misc_error", ex.getClass().getCanonicalName() + ": " + ex.getMessage()));
             } catch(Exception e) {}
         }
+
+        message.getChannel().setTypingStatus(false);
     }
 
     public Set<CommandTree> getCommands() {

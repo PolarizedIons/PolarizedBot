@@ -53,6 +53,7 @@ public class CommandRestart implements ICommand {
             ProcessBuilder builder = new ProcessBuilder(command);
             builder.inheritIO();
             builder.start();
+            message.getChannel().setTypingStatus(false);
             Bot.instance.shutdown();
             System.exit(0);
         } catch (URISyntaxException e) {
@@ -64,6 +65,7 @@ public class CommandRestart implements ICommand {
 
     private void softRestart(IMessage message, List<Object> objects) {
         message.getChannel().sendMessage(Localizer.localize("command.restart.success.soft"));
+        message.getChannel().setTypingStatus(false);
         Bot.instance.softRestart();
     }
 }

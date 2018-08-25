@@ -15,6 +15,7 @@ public class CommandShutdown implements ICommand {
                 .setRank(UserRank.BOT_OWNER)
                 .command("shutdown", shutdown -> shutdown.onExecute((message, args) -> {
                     logger.info("Shutting the bot down");
+                    message.getChannel().setTypingStatus(false);
                     Bot.instance.shutdown();
                 }))
                 .buildCommand();

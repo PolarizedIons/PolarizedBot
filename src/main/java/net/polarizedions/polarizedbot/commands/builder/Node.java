@@ -115,6 +115,7 @@ public class Node {
         }
 
         if (this.swallows) {
+            parsedArgs.add(head + " " + String.join(" ", treeOptions));
             this.run(command, parsedArgs);
         }
         else{

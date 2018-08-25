@@ -78,41 +78,29 @@ public class Node {
             throw new NeedPermission(this.rank);
         }
 
-        System.out.println("Parsing tree: " + treeOptions + " " + parsedArgs);
+
         if (treeOptions.size() == 0) {
-            System.out.println("  options size == 0");
             if (this.isExecutable()) {
-                System.out.println("    is executable");
                 if (this.swallows) {
-                    System.out.println("      swallows");
                     if (this.allowEmpty) {
-                        System.out.println("        allows empty");
-                        System.out.println("# adding \"\" to parsed Args");
                         parsedArgs.add("");
                     }
                     else {
-                        System.out.println("        doesn't allows empty");
-                        System.out.println("# Failing command");
                         this.fail(command, parsedArgs, treeOptions);
                     }
                 }
                 else {
-                    System.out.println("      doesnt swallow");
-                    System.out.println("# Running excecutable");
                     this.run(command, parsedArgs);
                 }
             }
             else {
-                System.out.println("    isn't executable");
-                System.out.println("# Failing command");
                 this.fail(command, parsedArgs, treeOptions);
             }
-            System.out.println("# Returning");
+
             return;
         }
 
         String head = treeOptions.remove(0);
-        System.out.println("Head is: " + head);
 
         for (Map.Entry<CommandArg, Node> optionEntry : this.options.entrySet()) {
             CommandArg arg = optionEntry.getKey();
@@ -120,40 +108,19 @@ public class Node {
             Object match = arg.match(head);
 
             if (match != null) {
-                System.out.println("  Found arg match! " + match);
-                System.out.println("# Adding match to parsed args");
                 parsedArgs.add(match);
-                System.out.println("# executing tree further");
                 node.executeTree(treeOptions, command, parsedArgs);
-                System.out.println("# returning");
                 return;
             }
         }
 
-        System.out.println("Swallows?");
         if (this.swallows) {
-            System.out.println("  YES!");
-//            if (treeOptions.size() == 0 && !this.allowEmpty) {
-//                System.out.println("    Tree size is now 0 && not allow empty");
-//                System.out.println("# failing command");
-//                this.fail(command);
-//            }
-//            else {
-//                System.out.println("    tree size is > 0  OR this.allows empty");
-                System.out.println("# adding head & joined options to parsed args: " + head + " " + String.join(" ", treeOptions));
-                parsedArgs.add(head + " " + String.join(" ", treeOptions));
-                System.out.println("# Running command");
-                this.run(command, parsedArgs);
-//            }
+            this.run(command, parsedArgs);
         }
         else{
-            System.out.println("  NO!");
-            System.out.println("# failing command");
             treeOptions.add(0, head);
             this.fail(command, parsedArgs, treeOptions);
         }
-
-        System.out.println("# Reached end of method");
     }
 
     public boolean isExecutable() {

@@ -24,7 +24,7 @@ public class Bot {
     private AnnouncerManager announcerManager;
     private CommandManager commandManager;
 
-    private Bot() {
+    Bot() {
         logger.info("Starting bot...");
         instance = this;
 
@@ -59,8 +59,7 @@ public class Bot {
     public IDiscordClient createClient(boolean login) {
         String BOT_TOKEN = System.getenv("BOT_TOKEN");
         if (BOT_TOKEN == null) {
-            logger.error("'BOT_TOKEN' environment variable MUST be set!");
-            System.exit(1);
+            throw new RuntimeException("'BOT_TOKEN' environment variable MUST be set!");
         }
 
         ClientBuilder clientBuilder = new ClientBuilder();

@@ -13,4 +13,5 @@ public class GuildConfig {
     public Map<Long, UserRank> rank = new HashMap<>();
     public List<String> disabledCommands = new ArrayList<>();
     public List<Long> ignoredUsers;
+    public List<String> disabledResponders = new ArrayList<>();
 }

@@ -12,5 +12,6 @@ public class DefaultGuildConfig extends GuildConfig {
         disabledCommands = new ArrayList<>();
         ignoredUsers = new ArrayList<>();
         rank = new HashMap<>();
+        disabledResponders = new ArrayList<>();
     }
 }

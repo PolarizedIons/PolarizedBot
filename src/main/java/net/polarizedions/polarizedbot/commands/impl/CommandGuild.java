@@ -1,6 +1,7 @@
 package net.polarizedions.polarizedbot.commands.impl;
 
 import net.polarizedions.polarizedbot.Bot;
+import net.polarizedions.polarizedbot.autoresponders.ResponderManager;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
@@ -8,6 +9,7 @@ import net.polarizedions.polarizedbot.config.GuildConfig;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.UserRank;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
@@ -41,12 +43,26 @@ public class CommandGuild implements ICommand {
                                 .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "unknown_set_command", (Object[]) setCommands))
                         )
                         .stringArg("enable", enable -> enable
-                                .captureArg(command -> command.onExecute(this::enableCommand))
-                                .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "enable_command_missing"))
+                                .stringArg("command", command -> command
+                                    .captureArg(cmd -> cmd.onExecute(this::enableCommand))
+                                    .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "enable_command_missing"))
+                                )
+                                .stringArg("responder", responder -> responder
+                                    .captureArg(rsp -> rsp.onExecute(this::enableResponder))
+                                    .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "enable_responder_missing", String.join(", ", GuildManager.getConfig(m.getGuild()).disabledResponders)))
+                                )
+                                .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "enable_arg_missing", "command, responder"))
                         )
                         .stringArg("disable", disable -> disable
-                                .captureArg(command -> command.onExecute(this::disableCommand))
-                                .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "disable_command_missing"))
+                                .stringArg("command", command -> command
+                                    .captureArg(cmd -> cmd.onExecute(this::disableCommand))
+                                    .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "disable_command_missing"))
+                                )
+                                .stringArg("responder", responder -> responder
+                                    .captureArg(rsp -> rsp.onExecute(this::disableResponder))
+                                    .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "disable_responder_missing", String.join(", ", Bot.instance.getResponderManager().getIDs())))
+                                )
+                                .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "disable_arg_missing", "command, responder"))
                         )
                         .onFail(this::subcommandFail)
                 )
@@ -95,7 +111,7 @@ public class CommandGuild implements ICommand {
 
     private void disableCommand(IMessage message, List<Object> args) {
         GuildConfig config = GuildManager.getConfig(message.getGuild());
-        String commandName = (String) args.get(2);
+        String commandName = (String) args.get(3);
         CommandTree command = Bot.instance.getCommandManager().get(commandName);
 
         if (command == null) {
@@ -111,13 +127,13 @@ public class CommandGuild implements ICommand {
         else {
             config.disabledCommands.addAll(command.getCommands());
             GuildManager.saveConfig(message.getGuild());
-            message.getChannel().sendMessage(Localizer.localize("command.guild.success.disable", command.getName()));
+            message.getChannel().sendMessage(Localizer.localize("command.guild.success.disable.command", command.getName()));
         }
     }
 
     private void enableCommand(IMessage message, List<Object> args) {
         GuildConfig guildConfig = GuildManager.getConfig(message.getGuild());
-        String commandName = (String) args.get(2);
+        String commandName = (String) args.get(3);
         CommandTree command = Bot.instance.getCommandManager().get(commandName);
         if (command == null) {
             message.getChannel().sendMessage(Localizer.localize("command.guild.error.no_command_found", commandName));
@@ -130,7 +146,45 @@ public class CommandGuild implements ICommand {
 
         guildConfig.disabledCommands.removeAll(command.getCommands());
         GuildManager.saveConfig(message.getGuild());
-        message.getChannel().sendMessage(Localizer.localize("command.guild.success.enable", command.getName()));
+        message.getChannel().sendMessage(Localizer.localize("command.guild.success.enable.command", command.getName()));
+    }
+
+    private void disableResponder(IMessage message, List<Object> args) {
+        ResponderManager manager = Bot.instance.getResponderManager();
+        String toDisable = ((String) args.get(3)).toLowerCase();
+        IGuild guild = message.getGuild();
+
+        if (!manager.getIDs().contains(toDisable)) {
+            message.getChannel().sendMessage(Localizer.localize("command.guild.error.no_responder_found", toDisable, String.join(", ", manager.getIDs())));
+            return;
+        }
+        else if (GuildManager.getConfig(guild).disabledResponders.contains(toDisable)) {
+            message.getChannel().sendMessage(Localizer.localize("command.guild.error.responder_already_disabled", toDisable));
+            return;
+        }
+
+        GuildManager.getConfig(guild).disabledResponders.add(toDisable);
+        GuildManager.saveConfig(guild);
+        message.getChannel().sendMessage(Localizer.localize("command.guild.success.disable.responder", toDisable));
+    }
+
+    private void enableResponder(IMessage message, List<Object> args) {
+        ResponderManager manager = Bot.instance.getResponderManager();
+        String toDisable = ((String) args.get(3)).toLowerCase();
+        IGuild guild = message.getGuild();
+
+        if (!GuildManager.getConfig(guild).disabledResponders.contains(toDisable)) {
+            message.getChannel().sendMessage(Localizer.localize("command.guild.error.responder_not_disabled", toDisable));
+            return;
+        }
+        else if (!manager.getIDs().contains(toDisable)) {
+            message.getChannel().sendMessage(Localizer.localize("command.guild.error.no_responder_found", toDisable, String.join(", ", manager.getIDs())));
+            return;
+        }
+
+        GuildManager.getConfig(guild).disabledResponders.remove(toDisable);
+        GuildManager.saveConfig(guild);
+        message.getChannel().sendMessage(Localizer.localize("command.guild.success.enable.responder", toDisable));
     }
 
     private void setPrefix(IMessage message, List<Object> args) {

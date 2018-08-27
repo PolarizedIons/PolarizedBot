@@ -37,13 +37,26 @@
                 "no_command_found": "Unknown command '%s'",
                 "cannot_disable_self": "Cannot disable the guild command!",
                 "already_disabled": "The %s command is already disabled.",
-                "command_not_disabled": "The %s is not disabled"
+                "command_not_disabled": "The %s is not disabled",
+                "enable_arg_missing": "You must specify what to enable: %s",
+                "enable_responder_missing": "You mist provide a responder to enable! %s",
+                "disable_arg_missing": "You must specify what to disable: %s",
+                "disable_responder_missing": "You must specify what to disable! %s",
+                "no_responder_found": "Unknown responder '%s'. Valid: %s",
+                "responder_already_disabled": "The %s responder is already disabled.",
+                "responder_not_disabled": "The %s responder is not disabled."
             },
             "success": {
                 "setlang": "Changed the server's language to %s!",
                 "set_rank": "Set rank of user %s to %s",
-                "disable": "Disabled %s",
-                "enable": "Enabled %s",
+                "disable": {
+                    "command": "Disabled %s",
+                    "responder": "Disabled %s"
+                },
+                "enable": {
+                    "command": "Enabled %s",
+                    "responder": "Enabled %s"
+                },
                 "set_prefix": "Set the server's prefix to '%s'"
             }
         },

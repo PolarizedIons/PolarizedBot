@@ -1,6 +1,7 @@
 package net.polarizedions.polarizedbot;
 
 import net.polarizedions.polarizedbot.announcer.AnnouncerManager;
+import net.polarizedions.polarizedbot.autoresponders.ResponderManager;
 import net.polarizedions.polarizedbot.commands.CommandManager;
 import net.polarizedions.polarizedbot.config.GlobalConfig;
 import net.polarizedions.polarizedbot.util.ConfigManager;
@@ -23,6 +24,7 @@ public class Bot {
     private IDiscordClient client;
     private AnnouncerManager announcerManager;
     private CommandManager commandManager;
+    private ResponderManager responderManager;
 
     Bot() {
         logger.info("Starting bot...");
@@ -40,6 +42,7 @@ public class Bot {
         GuildManager.init();
         this.announcerManager = new AnnouncerManager();
         this.commandManager = new CommandManager();
+        this.responderManager = new ResponderManager();
     }
 
     private void run() {
@@ -47,6 +50,7 @@ public class Bot {
 
         this.client.getDispatcher().registerListener((IListener<ReadyEvent>) readyEvent -> {
             this.commandManager.registerListeners(this.client);
+            this.responderManager.registerListeners(this.client);
             this.announcerManager.load();
             this.announcerManager.initAnnouncers();
         });
@@ -108,6 +112,10 @@ public class Bot {
 
     public AnnouncerManager getAnnouncerManager() {
         return announcerManager;
+    }
+
+    public ResponderManager getResponderManager() {
+        return this.responderManager;
     }
 
     public static void main(String[] args) {

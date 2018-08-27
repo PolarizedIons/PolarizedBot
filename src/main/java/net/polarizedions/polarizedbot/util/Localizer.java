@@ -88,6 +88,11 @@ public class Localizer {
         return String.format(translated, values);
     }
 
+    public static boolean doesKeyExist(String key) {
+        Map<String, String> langFile = langData.get(currentLang);
+        return langFile != null && (langFile.containsKey(key));
+    }
+
     public static void setCurrentLang(String newLang) {
         for (String lang : AVAILABLE_LANGS) {
             if (lang.equalsIgnoreCase(newLang)) {

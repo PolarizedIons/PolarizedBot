@@ -10,6 +10,28 @@
         "unknown_command_failure": "Failed to parse command"
     },
     "command": {
+        "about": {
+            "bot_info": "About %s",
+            "user_info": "Info about: %s",
+            "header": {
+                "owner": "Bot owner:",
+                "running": "Running for:",
+                "connected": "Connected for:",
+                "commands": "Commands:",
+                "autoresponders": "Auto responders:",
+                "announcers": "Announcers:",
+                "bot_user": "Bot User:",
+                "bot_id": "Bot ID:",
+                "user": "User:",
+                "user_id": "User ID:",
+                "rank": "Rank:"
+            },
+            "info": {
+                "commands": "%s available (%s disabled in this guild)",
+                "autoresponders": "%s available (%s disabled in this guild)",
+                "announcers": "%s available (%s enabled in this guild)"
+            }
+        },
         "announce": {
             "list": "Available announcements: %s",
             "error": {
@@ -100,6 +122,28 @@
                 "connection": "Error reaching WolframAlpha",
                 "no_reply": "WolframAlpha did not send back a reply"
             }
+        }
+    },
+    "format": {
+        "week": {
+            "*": "%s weeks",
+            "1": "%s week"
+        },
+        "day": {
+            "*": "%s days",
+            "1": "%s day"
+        },
+        "hour": {
+            "*": "%s hours",
+            "1": "%s hour"
+        },
+        "minute": {
+            "*": "%s minutes",
+            "1": "%s minute"
+        },
+        "second": {
+            "*": "%s seconds",
+            "1": "%s second"
         }
     }
 }

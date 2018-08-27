@@ -24,15 +24,16 @@ public class CommandManager {
     private Map<String, CommandTree> commands = new HashMap<>();
 
     public CommandManager() {
+        this.registerCommand(new CommandAbout());
         this.registerCommand(new CommandAnnoucer());
         this.registerCommand(new CommandGuild());
+//        this.registerCommand(new CommandHelp());
         this.registerCommand(new CommandIgnore());
         this.registerCommand(new CommandPing());
-        this.registerCommand(new CommandWolframAlpha());
-        this.registerCommand(new CommandShutdown());
-//        this.registerCommand(new CommandHelp());
-        this.registerCommand(new CommandSay());
         this.registerCommand(new CommandRestart());
+        this.registerCommand(new CommandShutdown());
+        this.registerCommand(new CommandSay());
+        this.registerCommand(new CommandWolframAlpha());
     }
 
     public void registerCommand(ICommand command) {

@@ -16,10 +16,15 @@ import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.util.DiscordException;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 
 public class Bot {
     public static Bot instance;
+    public static final String VERSION = "0.1.6";
     public static final Logger logger = LogManager.getLogger("PolarizedBot");
+    private static Instant startInstant;
+    private Instant connectedInstant;
 
     private IDiscordClient client;
     private AnnouncerManager announcerManager;
@@ -49,6 +54,7 @@ public class Bot {
         this.client = createClient();
 
         this.client.getDispatcher().registerListener((IListener<ReadyEvent>) readyEvent -> {
+            this.connectedInstant = Instant.now();
             this.commandManager.registerListeners(this.client);
             this.responderManager.registerListeners(this.client);
             this.announcerManager.load();
@@ -118,7 +124,17 @@ public class Bot {
         return this.responderManager;
     }
 
+    public Instant getStartInstant() {
+        return this.startInstant;
+    }
+
+    public Instant getConnectedInstant() {
+        return this.connectedInstant;
+    }
+
     public static void main(String[] args) {
-        new Bot().run();
+        Bot bot = new Bot();
+        bot.startInstant = Instant.now();
+        bot.run();
     }
 }

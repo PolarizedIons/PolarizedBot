@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,6 +69,20 @@ public class AnnouncerManager {
 
     public String[] getNames() {
         return this.announcers.keySet().toArray(new String[0]);
+    }
+
+    public Map<IAnnouncer, List<IChannel>> getAnnouncersForGuild(IGuild guild) {
+        Map<IAnnouncer, List<IChannel>> announcers = new HashMap<>();
+
+        for (Map.Entry<IAnnouncer, List<IChannel>> entry : this.subData.entrySet()) {
+            List<IChannel> channels = entry.getValue().parallelStream().filter(c -> c.getGuild().getLongID() == guild.getLongID()).collect(Collectors.toList());
+
+            if (channels.size() > 0) {
+                announcers.put(entry.getKey(), channels);
+            }
+        }
+
+        return announcers;
     }
 
     public void addSub(IAnnouncer announcer, IChannel channel) {

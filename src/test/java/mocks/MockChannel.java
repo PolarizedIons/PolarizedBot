@@ -4,7 +4,17 @@ import net.polarizedions.polarizedbot.Bot;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.IShard;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.obj.*;
+import sx.blah.discord.handle.obj.ICategory;
+import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IExtendedInvite;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IInvite;
+import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IRole;
+import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.IWebhook;
+import sx.blah.discord.handle.obj.PermissionOverride;
+import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.AttachmentPartEntry;
 import sx.blah.discord.util.Image;
 import sx.blah.discord.util.MessageBuilder;
@@ -12,7 +22,6 @@ import sx.blah.discord.util.MessageHistory;
 import sx.blah.discord.util.cache.LongMap;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.EnumSet;
@@ -187,32 +196,32 @@ public class MockChannel implements IChannel {
     }
 
     @Override
-    public IMessage sendFile(File file) throws FileNotFoundException {
+    public IMessage sendFile(File file) {
         return null;
     }
 
     @Override
-    public IMessage sendFiles(File... files) throws FileNotFoundException {
+    public IMessage sendFiles(File... files) {
         return null;
     }
 
     @Override
-    public IMessage sendFile(String content, File file) throws FileNotFoundException {
+    public IMessage sendFile(String content, File file) {
         return null;
     }
 
     @Override
-    public IMessage sendFiles(String content, File... files) throws FileNotFoundException {
+    public IMessage sendFiles(String content, File... files) {
         return null;
     }
 
     @Override
-    public IMessage sendFile(EmbedObject embed, File file) throws FileNotFoundException {
+    public IMessage sendFile(EmbedObject embed, File file) {
         return null;
     }
 
     @Override
-    public IMessage sendFiles(EmbedObject embed, File... files) throws FileNotFoundException {
+    public IMessage sendFiles(EmbedObject embed, File... files) {
         return null;
     }
 

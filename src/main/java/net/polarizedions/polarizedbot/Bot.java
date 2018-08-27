@@ -18,7 +18,7 @@ import java.io.IOException;
 
 public class Bot {
     public static Bot instance;
-    public static final Logger logger = LogManager.getLogger("PolarizedBot");;
+    public static final Logger logger = LogManager.getLogger("PolarizedBot");
 
     private IDiscordClient client;
     private AnnouncerManager announcerManager;

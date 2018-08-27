@@ -51,6 +51,7 @@ public class ResponderManager {
             return;
         }
 
+        Localizer.setCurrentLang(guildConfig.lang);
         for (IResponder responder : this.responders) {
             if (guildConfig.disabledResponders.contains(responder.getID())) {
                 continue;

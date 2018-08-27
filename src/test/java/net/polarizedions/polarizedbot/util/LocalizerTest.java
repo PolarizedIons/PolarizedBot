@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -21,7 +24,10 @@ class LocalizerTest {
         modifiersField.setAccessible(true);
         modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 
-        field.set(null, new String[] {"en", "testlang"});
+        List<String> newSupports = new ArrayList<>();
+        Collections.addAll(newSupports, (String[])field.get(null));
+        newSupports.add("testlang");
+        field.set(null, newSupports.toArray(new String[0]));
 
         Localizer.init();
     }

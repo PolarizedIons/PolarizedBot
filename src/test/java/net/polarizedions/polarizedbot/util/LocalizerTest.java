@@ -71,5 +71,7 @@ class LocalizerTest {
         Localizer.setCurrentLang("testlang");
         assertEquals("success", Localizer.localize("test"));
         assertEquals("Hello World!", Localizer.localize("hello", "World!"));
+        assertEquals("hi polar", Localizer.localize("test.deep.keys", "polar"));
+        assertEquals("2 1", Localizer.localize("order", "1", 2));
     }
 }

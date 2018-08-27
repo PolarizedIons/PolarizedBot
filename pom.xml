@@ -6,7 +6,7 @@
 
     <groupId>net.polarizedions.polarizedbot</groupId>
     <artifactId>polarizedbot</artifactId>
-    <version>0.1.4</version>
+    <version>0.1.5</version>
     <packaging>jar</packaging>
     <build>
         <plugins>

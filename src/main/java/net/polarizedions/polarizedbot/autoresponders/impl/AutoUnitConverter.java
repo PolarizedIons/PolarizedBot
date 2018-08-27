@@ -37,13 +37,13 @@ public class AutoUnitConverter implements IResponder {
         new Convertion("mi", "km", mi -> mi * 1.609344)
                 .alias("mile", "kilometer")
                 .alias("miles", "kilometers").register()
-                .reverse(km -> km / 1.609344);
+                .reverse(km -> km / 1.609344).register();
 
         new Convertion("ft", "m", ft -> ft * 0.3048)
                 .alias("'", "m")
                 .alias("foot", "meter")
                 .alias("feet", "meters").register()
-                .reverse(m -> m / 0.3048);
+                .reverse(m -> m / 0.3048).register();
 
         // TEMPERATURE
 
@@ -66,7 +66,6 @@ public class AutoUnitConverter implements IResponder {
 
         String matchRegexString = ".*?([0-9]+)(\\.([0-9]+))? ?(%s).*?";
         this.matchPattern = Pattern.compile(String.format(matchRegexString, String.join("|", this.convertions.keySet())));
-        System.out.println(this.matchPattern.toString());
     }
 
     @Override

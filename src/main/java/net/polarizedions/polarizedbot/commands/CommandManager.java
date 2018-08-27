@@ -29,6 +29,7 @@ public class CommandManager {
         this.registerCommand(new CommandGuild());
 //        this.registerCommand(new CommandHelp());
         this.registerCommand(new CommandIgnore());
+        this.registerCommand(new CommandInvite());
         this.registerCommand(new CommandPing());
         this.registerCommand(new CommandRestart());
         this.registerCommand(new CommandShutdown());

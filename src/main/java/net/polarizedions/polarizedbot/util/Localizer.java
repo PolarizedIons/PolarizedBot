@@ -1,24 +1,28 @@
 package net.polarizedions.polarizedbot.util;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 public class Localizer {
     private static final Logger logger = LogManager.getLogger("Localizer");
+    private static final JsonParser parser = new JsonParser();
     public static final String[] AVAILABLE_LANGS = new String[] {
             "en",
     };
-    private static Map<String, Properties> langData;
+    private static Map<String, Map<String, String>> langData;
     private static String currentLang = AVAILABLE_LANGS[0];
 
     public static void init() {
+        logger.info("Loading localization files...");
         langData = new HashMap<>();
         for (String langCode : AVAILABLE_LANGS) {
             loadLangFile(langCode);
@@ -35,27 +39,46 @@ public class Localizer {
     }
 
     private static void loadLangFile(String langCode) {
-        String path = "/lang/" + langCode + ".properties";
+        String path = "/lang/" + langCode + ".json";
         InputStream is = Localizer.class.getResourceAsStream(path);
         if (is == null) {
             logger.error("Failed to loadGlobalConfig language file {}", path);
             return;
         }
 
-        logger.debug("Loading language file for '{}'", langCode);
-        Properties lang = new Properties();
         try {
-            lang.load(is);
-        } catch (IOException e) {
-            logger.error("Error loading/parsing language file " + path, e);
+            JsonElement object = parser.parse(new InputStreamReader(is));
+            langData.put(langCode, new HashMap<>());
+            parseLangData(langCode, "", object);
+        }
+        catch (JSONException ex) {
+            logger.error("Failed to parse language file for '{}'", ex);
             return;
         }
-        langData.put(langCode, lang);
+
+        logger.debug("Loaded language file for '{}'", langCode);
+    }
+
+    private static void parseLangData(String lang, String key, JsonElement object) {
+        if (object.isJsonObject()) {
+            String keyPrefix = key.length() == 0 ? "" : key + ".";
+            for (Map.Entry<String, JsonElement> child : object.getAsJsonObject().entrySet()) {
+                parseLangData(lang, keyPrefix + child.getKey(), child.getValue());
+            }
+        }
+        else {
+            String value = object.getAsString();
+            if (key.endsWith("*")) {
+                key = key.substring(0, key.length() - 2);
+            }
+            langData.get(lang).put(key, value);
+//            System.out.println("put '" + key + "' = '" + value + "'");
+        }
     }
 
     public static String localize(String key, Object... values) {
-        Properties langFile = langData.get(currentLang);
-        String translated = langFile == null ? null : (langFile.getProperty(key));
+        Map<String, String> langFile = langData.get(currentLang);
+        String translated = langFile == null ? null : (langFile.get(key));
         if (translated == null) {
             String context = Arrays.toString(values);
             logger.warn("Unable to translate '{}' for lang {}. Context: {}", key, currentLang, context);

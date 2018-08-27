@@ -1,0 +1,92 @@
+{
+    "error": {
+        "pm_not_supported": "Private messages are not supported.",
+        "command_disabled": "The command '%s' is disabled in this server.",
+        "no_permission": "The bot does not have the needed permission to perform this command. Please contact your server's admin(s) (needs: %s)",
+        "discord_error": "A discord error occurred: %s",
+        "misc_error": "An error occurred trying to execute that command. Please contact the bot owner! ```%s```",
+        "need_permission": "You do not have permission to use that command (need: %s)",
+        "no_such_command": "Command not found",
+        "unknown_command_failure": "Failed to parse command"
+    },
+    "command": {
+        "announce": {
+            "list": "Available announcements: %s",
+            "error": {
+                "no_such_announcement": "'%s' is not an available announcement",
+                "no_subcommand": "Unknown action. Valid actions: %s"
+            },
+            "success": {
+                "sub": "Subscribed $2%s to $1%s",
+                "unsub": "Unsubscribed $2%s to $1%s"
+            }
+        },
+        "guild": {
+            "error": {
+                "no_subcommand": "You need to provide an action. Valid actions: %s",
+                "unknown_subcommand": "Unknown action %s. Valid actions: %s",
+                "prefix_missing": "You need to provide a prefix!",
+                "lang_missing": "You need to provide a language!",
+                "rank_user_missing": "You need to provide a valid user! (Ping them)",
+                "rank_missing": "You need to provide a valid rank",
+                "unknown_set_command": "Unknown set variable. Valid options: %s ",
+                "enable_command_missing": "You must provide a command to enable!",
+                "disable_command_missing": "You must provide a command to disable!",
+                "unknown_lang": "Unknown language %s. Supported languages: %s",
+                "no_such_rank": "Unknown rank %s. Valid ranks: %s",
+                "no_command_found": "Unknown command '%s'",
+                "cannot_disable_self": "Cannot disable the guild command!",
+                "already_disabled": "The %s command is already disabled.",
+                "command_not_disabled": "The %s is not disabled"
+            },
+            "success": {
+                "setlang": "Changed the server's language to %s!",
+                "set_rank": "Set rank of user %s to %s",
+                "disable": "Disabled %s",
+                "enable": "Enabled %s",
+                "set_prefix": "Set the server's prefix to '%s'"
+            }
+        },
+        "ignore": {
+            "error": {
+                "bot_owner": "Cannot ignore the bot owner",
+                "no_user": "You must specify a user."
+            },
+            "success": {
+                "ignore": "Now ignoring %s in this guild.",
+                "unignore": "Unignored %s in this guild."
+            }
+        },
+        "ping": {
+            "reply": {
+                "1": "%s PONG!",
+                "2": "%s PONG! (%s ms)"
+            },
+            "reply_alt": {
+                "1": "%s ping?",
+                "2": "%s ping? (%s ms)"
+            }
+        },
+        "restart": {
+            "error": {
+                "subcommand": "Unknown action. Valid actions: %s",
+                "not_jar": "Error: Bot was not launched from jar",
+                "jar_uri_error": "Error getting jar location",
+                "cannot_spawn_process": "Cannot create new process"
+            },
+            "success": {
+                "hard": "Restarting jar...",
+                "soft": "Restarting..."
+            }
+        },
+        "wolfram": {
+            "error": {
+                "no_arg": "No input provided!",
+                "unknown": "Unknown error occured",
+                "no_api_key": "No api key!",
+                "connection": "Error reaching WolframAlpha",
+                "no_reply": "WolframAlpha did not send back a reply"
+            }
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "hello": "Hello %s",
+    "test": {
+       "deep": {
+           "keys": "hi %s"
+       },
+       "*": "success"
+    },
+    "order": "%2$s %1$s"
+}

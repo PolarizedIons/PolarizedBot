@@ -50,8 +50,6 @@ public class CommandManager {
 
     public void messageHandler(MessageReceivedEvent event) {
         IMessage message = event.getMessage();
-        logger.debug("[UserID: {}, GuildID: {}, MessageID: {}, User: {}]: {}", message.getAuthor().getStringID(), message.getGuild().getStringID(), message.getStringID(), message.getAuthor().getName() + "#" + message.getAuthor().getDiscriminator(), message.getContent());
-
         IUser user = message.getAuthor();
         IGuild guild = message.getGuild();
 
@@ -59,6 +57,8 @@ public class CommandManager {
             message.getChannel().sendMessage(Localizer.localize("error.pm_not_supported"));
             return;
         }
+
+        logger.debug("[UserID: {}, GuildID: {}, MessageID: {}, User: {}]: {}", message.getAuthor().getStringID(), message.getGuild().getStringID(), message.getStringID(), message.getAuthor().getName() + "#" + message.getAuthor().getDiscriminator(), message.getContent());
 
         GuildConfig guildConfig = GuildManager.getConfig(guild);
 

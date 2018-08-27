@@ -96,8 +96,8 @@ public class CommandGuild implements ICommand {
     }
 
     private void setRank(IMessage message, List<Object> args) {
-        String rankName = (String) args.get(2);
-        IUser user = (IUser) args.get(3);
+        String rankName = (String) args.get(3);
+        IUser user = (IUser) args.get(4);
 
         UserRank rank = UserRank.getByName(rankName);
         if (rank == null) {

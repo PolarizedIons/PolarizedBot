@@ -36,11 +36,13 @@
             "list": "Available announcements: %s",
             "error": {
                 "no_such_announcement": "'%s' is not an available announcement",
-                "no_subcommand": "Unknown action. Valid actions: %s"
+                "no_subcommand": "Unknown action. Valid actions: %s",
+                "channel_or_announcer_missing": "You must provide (optionally a channel) and an announcer",
+                "announcer_missing": "You must provide an announcer"
             },
             "success": {
-                "sub": "Subscribed $2%s to $1%s",
-                "unsub": "Unsubscribed $2%s to $1%s"
+                "sub": "Subscribed %2$s to %1$s",
+                "unsub": "Unsubscribed %2$s to %1$s"
             }
         },
         "guild": {

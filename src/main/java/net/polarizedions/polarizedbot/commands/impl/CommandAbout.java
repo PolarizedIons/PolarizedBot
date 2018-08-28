@@ -71,7 +71,7 @@ public class CommandAbout implements ICommand {
         builder.appendField(Localizer.localize("command.about.header.autoresponders"), Localizer.localize("command.about.info.autoresponders", respondersNum, respondersDisabled), false);
         builder.appendField(Localizer.localize("command.about.header.announcers"), Localizer.localize("command.about.info.announcers", announcersNum, announcersEnabled), false);
 
-        builder.withTitle(Localizer.localize("command.about.bot_info", bot.getClient().getOurUser().getNicknameForGuild(guild)));
+        builder.withTitle(Localizer.localize("command.about.bot_info", bot.getClient().getOurUser().getDisplayName(guild)));
         builder.withThumbnail(bot.getClient().getApplicationIconURL());
         builder.withFooterText("PolarizedBot v" + Bot.VERSION);
 
@@ -87,7 +87,7 @@ public class CommandAbout implements ICommand {
         builder.appendField(Localizer.localize("command.about.header.user_id"), user.getStringID(), true);
         builder.appendField(Localizer.localize("command.about.header.rank"), GuildManager.getUserRank(guild, user).name(), true);
 
-        builder.withTitle(Localizer.localize("command.about.user_info", user.getNicknameForGuild(guild)));
+        builder.withTitle(Localizer.localize("command.about.user_info", user.getDisplayName(guild)));
         builder.withThumbnail(message.getAuthor().getAvatarURL());
         builder.withFooterText("PolarizedBot v" + Bot.VERSION);
 

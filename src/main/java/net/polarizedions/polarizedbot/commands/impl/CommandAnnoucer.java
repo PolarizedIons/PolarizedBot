@@ -7,6 +7,7 @@ import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.util.Localizer;
+import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
@@ -108,7 +109,7 @@ public class CommandAnnoucer implements ICommand {
                 response.append("#").append(channels.get(i).getName()).append("\n");
             }
         }
-        response.append("```");
-        message.getChannel().sendMessage(response.toString());
+
+        MessageUtil.sendAutosplit(message.getChannel(), response.append("```").toString());
     }
 }

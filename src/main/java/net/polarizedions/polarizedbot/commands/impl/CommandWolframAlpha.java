@@ -5,9 +5,9 @@ import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.util.Localizer;
+import net.polarizedions.polarizedbot.util.MessageUtil;
 import sx.blah.discord.handle.obj.IMessage;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -85,33 +85,7 @@ public class CommandWolframAlpha implements ICommand {
             responseBuilder.append("\n");
         }
 
-        String response = responseBuilder.toString();
-
-        List<String> messages = new LinkedList<>();
-        if (response.length() <= 2000) { // Discord message char limit
-            messages.add(response);
-        }
-        else {
-            String[] responseParts = response.split("(?=\n\\*\\*)");
-            StringBuilder currentMsg = new StringBuilder();
-            for (String part : responseParts) {
-                if ((currentMsg.length() + part.length()) <= 2000) {
-                    currentMsg.append(part);
-                }
-                else {
-                    messages.add(currentMsg.toString());
-                    currentMsg = new StringBuilder(part);
-                }
-            }
-
-            if (currentMsg.length() > 0) {
-                messages.add(currentMsg.toString());
-            }
-        }
-
-        for (String msg : messages) {
-            message.getChannel().sendMessage(msg);
-        }
+        MessageUtil.sendAutosplit(message.getChannel(), responseBuilder.toString());
     }
 
 
@@ -146,6 +120,6 @@ public class CommandWolframAlpha implements ICommand {
             i++;
         }
 
-        message.getChannel().sendMessage(responseBuilder.toString());
+        MessageUtil.sendAutosplit(message.getChannel(), responseBuilder.toString());
     }
 }

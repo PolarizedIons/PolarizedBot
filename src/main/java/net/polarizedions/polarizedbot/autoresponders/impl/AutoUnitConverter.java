@@ -1,12 +1,17 @@
 package net.polarizedions.polarizedbot.autoresponders.impl;
 
 import net.polarizedions.polarizedbot.autoresponders.IResponder;
+import net.polarizedions.polarizedbot.util.MessageUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -84,7 +89,7 @@ public class AutoUnitConverter implements IResponder {
         }
 
         if (matcher.matches()) {
-            message.getChannel().sendMessage(response.append("```").toString());
+            MessageUtil.sendAutosplit(message.getChannel(), response.append("```").toString());
         }
     }
 

@@ -10,8 +10,8 @@ import java.util.Map;
 public class GuildConfig {
     public String lang;
     public String commandPrefix;
-    public Map<Long, UserRank> rank = new HashMap<>();
-    public List<String> disabledCommands = new ArrayList<>();
+    public Map<Long, UserRank> rank;
+    public List<String> disabledCommands;
     public List<Long> ignoredUsers;
-    public List<String> disabledResponders = new ArrayList<>();
+    public List<String> disabledResponders;
 }

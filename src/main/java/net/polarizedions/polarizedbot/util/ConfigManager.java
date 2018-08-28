@@ -1,5 +1,7 @@
 package net.polarizedions.polarizedbot.util;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.moandjiezana.toml.Toml;
 import com.moandjiezana.toml.TomlWriter;
 import net.polarizedions.polarizedbot.config.GlobalConfig;
@@ -10,21 +12,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sx.blah.discord.handle.obj.IGuild;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Paths;
 
 public class ConfigManager {
     private static final Logger logger = LogManager.getLogger("ConfigManager");
+    private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(GlobalConfig.class, new DefaultGlobalConfig())
+            .registerTypeAdapter(GuildConfig.class, new DefaultGuildConfig())
+            .setPrettyPrinting()
+            .create();
 
     public static File configDir = new File("config");
     private static GlobalConfig globalConfig;
-
-    private static TomlWriter tomlWriter = new TomlWriter();
-
-    // THIS IS UGLY I KNOW!
-    private static Toml defaultGlobal = new Toml().read(tomlWriter.write(new DefaultGlobalConfig()));
-    private static Toml defaultGuild = new Toml().read(tomlWriter.write(new DefaultGuildConfig()));
 
     public static void loadGlobalConfig() throws IOException {
         String configDirStr = configDir.getAbsolutePath();
@@ -34,12 +34,19 @@ public class ConfigManager {
             configDir.mkdir();
         }
 
-        File globalFile = Paths.get(configDirStr, "bot.toml").toFile();
+        File globalFile = Paths.get(configDirStr, "bot.json").toFile();
         globalFile.createNewFile();
         logger.info("Loading global config from: {}", globalFile);
-        Toml globalToml = new Toml(defaultGlobal).read(globalFile);
-        globalConfig = globalToml.to(GlobalConfig.class);
-        tomlWriter.write(globalConfig, globalFile);
+        Reader reader = new FileReader(globalFile);
+        globalConfig = GSON.fromJson(reader, GlobalConfig.class);
+
+        if (globalConfig == null) {
+            globalConfig = GSON.fromJson("{}", GlobalConfig.class);
+        }
+
+        Writer writer = new FileWriter(globalFile);
+        GSON.toJson(globalConfig, writer);
+        writer.close();
     }
 
     public static GuildConfig loadGuildConfig(Long guildId) throws IOException {
@@ -49,13 +56,19 @@ public class ConfigManager {
             guildsFolder.mkdir();
         }
 
-        File guildFile = Paths.get(guildsFolder.toString(), guildId + ".toml").toFile();
+        File guildFile = Paths.get(guildsFolder.toString(), guildId + ".json").toFile();
         guildFile.createNewFile();
 
         logger.info("Loading Guild Config from: {}", guildFile);
-        Toml guildToml = new Toml(defaultGuild).read(guildFile);
-        GuildConfig guildConfig = guildToml.to(GuildConfig.class);
-        tomlWriter.write(guildConfig, guildFile);
+
+        GuildConfig guildConfig = GSON.fromJson(new FileReader(guildFile), GuildConfig.class);
+
+        if (guildConfig == null) {
+            guildConfig = GSON.fromJson("{}", GuildConfig.class);
+        }
+        Writer writer = new FileWriter(guildFile);
+        GSON.toJson(guildConfig, writer);
+        writer.close();
 
         return guildConfig;
     }
@@ -67,7 +80,7 @@ public class ConfigManager {
             guildsFolder.mkdir();
         }
 
-        File guildFile = Paths.get(guildsFolder.toString(), guild.getLongID() + ".toml").toFile();
+        File guildFile = Paths.get(guildsFolder.toString(), guild.getLongID() + ".json").toFile();
 
         if (config == null) {
             logger.error("Tried to save unknown guild config!?");
@@ -75,7 +88,9 @@ public class ConfigManager {
         }
 
         logger.info("Saving Guild Config file: {}", guildFile);
-        tomlWriter.write(config, guildFile);
+        Writer writer = new FileWriter(guildFile);
+        GSON.toJson(config, writer);
+        writer.close();
     }
 
     public static GlobalConfig getGlobalConfig() {

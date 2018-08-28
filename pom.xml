@@ -75,11 +75,6 @@
             <version>2.11.0</version>
         </dependency>
         <dependency>
-            <groupId>com.moandjiezana.toml</groupId>
-            <artifactId>toml4j</artifactId>
-            <version>0.7.2</version>
-        </dependency>
-        <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>RELEASE</version>

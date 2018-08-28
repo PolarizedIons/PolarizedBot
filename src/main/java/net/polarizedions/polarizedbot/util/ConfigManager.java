@@ -2,8 +2,6 @@ package net.polarizedions.polarizedbot.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.moandjiezana.toml.Toml;
-import com.moandjiezana.toml.TomlWriter;
 import net.polarizedions.polarizedbot.config.GlobalConfig;
 import net.polarizedions.polarizedbot.config.GuildConfig;
 import net.polarizedions.polarizedbot.config.defaults.DefaultGlobalConfig;

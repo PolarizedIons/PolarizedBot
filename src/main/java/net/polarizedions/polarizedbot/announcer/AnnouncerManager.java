@@ -1,7 +1,6 @@
 package net.polarizedions.polarizedbot.announcer;
 
-import com.moandjiezana.toml.Toml;
-import com.moandjiezana.toml.TomlWriter;
+import com.google.gson.*;
 import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.util.ConfigManager;
 import org.apache.logging.log4j.LogManager;
@@ -10,14 +9,14 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class AnnouncerManager {
     private static final Logger logger = LogManager.getLogger("AnnouncerManager");
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private Map<String, IAnnouncer> announcers;
     private Map<IAnnouncer, List<IChannel>> subData;
     private List<Timer> timers;
@@ -105,45 +104,40 @@ public class AnnouncerManager {
         return subData.getOrDefault(announcer, Collections.emptyList());
     }
 
-    @SuppressWarnings("unchecked")
     public void load() {
-        File saveFile = Paths.get(ConfigManager.configDir.getAbsolutePath(), "announcements.toml").toFile();
+        File saveFile = Paths.get(ConfigManager.configDir.getAbsolutePath(), "announcements.json").toFile();
 
         if (!saveFile.exists()) {
             return;
         }
 
-        logger.info("Loaded announcement sub data from: {}", saveFile);
-        Toml toml = new Toml().read(saveFile);
+        logger.info("Loading announcement sub data from: {}", saveFile);
+        JsonObject json;
+        try {
+            json = new JsonParser().parse(new FileReader(saveFile)).getAsJsonObject();
+        } catch (FileNotFoundException ex) {
+            logger.error("Save file not found", ex);
+            return;
+        }
+
         IDiscordClient client = Bot.instance.getClient();
 
-        for (Map.Entry<String, Object> entry : toml.entrySet()) {
+        for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
             IAnnouncer announcer = getAnnouncer(entry.getKey());
             if (announcer == null) {
                 logger.error("Error loading data: unknown announcer '{}'", entry.getKey());
                 continue;
             }
 
-            if (!(entry.getValue() instanceof List)) {
-                logger.error("Error loading data: value not list");
-                continue;
-            }
-
-            List<Long> data;
-            try {
-                data = (List<Long>) entry.getValue();
-            }
-            catch (ClassCastException e) {
-                logger.error("Error loading data: failed to cast list");
-                continue;
-            }
-
             List<IChannel> channels = new ArrayList<>();
-            for (Long channelID : data) {
+            for (JsonElement jsonLong : entry.getValue().getAsJsonArray()) {
+                long channelID = jsonLong.getAsLong();
                 IChannel channel = client.getChannelByID(channelID);
                 if (channel == null) {
                     logger.error("Unable to get channel from id ({}) while loading announcement data for {}, dropping.", channelID, announcer.getName());
+                    continue;
                 }
+                channels.add(channel);
             }
 
             subData.put(announcer, channels);
@@ -151,7 +145,7 @@ public class AnnouncerManager {
     }
 
     public void save() {
-        File saveFile = Paths.get(ConfigManager.configDir.getAbsolutePath(), "announcements.toml").toFile();
+        File saveFile = Paths.get(ConfigManager.configDir.getAbsolutePath(), "announcements.json").toFile();
         logger.info("Saving announcements sub data to: {}", saveFile);
 
         Map<String, List<Long>> data = new HashMap<>();
@@ -159,11 +153,12 @@ public class AnnouncerManager {
             data.put(entry.getKey().getName(), entry.getValue().parallelStream().map(channel -> channel.getLongID()).collect(Collectors.toList()));
         }
 
-        TomlWriter tomlWriter = new TomlWriter();
         try {
-            tomlWriter.write(data, saveFile);
-        } catch (IOException e) {
-            logger.error("Error saving announcement sub data: ", e);
+            Writer writer = new FileWriter(saveFile);
+            GSON.toJson(data, writer);
+            writer.close();
+        } catch (IOException ex) {
+            logger.error("Error saving announcement data", ex);
         }
     }
 

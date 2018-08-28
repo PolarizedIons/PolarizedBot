@@ -26,21 +26,26 @@ public class CommandAnnoucer implements ICommand {
                             .captureArg(name -> name
                                 .channelArg(channel -> channel
                                         .onExecute((msg, args) -> this.manageSubscription(msg, true, (String)args.get(2), (IChannel)args.get(3)))
+                                        .onFail(this::failChannel)
                                 )
                                 .onExecute((msg, args) -> this.manageSubscription(msg, true, (String)args.get(2), msg.getChannel()))
+                                .onFail(this::fail)
                             )
                         )
                         .optionArg(new String[] {"unsubscribe", "unsub"}, unsub -> unsub
                             .captureArg(name -> name
                                 .channelArg(channel -> channel
                                     .onExecute((msg, args) -> this.manageSubscription(msg, false, (String)args.get(2), (IChannel)args.get(3)))
+                                    .onFail(this::failChannel)
                                 )
                                 .onExecute((msg, args) -> this.manageSubscription(msg, false, (String)args.get(2), msg.getChannel()))
+                                .onFail(this::fail)
                             )
                         )
                         .stringArg("list", list -> list
                             .onExecute(this::listAnnouncements)
                         )
+                        .onFail(this::fail)
                 )
                 .buildCommand();
     }
@@ -68,6 +73,18 @@ public class CommandAnnoucer implements ICommand {
     }
 
     private void fail(IMessage message, List<Object> parsedArgs, List<String> unparsedArgs) {
-        message.getChannel().sendMessage(Localizer.localize("command.announce.error.no_subcommand", "subscribe, unsubscribe, list"));
+        if (parsedArgs.size() == 1) {
+            message.getChannel().sendMessage(Localizer.localize("command.announce.error.no_subcommand", "subscribe, unsubscribe, list"));
+        }
+        else if (parsedArgs.size() == 2){
+            message.getChannel().sendMessage(Localizer.localize("command.announce.error.channel_or_announcer_missing"));
+        }
+        else {
+            message.getChannel().sendMessage(Localizer.localize("command.announce.error.announcer_missing"));
+        }
+    }
+
+    private void failChannel(IMessage message, List<Object> parsedArgs, List<String> unparsedArgs) {
+        message.getChannel().sendMessage(Localizer.localize("command.announce.error.no_channel"));
     }
 }

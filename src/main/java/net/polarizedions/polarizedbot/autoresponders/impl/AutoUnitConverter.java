@@ -69,7 +69,7 @@ public class AutoUnitConverter implements IResponder {
 
         // DONE WITH UNIT INITS
 
-        String matchRegexString = ".*?([0-9]+)(\\.([0-9]+))? ?(%s).*?";
+        String matchRegexString = "(^|\\s)([0-9]+)(\\.([0-9]+))? ?(%s)($|[^a-zA-z0-9]+?)";
         this.matchPattern = Pattern.compile(String.format(matchRegexString, String.join("|", this.convertions.keySet())));
     }
 
@@ -79,9 +79,9 @@ public class AutoUnitConverter implements IResponder {
         StringBuilder response = new StringBuilder("```\n");
 
         while (matcher.find()) {
-            String matchingUnit = matcher.group(4);
+            String matchingUnit = matcher.group(5);
             logger.debug("Found unit '{}' to convert", matchingUnit);
-            double in = Double.parseDouble(matcher.group(1) + (matcher.group(2) == null ? "" : matcher.group(2)));
+            double in = Double.parseDouble(matcher.group(2) + (matcher.group(3) == null ? "" : matcher.group(3)));
             for (Convertion converter : this.convertions.get(matchingUnit)) {
                 response.append(in).append(" ").append(converter.from.get(0)).append(" -> ")
                         .append(FORMAT.format(converter.run(in))).append(" ").append(converter.to.get(0)).append("\n");

@@ -21,10 +21,15 @@ public class CommandRestart implements ICommand {
         return CommandBuilder.create("Restart")
                 .setRank(UserRank.BOT_OWNER)
                 .command("restart", restart -> restart
-                    .stringArg("soft", soft -> soft.onExecute(this::softRestart))
-                    .stringArg("hard", hard -> hard.onExecute(this::hardRestart))
+                    .stringArg("soft", soft -> soft
+                            .onExecute(this::softRestart)
+                    )
+                    .stringArg("hard", hard -> hard
+                            .onExecute(this::hardRestart)
+                    )
                     .onExecute(this::softRestart)
                     .onFail(this::fail)
+                    .setHelp("command.restart.help")
                 )
                 .buildCommand();
     }

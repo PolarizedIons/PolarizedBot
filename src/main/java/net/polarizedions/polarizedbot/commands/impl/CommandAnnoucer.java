@@ -51,7 +51,9 @@ public class CommandAnnoucer implements ICommand {
                                  .onExecute(this::listGuild)
                          )
                          .onFail(this::fail)
+                         .setHelp("command.announce.help.usage")
                  )
+                 .setHelp("command.announce.help")
                  .buildCommand();
     }
 

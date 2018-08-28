@@ -5,7 +5,6 @@ import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
 
 import java.util.List;
 
@@ -15,7 +14,11 @@ public class CommandInvite implements ICommand {
     @Override
     public CommandTree getCommand() {
         return CommandBuilder.create("Invite")
-                .command("invite", invite -> invite.onExecute(this::invite))
+                .command("invite", invite -> invite
+                        .onExecute(this::invite)
+                        .setHelp("command.invite.help")
+                )
+                .setHelp("command.invite.help")
                 .buildCommand();
     }
 

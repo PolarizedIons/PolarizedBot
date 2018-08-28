@@ -11,6 +11,11 @@
     },
     "command": {
         "about": {
+            "help": {
+                "*": "Get some general info",
+                "about": "Get info about the bot and this guild",
+                "info": "Get info about yourself"
+            },
             "bot_info": "About %s",
             "user_info": "Info about: %s",
             "header": {
@@ -33,6 +38,10 @@
             }
         },
         "announce": {
+            "help": {
+                "*": "Manages the announcer subscriptions for the bot.",
+                "usage": "[subscribe/unsubscribe] <announcer> (channel) OR [list/guild]"
+            },
             "list": "Available announcements: %s",
             "error": {
                 "no_such_announcement": "'%s' is not an available announcement",
@@ -46,6 +55,10 @@
             }
         },
         "guild": {
+            "help": {
+                "*": "Manage this guild",
+                "usage": "[set] [prefix/lang] <new value> OR [set] [rank] <user> <new rank> OR [enable/disable] [command/responder] <name>"
+            },
             "error": {
                 "no_subcommand": "You need to provide an action. Valid actions: %s",
                 "unknown_subcommand": "Unknown action %s. Valid actions: %s",
@@ -84,7 +97,23 @@
                 "set_prefix": "Set the server's prefix to '%s'"
             }
         },
+        "help": {
+            "help": {
+                "*": "Get help with bot commands",
+                "usage": "[help] (command)"
+            },
+            "error": {
+                "not_found": "%s isn't a registered command.",
+                "no_command_help": "%s doesn't provide any help strings :(",
+                "no_alias_help": "%s doesn't provide any help for this command :("
+            }
+        },
         "ignore": {
+            "help": {
+                "*": "Manages ignored users for this guild, or ignore yourself",
+                "ignore": "[ignore] (user)",
+                "unignore": "[unignore] <user>"
+            },
             "error": {
                 "bot_owner": "Cannot ignore the bot owner",
                 "no_user": "You must specify a user."
@@ -94,7 +123,16 @@
                 "unignore": "Unignored %s in this guild."
             }
         },
+        "invite": {
+            "help": {
+                "*": "Get the bot invite link"
+            }
+        },
         "ping": {
+            "help": {
+                "*": "Ping Pong! Test that the bot it working.",
+                "pingpong": "Run to see latency"
+            },
             "reply": {
                 "1": "%s PONG!",
                 "2": "%s PONG! (%s ms)"
@@ -105,6 +143,7 @@
             }
         },
         "restart": {
+            "help": "Restart the bot. Usage: [restart] [hard/soft]",
             "error": {
                 "subcommand": "Unknown action. Valid actions: %s",
                 "not_jar": "Error: Bot was not launched from jar",
@@ -116,7 +155,22 @@
                 "soft": "Restarting..."
             }
         },
+        "say": {
+            "help": {
+                "*": "Say things in channels or to people",
+                "say": "Say things in channel. (Default current)",
+                "tell": "Tell a person something"
+            }
+        },
+        "shutdown": {
+            "help": "Shuts the bot down"
+        },
         "wolfram": {
+            "help": {
+                "*": "Ask WolframAlpha a question",
+                "wolf": "Get the full response",
+                "calc": "Get the first answer (probably what you were looking for)"
+            },
             "error": {
                 "no_arg": "No input provided!",
                 "unknown": "Unknown error occured",

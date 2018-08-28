@@ -24,6 +24,7 @@ public class Node {
     private boolean allowEmpty;
 
     private UserRank rank;
+    private String help;
 
     public Node(CommandBuilder builder) {
         this.builder = builder;
@@ -71,6 +72,15 @@ public class Node {
         this.swallows = true;
         this.allowEmpty = allowEmpty;
         return this;
+    }
+
+    public Node setHelp(String helpKey) {
+        this.help = helpKey;
+        return this;
+    }
+
+    public String getHelp() {
+        return this.help;
     }
 
     void executeTree(List<String> treeOptions, IMessage command, List<Object> parsedArgs) throws CommandException {

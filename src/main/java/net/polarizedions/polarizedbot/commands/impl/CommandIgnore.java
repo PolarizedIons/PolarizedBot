@@ -23,6 +23,7 @@ public class CommandIgnore implements ICommand {
                         )
                         .onFail(this::fail)
                         .onExecute(this::ignore)
+                        .setHelp("command.ignore.help.ignore")
                 )
                 .command("unignore", unignore ->
                     unignore.pingArg(pingNode -> pingNode
@@ -30,7 +31,9 @@ public class CommandIgnore implements ICommand {
                             .onExecute(this::unignore)
                     )
                     .onFail(this::fail)
+                    .setHelp("command.ignore.help.unignore")
                 )
+                 .setHelp("command.ignore.help")
                 .buildCommand();
     }
 

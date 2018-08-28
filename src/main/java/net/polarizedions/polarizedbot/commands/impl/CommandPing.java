@@ -12,6 +12,17 @@ import java.util.List;
 
 public class CommandPing implements ICommand {
 
+    @Override
+    public CommandTree getCommand() {
+        return CommandBuilder.create("Ping")
+                             .command("ping", "pong", ping -> ping
+                                     .onExecute(this::run)
+                                     .setHelp("command.ping.help.pingpong")
+                             )
+                             .setHelp("command.ping.help")
+                             .buildCommand();
+    }
+
     public void run(IMessage message, List<Object> args) {
         String arg1 = (String) args.get(0);
         String replyKey = "command.ping.reply";
@@ -27,12 +38,5 @@ public class CommandPing implements ICommand {
         Duration duration = Duration.between(ping, pong);
         String msgText2 = Localizer.localize(replyKey + ".2", "<@!" + message.getAuthor().getLongID() + ">", duration.toMillis());
         msg.edit(msgText2);
-    }
-
-    @Override
-    public CommandTree getCommand() {
-        return CommandBuilder.create("Ping")
-                .command("ping", "pong", ping -> ping.onExecute(this::run))
-                .buildCommand();
     }
 }

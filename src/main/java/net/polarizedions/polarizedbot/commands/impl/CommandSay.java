@@ -19,6 +19,7 @@ public class CommandSay implements ICommand {
                             }))
                     .swallow(false)
                     .onExecute((message, args) -> message.getChannel().sendMessage((String)args.get(1)))
+                    .setHelp("command.say.help.say")
                 )
                 .command("tell", tell -> tell
                     .pingArg(pingNode -> pingNode
@@ -27,7 +28,9 @@ public class CommandSay implements ICommand {
                             IUser user = (IUser) args.get(1);
                             user.getOrCreatePMChannel().sendMessage(message.getAuthor().toString() + "says: " + args.get(2));
                         }))
+                    .setHelp("command.say.help.tell")
                 )
+                .setHelp("command.help.say")
                 .buildCommand();
     }
 }

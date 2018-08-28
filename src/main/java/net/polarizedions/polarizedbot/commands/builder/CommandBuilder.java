@@ -16,8 +16,8 @@ public class CommandBuilder {
         return new CommandBuilder(commandName);
     }
 
-    public CommandBuilder setHelp(String helpText) {
-        this.command.help = helpText;
+    public CommandBuilder setHelp(String helpKey) {
+        this.command.help = helpKey;
         return this;
     }
 

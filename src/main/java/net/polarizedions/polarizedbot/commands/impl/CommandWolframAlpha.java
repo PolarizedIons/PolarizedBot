@@ -20,12 +20,15 @@ public class CommandWolframAlpha implements ICommand {
                     .swallow(false)
                     .onExecute(this::replyFull)
                     .onFail(this::fail)
+                    .setHelp("command.wolfram.help.wolf")
                 )
                 .command("calc", calc -> calc
                     .swallow(false)
                     .onExecute(this::replyShort)
                     .onFail(this::fail)
+                    .setHelp("command.wolfram.help.calc")
                 )
+                 .setHelp("command.wolfram.help")
                 .buildCommand();
     }
 

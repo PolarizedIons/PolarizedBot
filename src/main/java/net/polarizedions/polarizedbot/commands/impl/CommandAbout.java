@@ -27,10 +27,13 @@ public class CommandAbout implements ICommand {
         return CommandBuilder.create("About")
                 .command("about", about -> about
                         .onExecute(this::about)
+                        .setHelp("command.about.help.about")
                 )
                 .command("info", info -> info
                     .onExecute(this::info)
+                    .setHelp("command.about.help.info")
                 )
+                 .setHelp("command.about.help")
                 .buildCommand();
     }
 

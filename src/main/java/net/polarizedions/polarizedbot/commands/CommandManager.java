@@ -1,7 +1,17 @@
 package net.polarizedions.polarizedbot.commands;
 
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
-import net.polarizedions.polarizedbot.commands.impl.*;
+import net.polarizedions.polarizedbot.commands.impl.CommandAbout;
+import net.polarizedions.polarizedbot.commands.impl.CommandAnnoucer;
+import net.polarizedions.polarizedbot.commands.impl.CommandGuild;
+import net.polarizedions.polarizedbot.commands.impl.CommandHelp;
+import net.polarizedions.polarizedbot.commands.impl.CommandIgnore;
+import net.polarizedions.polarizedbot.commands.impl.CommandInvite;
+import net.polarizedions.polarizedbot.commands.impl.CommandPing;
+import net.polarizedions.polarizedbot.commands.impl.CommandRestart;
+import net.polarizedions.polarizedbot.commands.impl.CommandSay;
+import net.polarizedions.polarizedbot.commands.impl.CommandShutdown;
+import net.polarizedions.polarizedbot.commands.impl.CommandWolframAlpha;
 import net.polarizedions.polarizedbot.config.GuildConfig;
 import net.polarizedions.polarizedbot.exceptions.CommandException;
 import net.polarizedions.polarizedbot.util.GuildManager;
@@ -17,7 +27,13 @@ import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CommandManager {
     private Logger logger = LogManager.getLogger("CommandManager");
@@ -27,7 +43,7 @@ public class CommandManager {
         this.registerCommand(new CommandAbout());
         this.registerCommand(new CommandAnnoucer());
         this.registerCommand(new CommandGuild());
-//        this.registerCommand(new CommandHelp());
+        this.registerCommand(new CommandHelp());
         this.registerCommand(new CommandIgnore());
         this.registerCommand(new CommandInvite());
         this.registerCommand(new CommandPing());

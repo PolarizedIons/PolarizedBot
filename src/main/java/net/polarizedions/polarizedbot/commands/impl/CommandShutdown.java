@@ -11,13 +11,15 @@ public class CommandShutdown implements ICommand {
     @Override
     public CommandTree getCommand() {
         return CommandBuilder.create("Shutdown")
-                .setHelp("Shuts the bot down")
                 .setRank(UserRank.BOT_OWNER)
                 .command("shutdown", shutdown -> shutdown.onExecute((message, args) -> {
                     logger.info("Shutting the bot down");
                     message.getChannel().setTypingStatus(false);
                     Bot.instance.shutdown();
-                }))
+                })
+                 .setHelp("command.shutdown.help")
+                )
+                 .setHelp("command.shutdown.help")
                 .buildCommand();
     }
 }

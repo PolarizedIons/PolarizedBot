@@ -65,7 +65,9 @@ public class CommandGuild implements ICommand {
                                 .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "disable_arg_missing", "command, responder"))
                         )
                         .onFail(this::subcommandFail)
+                        .setHelp("command.guild.help.usage")
                 )
+                 .setHelp("command.guild.help")
                 .buildCommand();
     }
 

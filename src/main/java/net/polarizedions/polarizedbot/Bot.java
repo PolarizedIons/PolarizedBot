@@ -16,14 +16,16 @@ import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.util.DiscordException;
 
 import java.io.IOException;
-import java.time.Duration;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Properties;
 
 public class Bot {
-    public static Bot instance;
-    public static final String VERSION = "0.1.6";
     public static final Logger logger = LogManager.getLogger("PolarizedBot");
+    public static Bot instance;
     private static Instant startInstant;
+    private static String version;
+    private static String buildDate;
     private Instant connectedInstant;
 
     private IDiscordClient client;
@@ -32,7 +34,7 @@ public class Bot {
     private ResponderManager responderManager;
 
     Bot() {
-        logger.info("Starting bot...");
+        logger.info("Starting bot {}...", Bot.getVersion());
         instance = this;
 
         try {
@@ -125,16 +127,31 @@ public class Bot {
     }
 
     public Instant getStartInstant() {
-        return this.startInstant;
+        return Bot.startInstant;
     }
 
     public Instant getConnectedInstant() {
         return this.connectedInstant;
     }
 
+    public static String getVersion() {
+        if (Bot.version == null || Bot.buildDate == null) {
+            Properties versionProp = new Properties();
+            try {
+                versionProp.load(Bot.class.getResourceAsStream("/version.txt"));
+                Bot.version = "v" + versionProp.getProperty("version");
+                Bot.buildDate = versionProp.getProperty("time");
+            } catch (IOException e) {
+                Bot.version = "unknown";
+                Bot.buildDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX").format(Instant.now());
+            }
+        }
+
+        return Bot.version + " / " + Bot.buildDate;
+    }
+
     public static void main(String[] args) {
-        Bot bot = new Bot();
-        bot.startInstant = Instant.now();
-        bot.run();
+        Bot.startInstant = Instant.now();
+        new Bot().run();
     }
 }

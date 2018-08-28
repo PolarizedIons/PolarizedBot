@@ -1,7 +1,6 @@
 package net.polarizedions.polarizedbot.commands.impl;
 
 import net.polarizedions.polarizedbot.Bot;
-import net.polarizedions.polarizedbot.announcer.IAnnouncer;
 import net.polarizedions.polarizedbot.commands.CommandManager;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
@@ -11,7 +10,6 @@ import net.polarizedions.polarizedbot.config.GuildConfig;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.TimeUtil;
-import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -19,9 +17,8 @@ import sx.blah.discord.util.EmbedBuilder;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.Period;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandAbout implements ICommand {
@@ -73,7 +70,7 @@ public class CommandAbout implements ICommand {
 
         builder.withTitle(Localizer.localize("command.about.bot_info", bot.getClient().getOurUser().getDisplayName(guild)));
         builder.withThumbnail(bot.getClient().getApplicationIconURL());
-        builder.withFooterText("PolarizedBot v" + Bot.VERSION);
+        builder.withFooterText("PolarizedBot " + Bot.getVersion());
 
         message.getChannel().sendMessage(builder.build());
     }
@@ -89,7 +86,7 @@ public class CommandAbout implements ICommand {
 
         builder.withTitle(Localizer.localize("command.about.user_info", user.getDisplayName(guild)));
         builder.withThumbnail(message.getAuthor().getAvatarURL());
-        builder.withFooterText("PolarizedBot v" + Bot.VERSION);
+        builder.withFooterText("PolarizedBot " + Bot.getVersion());
 
         message.getChannel().sendMessage(builder.build());
     }

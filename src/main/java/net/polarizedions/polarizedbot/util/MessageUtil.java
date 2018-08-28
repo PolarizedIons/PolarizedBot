@@ -23,6 +23,11 @@ public class MessageUtil {
             }
         }
 
+        if (currentMsg.length() > 0) {
+            messages.add(currentMsg.toString());
+        }
+
+
         final int[] i = {0};
         RequestBuffer.request(() -> {
             for (/*NOOP*/; i[0] < messages.size(); /*NOOP*/) {

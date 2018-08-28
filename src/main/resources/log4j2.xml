@@ -4,13 +4,30 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%25t ] [ %5level ] [ %30logger ]    %msg%n"/>
         </Console>
+
+        <RollingRandomAccessFile name="RollingRandomAccessFile" fileName="logs/latests.log"
+                                 filePattern="logs/log-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss.SSS} [%t][%level][%logger] %msg%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="250 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingRandomAccessFile>
+
     </Appenders>
     <Loggers>
         <Root level="debug">
             <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingRandomAccessFile"/>
         </Root>
         <Logger name="sx.blah.discord.Discord4J" level="info" additivity="false">
             <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="sx.blah.discord.Discord4J" level="debug" additivity="false">
+            <AppenderRef ref="RollingRandomAccessFile" />
         </Logger>
     </Loggers>
 </Configuration>

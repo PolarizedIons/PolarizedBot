@@ -20,7 +20,7 @@ public class CommandShutdown implements ICommand {
     @Override
     public CommandTree getCommand() {
         return CommandBuilder.create("Shutdown")
-                 .setRank(UserRank.BOT_OWNER)
+                 .setRank(UserRank.GUILD_ADMIN)
                  .command("shutdown", shutdown -> shutdown.onExecute(this::shutdown))
                  .command("restart", restart -> restart
                          .stringArg("soft", soft -> soft

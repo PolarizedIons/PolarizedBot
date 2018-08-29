@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TimeUtil {
     private static String[] formatKeys = new String[] {
-            "format.hour",
+            "format.week",
             "format.day",
             "format.hour",
             "format.minute",

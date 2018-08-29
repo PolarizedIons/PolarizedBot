@@ -163,6 +163,22 @@
                 "restart_soft": "Restarting..."
             }
         },
+        "update": {
+            "help": "Updates the bot from github",
+            "error": {
+                "in_progress": "An update is currently in progress",
+                "no_response": "Couldn't check for an update at this time",
+                "no_jar": "The bot is not being ran from a jar, and cannot be updated automatically",
+                "not_found": "No release found for repo %s",
+                "github": "Github error: %s",
+                "up_to_date": "The bot is already running version %s",
+                "error_downloading": "An error occurred while downloading the update. Canceled action"
+            },
+            "success": {
+                "downloading": "Downloading %s...",
+                "starting": "Updating to %s"
+            }
+        },
         "wolfram": {
             "help": {
                 "*": "Ask WolframAlpha a question",

@@ -41,6 +41,12 @@ public class CommandShutdown implements ICommand {
         Bot.logger.info("Shutting down bot...");
         message.getChannel().sendMessage(Localizer.localize("command.shutdown.success"));
         Bot.instance.shutdown();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ex) {
+            // NOOP
+        }
+        System.exit(0);
     }
 
     private void fail(IMessage message, List<Object> parsed, List<String> unparsed) {
@@ -70,7 +76,7 @@ public class CommandShutdown implements ICommand {
             message.getChannel().setTypingStatus(false);
             Bot.logger.info("Hard restarting bot...");
             Bot.instance.shutdown();
-            System.exit(0);
+            // Don't System.exit because that breaks inheritIO
         } catch (URISyntaxException e) {
             message.getChannel().sendMessage(Localizer.localize("command.shutdown.error.jar_uri_error"));
         } catch (IOException e) {

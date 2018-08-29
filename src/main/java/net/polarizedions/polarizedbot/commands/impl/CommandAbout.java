@@ -73,7 +73,7 @@ public class CommandAbout implements ICommand {
 
         builder.withTitle(Localizer.localize("command.about.bot_info", bot.getClient().getOurUser().getDisplayName(guild)));
         builder.withThumbnail(bot.getClient().getApplicationIconURL());
-        builder.withFooterText("PolarizedBot " + Bot.getVersion());
+        builder.withFooterText("PolarizedBot " + Bot.getFullVersion());
 
         message.getChannel().sendMessage(builder.build());
     }
@@ -89,7 +89,7 @@ public class CommandAbout implements ICommand {
 
         builder.withTitle(Localizer.localize("command.about.user_info", user.getDisplayName(guild)));
         builder.withThumbnail(message.getAuthor().getAvatarURL());
-        builder.withFooterText("PolarizedBot " + Bot.getVersion());
+        builder.withFooterText("PolarizedBot " + Bot.getFullVersion());
 
         message.getChannel().sendMessage(builder.build());
     }

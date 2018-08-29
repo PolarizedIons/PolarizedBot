@@ -101,4 +101,8 @@ public class Localizer {
             }
         }
     }
+
+    public static String getCurrentLang() {
+        return currentLang;
+    }
 }

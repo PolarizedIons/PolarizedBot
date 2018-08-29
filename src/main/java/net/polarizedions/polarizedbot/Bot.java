@@ -15,6 +15,7 @@ import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.util.DiscordException;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -24,8 +25,8 @@ public class Bot {
     public static final Logger logger = LogManager.getLogger("PolarizedBot");
     public static Bot instance;
     private static Instant startInstant;
-    private static String version;
-    private static String buildDate;
+    public static String version;
+    public static String buildDate;
     private Instant connectedInstant;
 
     private IDiscordClient client;
@@ -34,7 +35,7 @@ public class Bot {
     private ResponderManager responderManager;
 
     Bot() {
-        logger.info("Starting bot {}...", Bot.getVersion());
+        logger.info("Starting bot {}...", Bot.getFullVersion());
         instance = this;
 
         try {
@@ -134,7 +135,7 @@ public class Bot {
         return this.connectedInstant;
     }
 
-    public static String getVersion() {
+    public static String getFullVersion() {
         if (Bot.version == null || Bot.buildDate == null) {
             Properties versionProp = new Properties();
             try {
@@ -151,6 +152,33 @@ public class Bot {
     }
 
     public static void main(String[] args) {
+        for (int i = 0; i < args.length; i++) {
+            // Delete old jar after update
+            if (args[i].equals("--update")) {
+                i++;
+                File oldJar = new File(args[i]);
+                if (!oldJar.delete()) {
+                    logger.info("Error deleting old jar {} after update!", args[i]);
+                }
+                else {
+                    logger.info("Deleted old jar {} because of update", args[i]);
+                }
+            }
+        }
+
+        // This is needed because even if I call ProcessBuilder#inheritIO, it doesn't seem to pass
+        // SIGINT to the child process, and thus soft-restarting, or updating the bot, cannot be
+        // killed by just pressing Control+C.
+        new Thread(() -> {
+            try {
+                while (System.in.read() != -1) { /* NOOP */ }
+            }
+            catch (IOException e) { /* NOOP */ }
+
+            System.out.println("Exiting because System.in is dead");
+            System.exit(0);
+        }, "SIGINT catcher").start();
+
         Bot.startInstant = Instant.now();
         new Bot().run();
     }

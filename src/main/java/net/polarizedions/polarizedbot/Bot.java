@@ -13,6 +13,8 @@ import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.DiscordException;
 
 import java.io.File;
@@ -58,10 +60,22 @@ public class Bot {
 
         this.client.getDispatcher().registerListener((IListener<ReadyEvent>) readyEvent -> {
             this.connectedInstant = Instant.now();
-            this.commandManager.registerListeners(this.client);
-            this.responderManager.registerListeners(this.client);
             this.announcerManager.load();
             this.announcerManager.initAnnouncers();
+        });
+
+        this.client.getDispatcher().registerListener((IListener<MessageReceivedEvent>) messageEvent -> {
+            IMessage message = messageEvent.getMessage();
+            logger.debug("[UserID: {}, GuildID: {}, MessageID: {}, User: {}]: {}",
+                    message.getAuthor().getStringID(),
+                    message.getGuild() == null ? "  0  " : message.getGuild().getStringID(),
+                    message.getStringID(),
+                    message.getAuthor().getName() + "#" + message.getAuthor().getDiscriminator(),
+                    message.getContent()
+            );
+
+            this.commandManager.messageHandler(message);
+            this.responderManager.messageHandler(message);
         });
     }
 

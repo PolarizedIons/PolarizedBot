@@ -60,12 +60,7 @@ public class CommandManager {
         }
     }
 
-    public void registerListeners(IDiscordClient discordClient) {
-        discordClient.getDispatcher().registerListener((IListener<MessageReceivedEvent>) this::messageHandler);
-    }
-
-    public void messageHandler(MessageReceivedEvent event) {
-        IMessage message = event.getMessage();
+    public void messageHandler(IMessage message) {
         IUser user = message.getAuthor();
         IGuild guild = message.getGuild();
 

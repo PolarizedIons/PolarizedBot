@@ -1,12 +1,9 @@
 package net.polarizedions.polarizedbot.autoresponders;
 
-import net.polarizedions.polarizedbot.autoresponders.impl.*;
+import net.polarizedions.polarizedbot.autoresponders.impl.AutoUnitConverter;
 import net.polarizedions.polarizedbot.config.GuildConfig;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.events.IListener;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -28,12 +25,7 @@ public class ResponderManager {
         this.responders.add(new AutoUnitConverter());
     }
 
-    public void registerListeners(IDiscordClient discordClient) {
-        discordClient.getDispatcher().registerListener((IListener<MessageReceivedEvent>) this::messageHandler);
-    }
-
-    private void messageHandler(MessageReceivedEvent event) {
-        IMessage message = event.getMessage();
+    public void messageHandler(IMessage message) {
         IUser user = message.getAuthor();
         IGuild guild = message.getGuild();
 

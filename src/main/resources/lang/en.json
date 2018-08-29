@@ -22,6 +22,7 @@
                 "owner": "Bot owner:",
                 "running": "Running for:",
                 "connected": "Connected for:",
+                "source_code": "Source code repo:",
                 "commands": "Commands:",
                 "autoresponders": "Auto responders:",
                 "announcers": "Announcers:",

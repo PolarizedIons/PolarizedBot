@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandAbout implements ICommand {
+    private static final String REPO_URL = "https://github.com/polarizedions/polarizedbot";
+
     @Override
     public CommandTree getCommand() {
         return CommandBuilder.create("About")
@@ -63,6 +65,7 @@ public class CommandAbout implements ICommand {
         builder.appendField(Localizer.localize("command.about.header.owner"), owner.getName() + "#" + owner.getDiscriminator(), false);
         builder.appendField(Localizer.localize("command.about.header.running"), TimeUtil.formatDuration(runningTime), false);
         builder.appendField(Localizer.localize("command.about.header.connected"), TimeUtil.formatDuration(connectedTime), false);
+        builder.appendField(Localizer.localize("command.about.header.source_code"), REPO_URL, false);
 
         builder.appendField(Localizer.localize("command.about.header.bot_user"), botUser.getName() + "#" + botUser.getDiscriminator(), false);
         builder.appendField(Localizer.localize("command.about.header.bot_id"), botUser.getStringID(), false);

@@ -8,7 +8,6 @@ import net.polarizedions.polarizedbot.commands.impl.CommandHelp;
 import net.polarizedions.polarizedbot.commands.impl.CommandIgnore;
 import net.polarizedions.polarizedbot.commands.impl.CommandInvite;
 import net.polarizedions.polarizedbot.commands.impl.CommandPing;
-import net.polarizedions.polarizedbot.commands.impl.CommandRestart;
 import net.polarizedions.polarizedbot.commands.impl.CommandSay;
 import net.polarizedions.polarizedbot.commands.impl.CommandShutdown;
 import net.polarizedions.polarizedbot.commands.impl.CommandWolframAlpha;
@@ -47,7 +46,6 @@ public class CommandManager {
         this.registerCommand(new CommandIgnore());
         this.registerCommand(new CommandInvite());
         this.registerCommand(new CommandPing());
-        this.registerCommand(new CommandRestart());
         this.registerCommand(new CommandShutdown());
         this.registerCommand(new CommandSay());
         this.registerCommand(new CommandWolframAlpha());

@@ -142,19 +142,6 @@
                 "2": "%s ping? (%s ms)"
             }
         },
-        "restart": {
-            "help": "Restart the bot. Usage: [restart] [hard/soft]",
-            "error": {
-                "subcommand": "Unknown action. Valid actions: %s",
-                "not_jar": "Error: Bot was not launched from jar",
-                "jar_uri_error": "Error getting jar location",
-                "cannot_spawn_process": "Cannot create new process"
-            },
-            "success": {
-                "hard": "Restarting jar...",
-                "soft": "Restarting..."
-            }
-        },
         "say": {
             "help": {
                 "*": "Say things in channels or to people",
@@ -163,7 +150,18 @@
             }
         },
         "shutdown": {
-            "help": "Shuts the bot down"
+            "help": "Shuts down/restarts the bot",
+            "error": {
+                "restart_subcommand": "Unknown action. Valid actions: %s",
+                "not_jar": "Error: Bot was not launched from jar",
+                "jar_uri_error": "Error getting jar location",
+                "cannot_spawn_process": "Cannot create new process"
+            },
+            "success": {
+                "*": "Shutting down...",
+                "restart_hard": "Restarting jar...",
+                "restart_soft": "Restarting..."
+            }
         },
         "wolfram": {
             "help": {

@@ -4,7 +4,7 @@ import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
-import net.polarizedions.polarizedbot.util.Localizer;
+import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
 import sx.blah.discord.handle.obj.IMessage;
 
@@ -39,7 +39,7 @@ public class CommandShutdown implements ICommand {
 
     private void shutdown(IMessage message, List<Object> args) {
         Bot.logger.info("Shutting down bot...");
-        message.getChannel().sendMessage(Localizer.localize("command.shutdown.success"));
+        MessageUtil.reply(message,"command.shutdown.success");
         Bot.instance.shutdown();
         try {
             Thread.sleep(500);
@@ -50,18 +50,18 @@ public class CommandShutdown implements ICommand {
     }
 
     private void fail(IMessage message, List<Object> parsed, List<String> unparsed) {
-        message.getChannel().sendMessage(Localizer.localize("command.shutdown.error.restart_subcommand", "hard, soft"));
+        MessageUtil.reply(message,"command.shutdown.error.restart_subcommand", "hard, soft");
     }
 
     private void hardRestart(IMessage message, List<Object> objects) {
-        message.getChannel().sendMessage(Localizer.localize("command.shutdown.success.restart_hard"));
+        MessageUtil.reply(message,"command.shutdown.success.restart_hard");
 
         try {
             String javaBin = Paths.get(System.getProperty("java.home"), "bin", "java").toAbsolutePath().toString();
             File currentJar = new File(Bot.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 
             if(!currentJar.getName().endsWith(".jar")) {
-                message.getChannel().sendMessage(Localizer.localize("command.restart.error.not_jar"));
+                MessageUtil.reply(message,"command.restart.error.not_jar");
                 return;
             }
 
@@ -78,14 +78,14 @@ public class CommandShutdown implements ICommand {
             Bot.instance.shutdown();
             // Don't System.exit because that breaks inheritIO
         } catch (URISyntaxException e) {
-            message.getChannel().sendMessage(Localizer.localize("command.shutdown.error.jar_uri_error"));
+            MessageUtil.reply(message,"command.shutdown.error.jar_uri_error");
         } catch (IOException e) {
-            message.getChannel().sendMessage(Localizer.localize("command.shutdown.error.cannot_spawn_process"));
+            MessageUtil.reply(message,"command.shutdown.error.cannot_spawn_process");
         }
     }
 
     private void softRestart(IMessage message, List<Object> objects) {
-        message.getChannel().sendMessage(Localizer.localize("command.shutdown.success.restart_soft"));
+        MessageUtil.reply(message,"command.shutdown.success.restart_soft");
         message.getChannel().setTypingStatus(false);
         Bot.logger.info("Soft restarting bot...");
         Bot.instance.softRestart();

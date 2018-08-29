@@ -53,14 +53,15 @@ public class CommandHelp implements ICommand {
         }
 
         if (command == null) {
-            message.getChannel().sendMessage(Localizer.localize("command.help.error.not_found", helpCommand));
+            MessageUtil.reply(message, "command.help.error.not_found", helpCommand);
             return;
         }
 
+        Localizer loc = new Localizer(message);
         StringBuilder resp = new StringBuilder("```\n")
                 .append(command.getName())
                 .append("\n  - ");
-        resp.append(Localizer.localize((Localizer.doesKeyExist(command.getHelp()) ? command.getHelp() : "command.help.error.no_command_help"), command.getName()))
+        resp.append(loc.localize((loc.doesKeyExist(command.getHelp()) ? command.getHelp() : "command.help.error.no_command_help"), command.getName()))
             .append("\n");
 
         Set<String> aliasSet = command.getCommands();
@@ -73,7 +74,7 @@ public class CommandHelp implements ICommand {
             resp.append("  ")
                 .append(helpAlias ? "*" : " ")
                 .append(String.format("%-" + (helpAlias ? aliasLen -1 : aliasLen) + "s", alias)).append(" - ")
-                .append(Localizer.localize(Localizer.doesKeyExist(command.getHelpFor(alias)) ? command.getHelpFor(alias) : "command.help.error.no_alias_help", alias))
+                .append(loc.localize(loc.doesKeyExist(command.getHelpFor(alias)) ? command.getHelpFor(alias) : "command.help.error.no_alias_help", alias))
                 .append("\n");
         }
 

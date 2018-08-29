@@ -6,6 +6,7 @@ import net.polarizedions.polarizedbot.config.GuildConfig;
 import net.polarizedions.polarizedbot.exceptions.CommandException;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
+import net.polarizedions.polarizedbot.util.MessageUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sx.blah.discord.handle.obj.IGuild;
@@ -48,14 +49,11 @@ public class CommandManager {
 
 
         if (guild == null) {
-            Localizer.setCurrentLang(Localizer.AVAILABLE_LANGS[0]);
-            message.getChannel().sendMessage(Localizer.localize("error.pm_not_supported"));
+            MessageUtil.reply(message, "error.pm_not_supported");
             return;
         }
 
         GuildConfig guildConfig = GuildManager.getConfig(guild);
-        Localizer.setCurrentLang(guildConfig.lang);
-
         if (guildConfig.ignoredUsers.contains(user.getLongID())) {
             logger.debug("From ignored user");
             return;
@@ -73,12 +71,12 @@ public class CommandManager {
 
         CommandTree commandTree = this.commands.get(command);
         if (commandTree == null) {
-            message.getChannel().sendMessage(Localizer.localize("error.no_such_command"));
+            MessageUtil.reply(message,"error.no_such_command");
             return;
         }
 
         if (guildConfig.disabledCommands.contains(command)) {
-            message.getChannel().sendMessage(Localizer.localize("error.command_disabled", commandTree.getName()));
+            MessageUtil.reply(message,"error.command_disabled", commandTree.getName());
             return;
         }
 
@@ -100,13 +98,13 @@ public class CommandManager {
     private void handleCommandException(IMessage message, Exception ex) {
         if (ex instanceof CommandException) {
             logger.warn("Failed to handle command: threw {}", ex.getClass().getSimpleName());
-            message.getChannel().sendMessage(((CommandException) ex).getError());
+            MessageUtil.reply(message, ((CommandException) ex).getError(), ((CommandException) ex).getErrorConext());
         }
         else if (ex instanceof MissingPermissionsException) {
             String neededPerms = ((MissingPermissionsException) ex).getMissingPermissions().toString();
             logger.error("No permission", neededPerms);
 
-            String localized = Localizer.localize("error.no_permission", neededPerms);
+            String localized = new Localizer(message).localize("error.no_permission", neededPerms);
             try {
                 message.getChannel().sendMessage(localized);
             } catch(Exception e) {
@@ -119,13 +117,13 @@ public class CommandManager {
         else if (ex instanceof DiscordException) {
             logger.error("Discord exception!", ex);
             try {
-                message.getChannel().sendMessage(Localizer.localize("error.discord_error", ((DiscordException) ex).getErrorMessage()));
+                MessageUtil.reply(message,"error.discord_error", ((DiscordException) ex).getErrorMessage());
             } catch(Exception e) { /* NOOP */ }
         }
         else {
             logger.error("I f'ed up", ex);
             try {
-                message.getChannel().sendMessage(Localizer.localize("error.misc_error", ex.getClass().getCanonicalName() + ": " + ex.getMessage()));
+                MessageUtil.reply(message,"error.misc_error", ex.getClass().getCanonicalName() + ": " + ex.getMessage());
             } catch(Exception e) { /* NOOP */ }
         }
 

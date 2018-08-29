@@ -3,6 +3,7 @@ package net.polarizedions.polarizedbot.commands.impl;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
+import net.polarizedions.polarizedbot.util.Localizer;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
 
@@ -26,7 +27,7 @@ public class CommandSay implements ICommand {
                         .swallow(false)
                         .onExecute((message, args) -> {
                             IUser user = (IUser) args.get(1);
-                            user.getOrCreatePMChannel().sendMessage(message.getAuthor().toString() + "says: " + args.get(2));
+                            user.getOrCreatePMChannel().sendMessage(new Localizer(message).localize("command.say.success", message.getAuthor().toString(), args.get(2)));
                         }))
                     .setHelp("command.say.help.tell")
                 )

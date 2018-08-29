@@ -3,7 +3,6 @@ package net.polarizedions.polarizedbot.autoresponders;
 import net.polarizedions.polarizedbot.autoresponders.impl.AutoUnitConverter;
 import net.polarizedions.polarizedbot.config.GuildConfig;
 import net.polarizedions.polarizedbot.util.GuildManager;
-import net.polarizedions.polarizedbot.util.Localizer;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -43,7 +42,6 @@ public class ResponderManager {
             return;
         }
 
-        Localizer.setCurrentLang(guildConfig.lang);
         for (IResponder responder : this.responders) {
             if (guildConfig.disabledResponders.contains(responder.getID())) {
                 continue;

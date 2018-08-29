@@ -4,7 +4,6 @@ import net.polarizedions.polarizedbot.api_handlers.WolframAlphaApi;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
-import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import sx.blah.discord.handle.obj.IMessage;
 
@@ -34,27 +33,27 @@ public class CommandWolframAlpha implements ICommand {
 
     private void fail(IMessage message, List<Object> parsedArgs, List<String> unparsedArgs) {
         if (parsedArgs.size() == 1) {
-            message.getChannel().sendMessage(Localizer.localize("command.wolfram.error.no_arg"));
+            MessageUtil.reply(message, "command.wolfram.error.no_arg");
         }
         else {
-            message.getChannel().sendMessage(Localizer.localize("command.wolfram.error.unknown"));
+            MessageUtil.reply(message, "command.wolfram.error.unknown");
         }
     }
 
     private Map<String, List<String>> get(IMessage message, List<Object> args) {
         if (!WolframAlphaApi.hasApiKey()) {
-            message.getChannel().sendMessage(Localizer.localize("command.wolfram.error.no_api_key"));
+            MessageUtil.reply(message, "command.wolfram.error.no_api_key");
             return null;
         }
 
         Map<String, List<String>> data = WolframAlphaApi.fetch((String) args.get(1));
         if (data == null) {
-            message.getChannel().sendMessage(Localizer.localize("command.wolfram.error.connection"));
+            MessageUtil.reply(message, "command.wolfram.error.connection");
             return null;
         }
 
         if (data.size() == 0) {
-            message.getChannel().sendMessage(Localizer.localize("command.wolfram.error.no_reply"));
+            MessageUtil.reply(message, "command.wolfram.error.no_reply");
             return null;
         }
 

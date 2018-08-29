@@ -40,6 +40,7 @@ public class CommandAbout implements ICommand {
     }
 
     private void about(IMessage message, List<Object> args) {
+        Localizer loc = new Localizer(message);
         EmbedBuilder builder = new EmbedBuilder();
         Bot bot = Bot.instance;
         GlobalConfig globalConfig = bot.getGlobalConfig();
@@ -62,19 +63,19 @@ public class CommandAbout implements ICommand {
         int announcersNum = bot.getAnnouncerManager().getNames().length;
         int announcersEnabled = bot.getAnnouncerManager().getAnnouncersForGuild(guild).size();
 
-        builder.appendField(Localizer.localize("command.about.header.owner"), owner.getName() + "#" + owner.getDiscriminator(), false);
-        builder.appendField(Localizer.localize("command.about.header.running"), TimeUtil.formatDuration(runningTime), false);
-        builder.appendField(Localizer.localize("command.about.header.connected"), TimeUtil.formatDuration(connectedTime), false);
-        builder.appendField(Localizer.localize("command.about.header.source_code"), REPO_URL, false);
+        builder.appendField(loc.localize("command.about.header.owner"), owner.getName() + "#" + owner.getDiscriminator(), false);
+        builder.appendField(loc.localize("command.about.header.running"), TimeUtil.formatDuration(loc, runningTime), false);
+        builder.appendField(loc.localize("command.about.header.connected"), TimeUtil.formatDuration(loc, connectedTime), false);
+        builder.appendField(loc.localize("command.about.header.source_code"), REPO_URL, false);
 
-        builder.appendField(Localizer.localize("command.about.header.bot_user"), botUser.getName() + "#" + botUser.getDiscriminator(), false);
-        builder.appendField(Localizer.localize("command.about.header.bot_id"), botUser.getStringID(), false);
+        builder.appendField(loc.localize("command.about.header.bot_user"), botUser.getName() + "#" + botUser.getDiscriminator(), false);
+        builder.appendField(loc.localize("command.about.header.bot_id"), botUser.getStringID(), false);
 
-        builder.appendField(Localizer.localize("command.about.header.commands"), Localizer.localize("command.about.info.commands", commandsNum, commandsDisabled), false);
-        builder.appendField(Localizer.localize("command.about.header.autoresponders"), Localizer.localize("command.about.info.autoresponders", respondersNum, respondersDisabled), false);
-        builder.appendField(Localizer.localize("command.about.header.announcers"), Localizer.localize("command.about.info.announcers", announcersNum, announcersEnabled), false);
+        builder.appendField(loc.localize("command.about.header.commands"), loc.localize("command.about.info.commands", commandsNum, commandsDisabled), false);
+        builder.appendField(loc.localize("command.about.header.autoresponders"), loc.localize("command.about.info.autoresponders", respondersNum, respondersDisabled), false);
+        builder.appendField(loc.localize("command.about.header.announcers"), loc.localize("command.about.info.announcers", announcersNum, announcersEnabled), false);
 
-        builder.withTitle(Localizer.localize("command.about.bot_info", bot.getClient().getOurUser().getDisplayName(guild)));
+        builder.withTitle(loc.localize("command.about.bot_info", bot.getClient().getOurUser().getDisplayName(guild)));
         builder.withThumbnail(bot.getClient().getApplicationIconURL());
         builder.withFooterText("PolarizedBot " + Bot.getFullVersion());
 
@@ -82,15 +83,16 @@ public class CommandAbout implements ICommand {
     }
 
     private void info(IMessage message, List<Object> args) {
+        Localizer loc = new Localizer(message);
         EmbedBuilder builder = new EmbedBuilder();
         IUser user = message.getAuthor();
         IGuild guild = message.getGuild();
 
-        builder.appendField(Localizer.localize("command.about.header.user"), user.getName() + "#" + user.getDiscriminator(), true);
-        builder.appendField(Localizer.localize("command.about.header.user_id"), user.getStringID(), true);
-        builder.appendField(Localizer.localize("command.about.header.rank"), GuildManager.getUserRank(guild, user).name(), true);
+        builder.appendField(loc.localize("command.about.header.user"), user.getName() + "#" + user.getDiscriminator(), true);
+        builder.appendField(loc.localize("command.about.header.user_id"), user.getStringID(), true);
+        builder.appendField(loc.localize("command.about.header.rank"), GuildManager.getUserRank(guild, user).name(), true);
 
-        builder.withTitle(Localizer.localize("command.about.user_info", user.getDisplayName(guild)));
+        builder.withTitle(loc.localize("command.about.user_info", user.getDisplayName(guild)));
         builder.withThumbnail(message.getAuthor().getAvatarURL());
         builder.withFooterText("PolarizedBot " + Bot.getFullVersion());
 

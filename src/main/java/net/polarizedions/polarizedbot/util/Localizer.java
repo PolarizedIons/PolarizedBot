@@ -6,6 +6,7 @@ import com.google.gson.JsonSyntaxException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
+import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,27 +17,69 @@ import java.util.Map;
 public class Localizer {
     private static final Logger logger = LogManager.getLogger("Localizer");
     private static final JsonParser parser = new JsonParser();
-    public static final String[] AVAILABLE_LANGS = new String[] {
+    public static final String[] AVAILABLE_LANGUAGES = new String[] {
             "en",
     };
     private static Map<String, Map<String, String>> langData;
-    private static String currentLang = AVAILABLE_LANGS[0];
+
+
+    private String currentLang;
+
+    public Localizer(IMessage message) {
+        this(message.getGuild() == null ? AVAILABLE_LANGUAGES[0] : GuildManager.getConfig(message.getGuild()).lang);
+    }
+
+    public Localizer(String lang) {
+        for (String l : AVAILABLE_LANGUAGES) {
+            if (l.equalsIgnoreCase(lang)) {
+                this.currentLang = l;
+                break;
+            }
+        }
+
+        if (this.currentLang == null) {
+            logger.debug("Failed to create localizer for language {}, defauling to {}", lang, AVAILABLE_LANGUAGES[0]);
+            this.currentLang = AVAILABLE_LANGUAGES[0];
+        }
+    }
+
+    public void setCurrentLang(String newLang) {
+        for (String lang : AVAILABLE_LANGUAGES) {
+            if (lang.equalsIgnoreCase(newLang)) {
+                this.currentLang = lang;
+                return;
+            }
+        }
+    }
+
+    public String getCurrentLang() {
+        return this.currentLang;
+    }
+
+
+    public String localize(String key, Object... values) {
+        Map<String, String> langFile = langData.get(this.currentLang);
+        String translated = langFile == null ? null : (langFile.get(key));
+        if (translated == null) {
+            String context = Arrays.toString(values);
+            logger.warn("Unable to translate '{}' for lang {}. Context: {}", key, this.currentLang, context);
+            translated = key + (values.length == 0 ? "" : "#" + context);
+        }
+        return String.format(translated, values);
+    }
+
+    public boolean doesKeyExist(String key) {
+        Map<String, String> langFile = langData.get(this.currentLang);
+        return langFile != null && (langFile.containsKey(key));
+    }
+
 
     public static void init() {
         logger.info("Loading localization files...");
         langData = new HashMap<>();
-        for (String langCode : AVAILABLE_LANGS) {
+        for (String langCode : AVAILABLE_LANGUAGES) {
             loadLangFile(langCode);
         }
-    }
-
-    public static boolean supports(String langCode) {
-        for (String lc : AVAILABLE_LANGS) {
-            if (lc.equalsIgnoreCase(langCode)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private static void loadLangFile(String langCode) {
@@ -73,36 +116,15 @@ public class Localizer {
                 key = key.substring(0, key.length() - 2);
             }
             langData.get(lang).put(key, value);
-//            System.out.println("put '" + key + "' = '" + value + "'");
         }
     }
 
-    public static String localize(String key, Object... values) {
-        Map<String, String> langFile = langData.get(currentLang);
-        String translated = langFile == null ? null : (langFile.get(key));
-        if (translated == null) {
-            String context = Arrays.toString(values);
-            logger.warn("Unable to translate '{}' for lang {}. Context: {}", key, currentLang, context);
-            translated = key + (values.length == 0 ? "" : "#" + context);
-        }
-        return String.format(translated, values);
-    }
-
-    public static boolean doesKeyExist(String key) {
-        Map<String, String> langFile = langData.get(currentLang);
-        return langFile != null && (langFile.containsKey(key));
-    }
-
-    public static void setCurrentLang(String newLang) {
-        for (String lang : AVAILABLE_LANGS) {
-            if (lang.equalsIgnoreCase(newLang)) {
-                currentLang = lang;
-                return;
+    public static boolean supports(String langCode) {
+        for (String lc : AVAILABLE_LANGUAGES) {
+            if (lc.equalsIgnoreCase(langCode)) {
+                return true;
             }
         }
-    }
-
-    public static String getCurrentLang() {
-        return currentLang;
+        return false;
     }
 }

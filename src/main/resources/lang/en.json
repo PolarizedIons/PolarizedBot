@@ -148,7 +148,8 @@
                 "*": "Say things in channels or to people",
                 "say": "Say things in channel. (Default current)",
                 "tell": "Tell a person something"
-            }
+            },
+            "success": "%s says: %s"
         },
         "shutdown": {
             "help": "Shuts down/restarts the bot",

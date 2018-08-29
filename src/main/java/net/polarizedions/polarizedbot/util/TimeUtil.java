@@ -12,7 +12,8 @@ public class TimeUtil {
             "format.second",
     };
 
-    public static String formatDuration(Duration duration) {
+
+    public static String formatDuration(Localizer localizer, Duration duration) {
         long[] time = new long[5];
         time[0] = duration.toDays() / 7;
         time[1] = duration.toDays() % 7;
@@ -27,20 +28,20 @@ public class TimeUtil {
             }
 
             String key = formatKeys[i];
-            if (Localizer.doesKeyExist(key + "." + time[i])) {
+            if (localizer.doesKeyExist(key + "." + time[i])) {
                 key = key + "." + time[i];
             }
 
-            formatted.append(Localizer.localize(key, time[i])).append(" ");
+            formatted.append(localizer.localize(key, time[i])).append(" ");
         }
 
         if (formatted.length() == 0) { // WAT o.o
             String key = formatKeys[4];
-            if (Localizer.doesKeyExist(key + ".0")) {
+            if (localizer.doesKeyExist(key + ".0")) {
                 key = key + ".0";
             }
 
-            formatted.append(Localizer.localize(key, 0));
+            formatted.append(localizer.localize(key, 0));
         }
 
         return formatted.toString().trim();

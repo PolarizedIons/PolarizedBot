@@ -8,6 +8,7 @@ import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.config.GuildConfig;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
+import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
@@ -73,28 +74,28 @@ public class CommandGuild implements ICommand {
 
     private void subcommandFail(IMessage message, List<Object> parsedArgs, List<String> unparsedArgs) {
         if (unparsedArgs.size() == 0) {
-            message.getChannel().sendMessage(Localizer.localize("command.guild.error.no_subcommand", String.join(", ", subcommands)));
+            MessageUtil.reply(message,"command.guild.error.no_subcommand", String.join(", ", subcommands));
         }
         else {
-            message.getChannel().sendMessage(Localizer.localize("command.guild.error.unknown_subcommand", unparsedArgs.get(0), String.join(", ", subcommands)));
+            MessageUtil.reply(message,"command.guild.error.unknown_subcommand", unparsedArgs.get(0), String.join(", ", subcommands));
         }
     }
 
     private void notEnoughArgs(IMessage message, List<Object> parsedArgs, List<String> unparsedArgs, String suffix, Object... context) {
-        message.getChannel().sendMessage(Localizer.localize("command.guild.error." + suffix, context));
+        MessageUtil.reply(message,"command.guild.error." + suffix, context);
     }
 
     private void setLang(IMessage message, List<Object> args) {
 
         String newLang = (String) args.get(2);
         if (!Localizer.supports(newLang)) {
-            message.getChannel().sendMessage(Localizer.localize("command.guild.error.unknown_lang", newLang, String.join(", "), Localizer.AVAILABLE_LANGS));
+            MessageUtil.reply(message,"command.guild.error.unknown_lang", newLang, String.join(", "), Localizer.AVAILABLE_LANGUAGES);
             return;
         }
 
         GuildManager.getConfig(message.getGuild()).lang = newLang.toLowerCase();
         GuildManager.saveConfig(message.getGuild());
-        message.getChannel().sendMessage(Localizer.localize("command.guild.success.setlang", newLang));
+        MessageUtil.reply(message,"command.guild.success.setlang", newLang);
     }
 
     private void setRank(IMessage message, List<Object> args) {
@@ -103,12 +104,12 @@ public class CommandGuild implements ICommand {
 
         UserRank rank = UserRank.getByName(rankName);
         if (rank == null) {
-            message.getChannel().sendMessage(Localizer.localize("command.guild.error.no_such_rank", rankName, String.join(", ", UserRank.getNames())));
+            MessageUtil.reply(message,"command.guild.error.no_such_rank", rankName, String.join(", ", UserRank.getNames()));
             return;
         }
 
         GuildManager.setRank(message.getGuild(), user, rank);
-        message.getChannel().sendMessage(Localizer.localize("command.guild.success.set_rank", user.toString(), rank.toString()));
+        MessageUtil.reply(message,"command.guild.success.set_rank", user.toString(), rank.toString());
     }
 
     private void disableCommand(IMessage message, List<Object> args) {
@@ -117,19 +118,18 @@ public class CommandGuild implements ICommand {
         CommandTree command = Bot.instance.getCommandManager().get(commandName);
 
         if (command == null) {
-            message.getChannel().sendMessage(Localizer.localize("command.guild.error.no_command_found", commandName));
+            MessageUtil.reply(message,"command.guild.error.no_command_found", commandName);
         }
         else if (command.getName().equals(this.getCommand().getName())) {
-            System.out.println(command);
-            message.getChannel().sendMessage(Localizer.localize("command.guild.error.cannot_disable_self"));
+            MessageUtil.reply(message,"command.guild.error.cannot_disable_self");
         }
         else if (config.disabledCommands.contains(commandName)) {
-            message.getChannel().sendMessage(Localizer.localize("command.guild.error.already_disabled", command.getName()));
+            MessageUtil.reply(message,"command.guild.error.already_disabled", command.getName());
         }
         else {
             config.disabledCommands.addAll(command.getCommands());
             GuildManager.saveConfig(message.getGuild());
-            message.getChannel().sendMessage(Localizer.localize("command.guild.success.disable.command", command.getName()));
+            MessageUtil.reply(message,"command.guild.success.disable.command", command.getName());
         }
     }
 
@@ -138,17 +138,18 @@ public class CommandGuild implements ICommand {
         String commandName = (String) args.get(3);
         CommandTree command = Bot.instance.getCommandManager().get(commandName);
         if (command == null) {
-            message.getChannel().sendMessage(Localizer.localize("command.guild.error.no_command_found", commandName));
+            MessageUtil.reply(message,"command.guild.error.no_command_found", commandName);
+            return;
         }
 
         if (!guildConfig.disabledCommands.contains(commandName)) {
-            message.getChannel().sendMessage(Localizer.localize("command.guild.error.command_not_disabled", command.getName()));
+            MessageUtil.reply(message,"command.guild.error.command_not_disabled", command.getName());
             return;
         }
 
         guildConfig.disabledCommands.removeAll(command.getCommands());
         GuildManager.saveConfig(message.getGuild());
-        message.getChannel().sendMessage(Localizer.localize("command.guild.success.enable.command", command.getName()));
+        MessageUtil.reply(message,"command.guild.success.enable.command", command.getName());
     }
 
     private void disableResponder(IMessage message, List<Object> args) {
@@ -157,17 +158,17 @@ public class CommandGuild implements ICommand {
         IGuild guild = message.getGuild();
 
         if (!manager.getIDs().contains(toDisable)) {
-            message.getChannel().sendMessage(Localizer.localize("command.guild.error.no_responder_found", toDisable, String.join(", ", manager.getIDs())));
+            MessageUtil.reply(message,"command.guild.error.no_responder_found", toDisable, String.join(", ", manager.getIDs()));
             return;
         }
         else if (GuildManager.getConfig(guild).disabledResponders.contains(toDisable)) {
-            message.getChannel().sendMessage(Localizer.localize("command.guild.error.responder_already_disabled", toDisable));
+            MessageUtil.reply(message,"command.guild.error.responder_already_disabled", toDisable);
             return;
         }
 
         GuildManager.getConfig(guild).disabledResponders.add(toDisable);
         GuildManager.saveConfig(guild);
-        message.getChannel().sendMessage(Localizer.localize("command.guild.success.disable.responder", toDisable));
+        MessageUtil.reply(message,"command.guild.success.disable.responder", toDisable);
     }
 
     private void enableResponder(IMessage message, List<Object> args) {
@@ -176,22 +177,22 @@ public class CommandGuild implements ICommand {
         IGuild guild = message.getGuild();
 
         if (!GuildManager.getConfig(guild).disabledResponders.contains(toDisable)) {
-            message.getChannel().sendMessage(Localizer.localize("command.guild.error.responder_not_disabled", toDisable));
+            MessageUtil.reply(message,"command.guild.error.responder_not_disabled", toDisable);
             return;
         }
         else if (!manager.getIDs().contains(toDisable)) {
-            message.getChannel().sendMessage(Localizer.localize("command.guild.error.no_responder_found", toDisable, String.join(", ", manager.getIDs())));
+            MessageUtil.reply(message,"command.guild.error.no_responder_found", toDisable, String.join(", ", manager.getIDs()));
             return;
         }
 
         GuildManager.getConfig(guild).disabledResponders.remove(toDisable);
         GuildManager.saveConfig(guild);
-        message.getChannel().sendMessage(Localizer.localize("command.guild.success.enable.responder", toDisable));
+        MessageUtil.reply(message,"command.guild.success.enable.responder", toDisable);
     }
 
     private void setPrefix(IMessage message, List<Object> args) {
         GuildManager.getConfig(message.getGuild()).commandPrefix = (String) args.get(3);
         GuildManager.saveConfig(message.getGuild());
-        message.getChannel().sendMessage(Localizer.localize("command.guild.success.set_prefix", args.get(3)));
+        MessageUtil.reply(message,"command.guild.success.set_prefix", args.get(3));
     }
 }

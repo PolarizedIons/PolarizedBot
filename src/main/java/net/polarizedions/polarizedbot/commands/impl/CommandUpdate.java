@@ -6,7 +6,7 @@ import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
-import net.polarizedions.polarizedbot.util.Localizer;
+import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
 import net.polarizedions.polarizedbot.util.WebHelper;
 import sx.blah.discord.handle.obj.IMessage;
@@ -24,7 +24,7 @@ import java.util.List;
 public class CommandUpdate implements ICommand {
     private static final String REPO = "PolarizedIons/polarizedbot";
     private static final String LATEST_RELEASE_URL = String.format("https://api.github.com/repos/%s/releases/latest", REPO);
-    private static boolean inProgess = false;
+    private static boolean inProgress = false;
 
     @Override
     public CommandTree getCommand() {
@@ -36,18 +36,18 @@ public class CommandUpdate implements ICommand {
     }
 
     private void update(IMessage message, List<Object> args) {
-        if (inProgess) {
-            message.getChannel().sendMessage(Localizer.localize("command.update.error.in_progress"));
+        if (inProgress) {
+            MessageUtil.reply(message, "command.update.error.in_progress");
             return;
         }
-        inProgess = true;
+        inProgress = true;
 
         logger.debug("Checking for updates...");
         JsonObject json = WebHelper.fetchJson(LATEST_RELEASE_URL);
 
         if (json == null) {
-            message.getChannel().sendMessage(Localizer.localize("command.update.error.no_response"));
-            inProgess = false;
+            MessageUtil.reply(message, "command.update.error.no_response");
+            inProgress = false;
             return;
         }
 
@@ -56,35 +56,35 @@ public class CommandUpdate implements ICommand {
             currentJar = new File(Bot.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 
             if(!currentJar.getName().endsWith(".jar")) {
-                message.getChannel().sendMessage(Localizer.localize("command.update.error.no_jar"));
-                inProgess = false;
+                MessageUtil.reply(message, "command.update.error.no_jar");
+                inProgress = false;
                 return;
             }
         }
         catch (URISyntaxException ex) {
-                message.getChannel().sendMessage(Localizer.localize("command.error.no_jar"));
-                inProgess = false;
+            MessageUtil.reply(message, "command.error.no_jar");
+                inProgress = false;
                 return;
         }
 
         if (json.get("message") != null) {
             String errMessage = json.get("message").getAsString();
             if (errMessage.equals("not found")) {
-                message.getChannel().sendMessage(Localizer.localize("command.update.error.not_found", REPO));
+                MessageUtil.reply(message, "command.update.error.not_found", REPO);
             }
             else {
-                message.getChannel().sendMessage(Localizer.localize("command.update.error.github", errMessage));
+                MessageUtil.reply(message, "command.update.error.github", errMessage);
             }
 
-            inProgess = false;
+            inProgress = false;
             return;
         }
 
         String tag_name = json.get("tag_name").getAsString();
 
         if (tag_name.equals(Bot.version)) {
-            message.getChannel().sendMessage(Localizer.localize("command.update.error.up_to_date", tag_name));
-            inProgess = false;
+            MessageUtil.reply(message, "command.update.error.up_to_date", tag_name);
+            inProgress = false;
             return;
         }
 
@@ -100,14 +100,13 @@ public class CommandUpdate implements ICommand {
         }
 
         if (downloadUrl == null) {
-            message.getChannel().sendMessage(Localizer.localize("command.update.error.url_not_found"));
-            inProgess = false;
+            MessageUtil.reply(message, "command.update.error.url_not_found");
+            inProgress = false;
             return;
         }
 
-        message.getChannel().sendMessage(Localizer.localize("command.update.success.downloading", tag_name));
+        MessageUtil.reply(message, "command.update.success.downloading", tag_name);
 
-        String currentLang = Localizer.getCurrentLang();
         String finalDownloadUrl = downloadUrl; // vars in lambdas need to be final.
         String finalDownloadName = downloadName;
         new Thread(() -> {
@@ -123,8 +122,7 @@ public class CommandUpdate implements ICommand {
                 fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
 
                 logger.info("Done downloading update {}", finalDownloadName);
-                Localizer.setCurrentLang(currentLang);
-                message.getChannel().sendMessage(Localizer.localize("command.update.success.starting", tag_name));
+                MessageUtil.reply(message, "command.update.success.starting", tag_name);
 
                 // Starting new process
                 String javaBin = Paths.get(System.getProperty("java.home"), "bin", "java").toAbsolutePath().toString();
@@ -144,7 +142,7 @@ public class CommandUpdate implements ICommand {
             }
             catch (Exception ex) {
                 logger.error("Exception while downloading update {}: {}", tag_name, ex);
-                message.getChannel().sendMessage(Localizer.localize("command.update.error.error_downloading"));
+                MessageUtil.reply(message, "command.update.error.error_downloading");
             }
         }, "update thread").start();
     }

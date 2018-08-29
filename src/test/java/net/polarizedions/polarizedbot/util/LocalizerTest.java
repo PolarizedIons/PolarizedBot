@@ -5,11 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +13,7 @@ class LocalizerTest {
     @BeforeAll
     static void mockLang() throws NoSuchFieldException, IllegalAccessException {
         Class<Localizer> clazz = Localizer.class;
-        Field field = clazz.getField("AVAILABLE_LANGS");
+        Field field = clazz.getField("AVAILABLE_LANGUAGES");
         field.setAccessible(true);
 
         Field modifiersField = Field.class.getDeclaredField("modifiers");
@@ -41,7 +37,6 @@ class LocalizerTest {
 
         assertNotNull(langData);
 
-        Localizer.setCurrentLang("en");
         assertNotNull(langData.get("en"));
         assertNotNull(langData.get("testlang"));
     }
@@ -53,31 +48,25 @@ class LocalizerTest {
         assertTrue(Localizer.supports("TeStLaNg"));
     }
 
-    static String getCurrentLang() throws NoSuchFieldException, IllegalAccessException {
-        Field field = Localizer.class.getDeclaredField("currentLang");
-        field.setAccessible(true);
-        return (String)field.get(null);
-    }
-
     @Test
     void changeLang() throws NoSuchFieldException, IllegalAccessException {
-        Localizer.setCurrentLang("en");
-        assertEquals("en", getCurrentLang());
+        Localizer loc = new Localizer("en");
+        assertEquals("en", loc.getCurrentLang());
 
         // Doesn't set unknown lang
-        Localizer.setCurrentLang("foobar");
-        assertEquals("en", getCurrentLang());
+        loc.setCurrentLang("foobar");
+        assertEquals("en", loc.getCurrentLang());
 
-        Localizer.setCurrentLang("testlang");
-        assertEquals("testlang", getCurrentLang());
+        loc.setCurrentLang("TeStLaNg");
+        assertEquals("testlang", loc.getCurrentLang());
     }
 
     @Test
     void formating() {
-        Localizer.setCurrentLang("testlang");
-        assertEquals("success", Localizer.localize("test"));
-        assertEquals("Hello World!", Localizer.localize("hello", "World!"));
-        assertEquals("hi polar", Localizer.localize("test.deep.keys", "polar"));
-        assertEquals("2 1", Localizer.localize("order", "1", 2));
+        Localizer loc = new Localizer("testlang");
+        assertEquals("success", loc.localize("test"));
+        assertEquals("Hello World!", loc.localize("hello", "World!"));
+        assertEquals("hi polar", loc.localize("test.deep.keys", "polar"));
+        assertEquals("2 1", loc.localize("order", "1", 2));
     }
 }

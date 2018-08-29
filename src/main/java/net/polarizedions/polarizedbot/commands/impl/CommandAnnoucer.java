@@ -6,7 +6,6 @@ import net.polarizedions.polarizedbot.announcer.IAnnouncer;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
-import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
 import sx.blah.discord.handle.obj.IChannel;
@@ -62,40 +61,40 @@ public class CommandAnnoucer implements ICommand {
 
         IAnnouncer announcer = announcerManager.getAnnouncer(announcerName);
         if (announcer == null) {
-            message.getChannel().sendMessage(Localizer.localize("command.announce.error.no_such_announcement", announcerName));
+            MessageUtil.reply(message,"command.announce.error.no_such_announcement", announcerName);
             return;
         }
 
         BiConsumer<IAnnouncer, IChannel> method = isSub ? announcerManager::addSub : announcerManager::forgetSub;
         method.accept(announcer, channel);
-        message.getChannel().sendMessage(Localizer.localize("command.announce.success." + (isSub ? "sub" : "unsub"), announcer.getName(), channel.toString()));
+        MessageUtil.reply(message,"command.announce.success." + (isSub ? "sub" : "unsub"), announcer.getName(), channel.toString());
     }
 
     private void listAnnouncements(IMessage message, List<Object> args) {
         AnnouncerManager announcerManager = Bot.instance.getAnnouncerManager();
         String announcers = String.join(", ", announcerManager.getNames());
-        message.getChannel().sendMessage(Localizer.localize("command.announce.list", announcers));
+        MessageUtil.reply(message,"command.announce.list", announcers);
     }
 
     private void fail(IMessage message, List<Object> parsedArgs, List<String> unparsedArgs) {
         if (parsedArgs.size() == 1) {
-            message.getChannel().sendMessage(Localizer.localize("command.announce.error.no_subcommand", String.join(", ", subcommands)));
+            MessageUtil.reply(message,"command.announce.error.no_subcommand", String.join(", ", subcommands));
         } else if (parsedArgs.size() == 2) {
-            message.getChannel().sendMessage(Localizer.localize("command.announce.error.channel_or_announcer_missing"));
+            MessageUtil.reply(message,"command.announce.error.channel_or_announcer_missing");
         } else {
-            message.getChannel().sendMessage(Localizer.localize("command.announce.error.announcer_missing"));
+            MessageUtil.reply(message,"command.announce.error.announcer_missing");
         }
     }
 
     private void failChannel(IMessage message, List<Object> parsedArgs, List<String> unparsedArgs) {
-        message.getChannel().sendMessage(Localizer.localize("command.announce.error.no_channel"));
+        MessageUtil.reply(message,"command.announce.error.no_channel");
     }
 
     private void listGuild(IMessage message, List<Object> args) {
         Map<IAnnouncer, List<IChannel>> announcers = Bot.instance.getAnnouncerManager().getAnnouncersForGuild(message.getGuild());
 
         if (announcers.size() == 0) {
-            message.getChannel().sendMessage(Localizer.localize("command.announce.error.no_announcements"));
+            MessageUtil.reply(message,"command.announce.error.no_announcements");
             return;
         }
 

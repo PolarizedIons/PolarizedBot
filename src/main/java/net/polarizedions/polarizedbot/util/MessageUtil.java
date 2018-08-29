@@ -37,4 +37,12 @@ public class MessageUtil {
             }
         });
     }
+
+    public static void reply(IMessage message, String localizationKey, Object... context) {
+        String localized = new Localizer(message).localize(localizationKey, context);
+
+        RequestBuffer.request(() -> {
+           message.getChannel().sendMessage(localized);
+        });
+    }
 }

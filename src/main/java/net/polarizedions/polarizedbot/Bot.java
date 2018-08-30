@@ -40,6 +40,10 @@ public class Bot {
         logger.info("Starting bot {}...", Bot.getFullVersion());
         instance = this;
 
+        if (Bot.version == null) {
+            Bot.loadBuildInfo();
+        }
+
         try {
             ConfigManager.loadGlobalConfig();
         }
@@ -149,19 +153,19 @@ public class Bot {
         return this.connectedInstant;
     }
 
-    public static String getFullVersion() {
-        if (Bot.version == null || Bot.buildDate == null) {
-            Properties versionProp = new Properties();
-            try {
-                versionProp.load(Bot.class.getResourceAsStream("/version.txt"));
-                Bot.version = "v" + versionProp.getProperty("version");
-                Bot.buildDate = versionProp.getProperty("time");
-            } catch (IOException e) {
-                Bot.version = "unknown";
-                Bot.buildDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX").format(Instant.now());
-            }
+    private static void loadBuildInfo() {
+        Properties versionProp = new Properties();
+        try {
+            versionProp.load(Bot.class.getResourceAsStream("/version.txt"));
+            Bot.version = "v" + versionProp.getProperty("version");
+            Bot.buildDate = versionProp.getProperty("time");
+        } catch (IOException e) {
+            Bot.version = "unknown";
+            Bot.buildDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX").format(Instant.now());
         }
+    }
 
+    public static String getFullVersion() {
         return Bot.version + " / " + Bot.buildDate;
     }
 

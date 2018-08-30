@@ -81,7 +81,6 @@ public class CommandManager {
         }
 
         CompletableFuture.runAsync(() -> {
-            message.getChannel().setTypingStatus(true);
             logger.debug("Running command {}, alias {}, fragments: {}", commandTree.getName(), command, commandFragments);
 
             try {
@@ -90,8 +89,6 @@ public class CommandManager {
             catch (Exception ex) {
                 this.handleCommandException(message, ex);
             }
-
-            message.getChannel().setTypingStatus(false);
         });
     }
 

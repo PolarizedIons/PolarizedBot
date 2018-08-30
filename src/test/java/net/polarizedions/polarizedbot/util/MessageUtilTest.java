@@ -10,17 +10,23 @@ import java.lang.reflect.Field;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MessageUtilTest {
+public class MessageUtilTest {
 
     @BeforeAll
     static void changeMaxLen() throws NoSuchFieldException, IllegalAccessException {
-        Class<MessageUtil> clazz = MessageUtil.class;
         // For the sake of testing, reduce the max length of messages
+        Class<MessageUtil> clazz = MessageUtil.class;
         Field maxLen = clazz.getDeclaredField("MAX_MESSAGE_LENGTH");
         maxLen.setAccessible(true);
         maxLen.set(null, 65);
 
+
+    }
+
+    @BeforeAll
+    public static void disableRatelimitHandling() throws NoSuchFieldException, IllegalAccessException {
         // Because the ratelimiting handling wont work without the bot running
+        Class<MessageUtil> clazz = MessageUtil.class;
         Field rateLimitEnable = clazz.getDeclaredField("ENABLE_RATELMIT_HANDLING");
         rateLimitEnable.setAccessible(true);
         rateLimitEnable.set(null, false);
@@ -81,7 +87,7 @@ class MessageUtilTest {
         // Because reply localizes, so we need to load our testlanguage
         LocalizerTest.mockLang();
 
-        MockMessage message = new MockMessage(456987123);
+        MockMessage message = new MockMessage();
         MessageUtil.reply(message, "test");
         MessageUtil.reply(message, "hello", "Polar");
 

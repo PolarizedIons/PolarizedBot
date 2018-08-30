@@ -14,24 +14,26 @@ import java.util.Optional;
 
 public class MockMessage implements IMessage {
     long messageID;
+    String content;
     public MockChannel channel;
 
     public MockMessage() {
-        this((long) (Math.random() * 40600));
+        this("");
     }
 
-    public MockMessage(long messageID) {
-        this(messageID, new MockChannel((long)(Math.random() * 5000)));
+    public MockMessage(String content) {
+        this((long) (Math.random() * 5000), new MockChannel(), content);
     }
 
-    public MockMessage(long messageID, MockChannel channel) {
+    public MockMessage(long messageID, MockChannel channel, String content) {
         this.messageID = messageID;
         this.channel = channel;
+        this.content = content;
     }
 
     @Override
     public String getContent() {
-        return null;
+        return this.content;
     }
 
     @Override

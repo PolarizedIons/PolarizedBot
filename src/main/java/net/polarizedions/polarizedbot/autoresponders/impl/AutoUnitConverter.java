@@ -7,11 +7,7 @@ import org.apache.logging.log4j.Logger;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,39 +53,42 @@ public class AutoUnitConverter implements IResponder {
                 .alias("fahrenheit", "celsius").register()
                 .reverse(c -> c * 1.8 + 32).register();
 
-        new Convertion("°K", "°C", k -> k + 273.15)
+        new Convertion("K", "°C", k -> k + 273.15)
                 .alias("K", "C").register()
                 .alias("kelvin", "celsius").register()
                 .reverse(c -> c - 273.15).register();
 
-        new Convertion("°K", "°F", k -> k * 9.0/5.0 - 459.67)
+        new Convertion("K", "°F", k -> k * 9.0/5.0 - 459.67)
                 .alias("K", "F").register()
                 .alias("kelvin", "fahrenheit").register()
                 .reverse(f -> (f + 459.67) * 5.0 / 9.0).register();
 
         // DONE WITH UNIT INITS
 
-        String matchRegexString = "(^|\\s)([0-9]+)(\\.([0-9]+))? ?(%s)($|[^a-zA-z0-9]+?)";
-        this.matchPattern = Pattern.compile(String.format(matchRegexString, String.join("|", this.convertions.keySet())));
+        String matchRegexString = "(?:^|\\s)((?:[0-9]+)(?:\\.(?:[0-9]+))?) ?(%s)(?:$|[^a-z])";
+        this.matchPattern = Pattern.compile(String.format(matchRegexString, String.join("|", this.convertions.keySet())), Pattern.MULTILINE);
+        System.out.println(matchPattern);
     }
 
     @Override
     public void run(IMessage message) {
-        Matcher matcher = matchPattern.matcher(message.getContent());
+        Matcher matcher = matchPattern.matcher(message.getContent().toLowerCase());
         StringBuilder response = new StringBuilder("```\n");
+        boolean matched = false;
 
         while (matcher.find()) {
-            String matchingUnit = matcher.group(5);
+            matched = true;
+            String matchingUnit = matcher.group(2);
             logger.debug("Found unit '{}' to convert", matchingUnit);
-            double in = Double.parseDouble(matcher.group(2) + (matcher.group(3) == null ? "" : matcher.group(3)));
+            double in = Double.parseDouble(matcher.group(1));
             for (Convertion converter : this.convertions.get(matchingUnit)) {
                 response.append(in).append(" ").append(converter.from.get(0)).append(" -> ")
                         .append(FORMAT.format(converter.run(in))).append(" ").append(converter.to.get(0)).append("\n");
             }
         }
 
-        if (matcher.matches()) {
-            MessageUtil.sendAutosplit(message.getChannel(), response.append("```").toString());
+        if (matched) {
+            MessageUtil.sendAutosplit(message.getChannel(), response.append("```").toString(), "```", "```");
         }
     }
 
@@ -131,8 +130,10 @@ public class AutoUnitConverter implements IResponder {
 
             for (String fromUnit : this.from) {
                 fromUnit = fromUnit.toLowerCase();
-                that.convertions.putIfAbsent(fromUnit, new ArrayList<>());
-                that.convertions.get(fromUnit).add(this);
+                if (!that.convertions.containsKey(fromUnit)) {
+                    that.convertions.put(fromUnit, new ArrayList<>());
+                    that.convertions.get(fromUnit).add(this);
+                }
             }
 
             return this;

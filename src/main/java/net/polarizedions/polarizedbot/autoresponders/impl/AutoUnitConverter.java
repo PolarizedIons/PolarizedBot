@@ -65,9 +65,8 @@ public class AutoUnitConverter implements IResponder {
 
         // DONE WITH UNIT INITS
 
-        String matchRegexString = "(?:^|\\s)((?:[0-9]+)(?:\\.(?:[0-9]+))?) ?(%s)(?:$|[^a-z])";
+        String matchRegexString = "(?<![a-zA-Z])((?:[0-9]+)(?:\\.(?:[0-9]+))?) ?(%s)(?![a-zA-Z])";
         this.matchPattern = Pattern.compile(String.format(matchRegexString, String.join("|", this.convertions.keySet())), Pattern.MULTILINE);
-        System.out.println(matchPattern);
     }
 
     @Override

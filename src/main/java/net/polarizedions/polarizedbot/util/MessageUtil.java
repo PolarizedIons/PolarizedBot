@@ -9,17 +9,22 @@ import java.util.List;
 
 public class MessageUtil {
     public static void sendAutosplit(IChannel channel, String message) {
+        sendAutosplit(channel, message, "", "");
+    }
+
+    public static void sendAutosplit(IChannel channel, String message, String splitPrefix, String splitSuffix) {
         List<String> messages = new LinkedList<>();
         String[] splitMessage = message.split("\n");
 
         StringBuilder currentMsg = new StringBuilder();
         for (String m : splitMessage) {
-            if (currentMsg.length() + m.length() +1 < IMessage.MAX_MESSAGE_LENGTH) { // +1 = \n
+            int newLength = currentMsg.length() + m.length() + 1 + splitSuffix.length(); // +1 = \n
+            if (newLength < IMessage.MAX_MESSAGE_LENGTH) {
                 currentMsg.append(m).append("\n");
             }
             else {
-                messages.add(currentMsg.toString());
-                currentMsg = new StringBuilder(m).append("\n");
+                messages.add(currentMsg.append(splitSuffix).toString());
+                currentMsg = new StringBuilder(splitPrefix).append(m).append("\n");
             }
         }
 

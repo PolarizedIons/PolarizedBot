@@ -52,6 +52,18 @@ public class Bot {
             System.exit(1);
         }
 
+        if (getGlobalConfig().owner.isEmpty()) {
+            logger.error("The `botowner` value in bot.json MUST NOT be empty!");
+        }
+
+        if (getGlobalConfig().botToken.isEmpty()) {
+            logger.error("The `botToken` value in bot.json MUST NOT be empty!");
+        }
+
+        if (getGlobalConfig().owner.isEmpty() || getGlobalConfig().botToken.isEmpty()) {
+            System.exit(1);
+        }
+
         Localizer.init();
         GuildManager.init();
         this.announcerManager = new AnnouncerManager();
@@ -88,13 +100,8 @@ public class Bot {
     }
 
     public IDiscordClient createClient(boolean login) {
-        String BOT_TOKEN = System.getenv("BOT_TOKEN");
-        if (BOT_TOKEN == null) {
-            throw new RuntimeException("'BOT_TOKEN' environment variable MUST be set!");
-        }
-
         ClientBuilder clientBuilder = new ClientBuilder();
-        clientBuilder.withToken(BOT_TOKEN);
+        clientBuilder.withToken(getGlobalConfig().botToken);
         try {
             if (login) {
                 return clientBuilder.login();

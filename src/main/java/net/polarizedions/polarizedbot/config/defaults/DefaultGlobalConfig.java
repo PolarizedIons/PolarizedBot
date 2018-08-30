@@ -9,8 +9,9 @@ public class DefaultGlobalConfig implements InstanceCreator<GlobalConfig> {
     @Override
     public GlobalConfig createInstance(Type type) {
         GlobalConfig defaultConfig = new GlobalConfig();
-        defaultConfig.owner = "153583013974900738";  // PolarizedIons
+        defaultConfig.owner = "";
         defaultConfig.wolframAlphaApi = "";
+        defaultConfig.botToken = "";
         return defaultConfig;
     }
 }

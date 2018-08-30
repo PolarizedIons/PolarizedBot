@@ -13,6 +13,22 @@ import java.util.List;
 import java.util.Optional;
 
 public class MockMessage implements IMessage {
+    long messageID;
+    public MockChannel channel;
+
+    public MockMessage() {
+        this((long) (Math.random() * 40600));
+    }
+
+    public MockMessage(long messageID) {
+        this(messageID, new MockChannel((long)(Math.random() * 5000)));
+    }
+
+    public MockMessage(long messageID, MockChannel channel) {
+        this.messageID = messageID;
+        this.channel = channel;
+    }
+
     @Override
     public String getContent() {
         return null;
@@ -20,7 +36,7 @@ public class MockMessage implements IMessage {
 
     @Override
     public IChannel getChannel() {
-        return null;
+        return this.channel;
     }
 
     @Override
@@ -240,6 +256,6 @@ public class MockMessage implements IMessage {
 
     @Override
     public long getLongID() {
-        return 0;
+        return this.messageID;
     }
 }

@@ -2,7 +2,6 @@ package net.polarizedions.polarizedbot.commands.builder;
 
 import mocks.MockDiscordClient;
 import net.polarizedions.polarizedbot.Bot;
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sx.blah.discord.handle.obj.IChannel;
@@ -11,7 +10,8 @@ import sx.blah.discord.handle.obj.IUser;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class CommandArgTest {
 

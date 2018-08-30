@@ -4,17 +4,7 @@ import net.polarizedions.polarizedbot.Bot;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.IShard;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.obj.ICategory;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IExtendedInvite;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IInvite;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IRole;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.IWebhook;
-import sx.blah.discord.handle.obj.PermissionOverride;
-import sx.blah.discord.handle.obj.Permissions;
+import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.AttachmentPartEntry;
 import sx.blah.discord.util.Image;
 import sx.blah.discord.util.MessageBuilder;
@@ -25,15 +15,21 @@ import java.io.File;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
 
 public class MockChannel implements IChannel {
-
+    public List<String> sentMessages;
     private final long channelID;
 
-    MockChannel(long channelID) {
+    public MockChannel() {
+        this((long) (Math.random() * 7823));
+    }
+
+    public MockChannel(long channelID) {
         this.channelID = channelID;
-        Bot.logger.info("[Mock] IUser {} created", channelID);
+        this.sentMessages = new LinkedList<>();
+        Bot.logger.info("[Mock] IChannel {} created", channelID);
     }
     @Override
     public String getName() {
@@ -172,6 +168,7 @@ public class MockChannel implements IChannel {
 
     @Override
     public IMessage sendMessage(String content) {
+        this.sentMessages.add(content);
         return null;
     }
 

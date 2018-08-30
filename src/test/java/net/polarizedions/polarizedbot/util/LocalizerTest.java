@@ -22,7 +22,7 @@ class LocalizerTest {
 
         List<String> newSupports = new ArrayList<>();
         Collections.addAll(newSupports, (String[])field.get(null));
-        newSupports.add("testlang");
+        newSupports.add(0, "testlang");
         field.set(null, newSupports.toArray(new String[0]));
 
         Localizer.init();

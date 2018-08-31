@@ -2,6 +2,7 @@ package net.polarizedions.polarizedbot.autoresponders.impl;
 
 import mocks.MockMessage;
 import net.polarizedions.polarizedbot.util.MessageUtilTest;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -33,6 +34,7 @@ class AutoUnitConverterTest {
         assertTrue(temps.contains("30.0 °C -> 86 °F"));
         assertTrue(temps.contains("30.0 °F -> -1.11 °C"));
         assertTrue(temps.contains("30.0 K -> 303.15 °C"));
+        assertEquals(3, StringUtils.countMatches("->", message.getContent()));
     }
 
     @Test
@@ -49,6 +51,7 @@ class AutoUnitConverterTest {
         assertTrue(lengths.contains("40.0 cm -> 15.75 in"));
         assertTrue(lengths.contains("1.0 ft -> 0.3 m"));
         assertTrue(lengths.contains("7.0 in -> 17.78 cm"));
+        assertEquals(8, StringUtils.countMatches("->", message.getContent()));
     }
 
     @Test
@@ -59,6 +62,25 @@ class AutoUnitConverterTest {
             MockMessage message = new MockMessage(msgStr);
             converter.run(message);
             assertEquals(0, message.channel.sentMessages.size(), "Failed naughty word " + msgStr);
+        }
+    }
+
+    @Test
+    void common() {
+        String[] messages = new String[] {
+                "4c is cold",
+                "Testing 4F capitalization",
+                "Seperation 4 K okay",
+                "And lowercase 4 f okay",
+                "Test ending with 4c",
+                "Test using 25 C in a sentance.",
+                "With punctation:140C!",
+        };
+
+        for (String msg : messages) {
+            MockMessage message = new MockMessage(msg);
+            converter.run(message);
+            assertEquals(1, message.channel.sentMessages.size(), "Failed common phrase: " + msg);
         }
     }
 }

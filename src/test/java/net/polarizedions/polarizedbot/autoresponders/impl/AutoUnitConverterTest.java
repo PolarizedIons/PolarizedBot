@@ -34,7 +34,7 @@ class AutoUnitConverterTest {
         assertTrue(temps.contains("30.0 °C -> 86 °F"));
         assertTrue(temps.contains("30.0 °F -> -1.11 °C"));
         assertTrue(temps.contains("30.0 K -> 303.15 °C"));
-        assertEquals(3, StringUtils.countMatches("->", message.getContent()));
+        assertEquals(3, StringUtils.countMatches(message.channel.sentMessages.get(0), "->"));
     }
 
     @Test
@@ -51,7 +51,7 @@ class AutoUnitConverterTest {
         assertTrue(lengths.contains("40.0 cm -> 15.75 in"));
         assertTrue(lengths.contains("1.0 ft -> 0.3 m"));
         assertTrue(lengths.contains("7.0 in -> 17.78 cm"));
-        assertEquals(8, StringUtils.countMatches("->", message.getContent()));
+        assertEquals(8, StringUtils.countMatches(message.channel.sentMessages.get(0), "->"));
     }
 
     @Test

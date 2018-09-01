@@ -37,30 +37,19 @@ public class Bot {
     private ResponderManager responderManager;
 
     Bot() {
-        logger.info("Starting bot {}...", Bot.getFullVersion());
-        instance = this;
-
         if (Bot.version == null) {
             Bot.loadBuildInfo();
         }
+
+        logger.info("Starting bot {}...", Bot.getFullVersion());
+        instance = this;
+
 
         try {
             ConfigManager.loadGlobalConfig();
         }
         catch (IOException e) {
             logger.error("Error loading config", e);
-            System.exit(1);
-        }
-
-        if (getGlobalConfig().owner.isEmpty()) {
-            logger.error("The `botowner` value in bot.json MUST NOT be empty!");
-        }
-
-        if (getGlobalConfig().botToken.isEmpty()) {
-            logger.error("The `botToken` value in bot.json MUST NOT be empty!");
-        }
-
-        if (getGlobalConfig().owner.isEmpty() || getGlobalConfig().botToken.isEmpty()) {
             System.exit(1);
         }
 
@@ -100,8 +89,21 @@ public class Bot {
     }
 
     public IDiscordClient createClient(boolean login) {
+        GlobalConfig config = this.getGlobalConfig();
+        if (config.owner.isEmpty()) {
+            logger.error("The `botowner` value in bot.json MUST NOT be empty!");
+        }
+
+        if (config.botToken.isEmpty()) {
+            logger.error("The `botToken` value in bot.json MUST NOT be empty!");
+        }
+
+        if (config.owner.isEmpty() || config.botToken.isEmpty()) {
+            System.exit(1);
+        }
+
         ClientBuilder clientBuilder = new ClientBuilder();
-        clientBuilder.withToken(getGlobalConfig().botToken);
+        clientBuilder.withToken(config.botToken);
         try {
             if (login) {
                 return clientBuilder.login();

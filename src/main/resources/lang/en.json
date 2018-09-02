@@ -6,7 +6,7 @@
         "discord_error": "A discord error occurred: %s",
         "misc_error": "An error occurred trying to execute that command. Please contact the bot owner! ```%s```",
         "need_permission": "You do not have permission to use that command (need: %s)",
-        "no_such_command": "Command not found",
+        "no_such_command": "Command '%s' not found",
         "unknown_command_failure": "Failed to parse command"
     },
     "command": {

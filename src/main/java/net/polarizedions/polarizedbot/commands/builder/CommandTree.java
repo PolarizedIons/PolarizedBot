@@ -29,7 +29,7 @@ public class CommandTree {
         String head = fragments.remove(0);
         Node alias = this.commands.get(head);
         if (alias == null) {
-            throw new NoSuchCommand();
+            throw new NoSuchCommand(head);
         }
 
         LinkedList<Object> parsed = new LinkedList<>();

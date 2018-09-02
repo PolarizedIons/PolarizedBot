@@ -70,9 +70,13 @@ public class CommandManager {
         String command = commandFragments.get(0).substring(guildConfig.commandPrefix.length());
         commandFragments.set(0, command);
 
+        if (command.isEmpty()) {
+            return;
+        }
+
         CommandTree commandTree = this.commands.get(command);
         if (commandTree == null) {
-            MessageUtil.reply(message,"error.no_such_command");
+            MessageUtil.reply(message,"error.no_such_command", command);
             return;
         }
 

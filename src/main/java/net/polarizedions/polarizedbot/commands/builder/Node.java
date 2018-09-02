@@ -1,6 +1,6 @@
 package net.polarizedions.polarizedbot.commands.builder;
 
-import net.polarizedions.polarizedbot.exceptions.BotExceptions;
+import net.polarizedions.polarizedbot.exceptions.CommandExceptions;
 import net.polarizedions.polarizedbot.exceptions.NeedPermission;
 import net.polarizedions.polarizedbot.exceptions.UnknownFail;
 import net.polarizedions.polarizedbot.util.GuildManager;
@@ -83,7 +83,7 @@ public class Node {
         return this.help;
     }
 
-    void executeTree(List<String> treeOptions, IMessage command, List<Object> parsedArgs) throws BotExceptions {
+    void executeTree(List<String> treeOptions, IMessage command, List<Object> parsedArgs) throws CommandExceptions {
         if (! GuildManager.userHasRank(command, this.rank)) {
             throw new NeedPermission(this.rank);
         }

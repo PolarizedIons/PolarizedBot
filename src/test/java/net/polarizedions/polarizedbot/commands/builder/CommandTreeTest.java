@@ -3,7 +3,7 @@ package net.polarizedions.polarizedbot.commands.builder;
 import mocks.MockDiscordClient;
 import mocks.MockMessage;
 import net.polarizedions.polarizedbot.Bot;
-import net.polarizedions.polarizedbot.exceptions.BotExceptions;
+import net.polarizedions.polarizedbot.exceptions.CommandExceptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sx.blah.discord.handle.obj.IMessage;
@@ -32,7 +32,7 @@ class CommandTreeTest {
 
 
     @Test
-    void pingPong() throws BotExceptions {
+    void pingPong() throws CommandExceptions {
         AtomicBoolean pinged = new AtomicBoolean(false);
         AtomicBoolean ponged = new AtomicBoolean(false);
         AtomicBoolean pingedPerson = new AtomicBoolean(false);

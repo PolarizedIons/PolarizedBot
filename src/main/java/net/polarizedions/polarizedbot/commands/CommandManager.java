@@ -3,7 +3,7 @@ package net.polarizedions.polarizedbot.commands;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.commands.impl.*;
 import net.polarizedions.polarizedbot.config.GuildConfig;
-import net.polarizedions.polarizedbot.exceptions.BotExceptions;
+import net.polarizedions.polarizedbot.exceptions.CommandExceptions;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.MessageUtil;
@@ -98,9 +98,9 @@ public class CommandManager {
     }
 
     private void handleCommandException(IMessage message, Exception ex) {
-        if (ex instanceof BotExceptions) {
+        if (ex instanceof CommandExceptions) {
             logger.warn("Failed to handle command: threw {}", ex.getClass().getSimpleName());
-            MessageUtil.reply(message, ((BotExceptions) ex).getError(), ((BotExceptions) ex).getErrorContext());
+            MessageUtil.reply(message, ((CommandExceptions) ex).getError(), ((CommandExceptions) ex).getErrorContext());
         }
         else if (ex instanceof MissingPermissionsException) {
             String neededPerms = ((MissingPermissionsException) ex).getMissingPermissions().toString();

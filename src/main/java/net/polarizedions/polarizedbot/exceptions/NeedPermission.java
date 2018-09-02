@@ -2,7 +2,7 @@ package net.polarizedions.polarizedbot.exceptions;
 
 import net.polarizedions.polarizedbot.util.UserRank;
 
-public class NeedPermission extends BotExceptions {
+public class NeedPermission extends CommandExceptions {
 
     public NeedPermission(UserRank rank) {
         this.context = new Object[] { rank };

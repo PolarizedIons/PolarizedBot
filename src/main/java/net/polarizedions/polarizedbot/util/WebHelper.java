@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -24,6 +25,7 @@ public class WebHelper {
     private static final Logger logger = LogManager.getLogger("WebHelper");
     private static final JsonParser parser = new JsonParser();
 
+    @Nullable
     public static InputStream fetchUrl(String uri) {
         logger.debug("Fetching url: " + uri);
         URL url;
@@ -51,11 +53,13 @@ public class WebHelper {
         }
     }
 
+    @Nullable
     public static JsonObject fetchJson(String uri) {
         InputStream is = fetchUrl(uri);
         return is == null ? null : parser.parse(new InputStreamReader(is)).getAsJsonObject();
     }
 
+    @Nullable
     public static Document fetchDom(String uri) {
         InputStream is = fetchUrl(uri);
 
@@ -66,7 +70,7 @@ public class WebHelper {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 //        factory.setValidating(true);
         factory.setIgnoringElementContentWhitespace(true);
-        DocumentBuilder builder = null;
+        DocumentBuilder builder;
         try {
             builder = factory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {

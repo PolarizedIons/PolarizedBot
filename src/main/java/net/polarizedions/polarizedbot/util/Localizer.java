@@ -5,6 +5,8 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import sx.blah.discord.handle.obj.IMessage;
 
@@ -25,7 +27,7 @@ public class Localizer {
 
     private String currentLang;
 
-    public Localizer(IMessage message) {
+    public Localizer(@NotNull IMessage message) {
         this(message.getGuild() == null ? AVAILABLE_LANGUAGES[0] : GuildManager.getConfig(message.getGuild()).lang);
     }
 
@@ -103,7 +105,7 @@ public class Localizer {
         logger.debug("Loaded language file for '{}'", langCode);
     }
 
-    private static void parseLangData(String lang, String key, JsonElement object) {
+    private static void parseLangData(String lang, String key, @NotNull JsonElement object) {
         if (object.isJsonObject()) {
             String keyPrefix = key.length() == 0 ? "" : key + ".";
             for (Map.Entry<String, JsonElement> child : object.getAsJsonObject().entrySet()) {
@@ -119,6 +121,7 @@ public class Localizer {
         }
     }
 
+    @Contract(pure = true)
     public static boolean supports(String langCode) {
         for (String lc : AVAILABLE_LANGUAGES) {
             if (lc.equalsIgnoreCase(langCode)) {

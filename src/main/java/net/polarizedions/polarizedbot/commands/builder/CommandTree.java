@@ -1,15 +1,11 @@
 package net.polarizedions.polarizedbot.commands.builder;
 
-import net.polarizedions.polarizedbot.exceptions.CommandException;
+import net.polarizedions.polarizedbot.exceptions.BotExceptions;
 import net.polarizedions.polarizedbot.exceptions.NoSuchCommand;
 import net.polarizedions.polarizedbot.util.UserRank;
 import sx.blah.discord.handle.obj.IMessage;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class CommandTree {
     String name;
@@ -29,7 +25,7 @@ public class CommandTree {
         return rank;
     }
 
-    public void execute(List<String> fragments, IMessage msg) throws CommandException {
+    public void execute(List<String> fragments, IMessage msg) throws BotExceptions {
         String head = fragments.remove(0);
         Node alias = this.commands.get(head);
         if (alias == null) {

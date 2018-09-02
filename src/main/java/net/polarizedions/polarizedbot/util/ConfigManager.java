@@ -8,6 +8,7 @@ import net.polarizedions.polarizedbot.config.defaults.DefaultGlobalConfig;
 import net.polarizedions.polarizedbot.config.defaults.DefaultGuildConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Contract;
 import sx.blah.discord.handle.obj.IGuild;
 
 import java.io.*;
@@ -91,6 +92,7 @@ public class ConfigManager {
         writer.close();
     }
 
+    @Contract(pure = true)
     public static GlobalConfig getGlobalConfig() {
         return globalConfig;
     }

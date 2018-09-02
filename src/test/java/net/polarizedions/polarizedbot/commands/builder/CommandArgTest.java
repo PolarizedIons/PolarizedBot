@@ -28,7 +28,7 @@ class CommandArgTest {
 
     @Test
     void string() {
-        CommandArg arg = CommandArg.String("bla");
+        CommandArg arg = CommandArg.string("bla");
 
         assertEquals("bla", arg.match("bla"));
         assertNull(arg.match("foobar"));
@@ -36,7 +36,7 @@ class CommandArgTest {
 
     @Test
     void ping() {
-        CommandArg arg = CommandArg.Ping();
+        CommandArg arg = CommandArg.ping();
 
         assertNull(arg.match("foobar"));
         assertNull(arg.match("123321"));
@@ -49,7 +49,7 @@ class CommandArgTest {
 
     @Test
     void channel() {
-        CommandArg arg = CommandArg.Channel();
+        CommandArg arg = CommandArg.channel();
 
         assertNull(arg.match("foobar"));
         assertNull(arg.match("123321"));
@@ -62,7 +62,7 @@ class CommandArgTest {
 
     @Test
     void any() {
-        CommandArg arg = CommandArg.Any();
+        CommandArg arg = CommandArg.any();
 
         assertEquals("bla", arg.match("bla"));
         assertEquals("123321", arg.match("123321"));
@@ -75,7 +75,7 @@ class CommandArgTest {
 
     @Test
     void option() {
-        CommandArg arg = CommandArg.Option(new String[] {"bla", "123321"});
+        CommandArg arg = CommandArg.option(new String[] {"bla", "123321"});
 
         assertEquals("bla", arg.match("bla"));
         assertEquals("123321", arg.match("123321"));

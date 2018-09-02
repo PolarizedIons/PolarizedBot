@@ -1,5 +1,6 @@
 package net.polarizedions.polarizedbot.util;
 
+import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.RequestBuffer;
@@ -10,15 +11,17 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MessageUtil {
-    // Only used for unit testing. change these >.>
+    // Only used for unit testing. don't change these >.>
+    @SuppressWarnings("FieldCanBeLocal")
     private static boolean ENABLE_RATELMIT_HANDLING = true;
+    @SuppressWarnings("FieldCanBeLocal")
     private static int MAX_MESSAGE_LENGTH = IMessage.MAX_MESSAGE_LENGTH;
 
     public static void sendAutosplit(IChannel channel, String message) {
         sendAutosplit(channel, message, "", "");
     }
 
-    public static void sendAutosplit(IChannel channel, String message, String splitPrefix, String splitSuffix) {
+    public static void sendAutosplit(IChannel channel, @NotNull String message, String splitPrefix, String splitSuffix) {
         List<String> messages = new LinkedList<>();
         String[] splitMessage = message.split("\n");
 

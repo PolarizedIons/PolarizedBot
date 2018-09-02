@@ -2,6 +2,7 @@ package net.polarizedions.polarizedbot.api_handlers;
 
 import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.util.WebHelper;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -23,6 +24,7 @@ public class WolframAlphaApi {
         return !API_KEY.isEmpty();
     }
 
+    @Nullable
     public static Map<String, List<String>> fetch(String input) {
         if (! hasApiKey()) {
             return null;

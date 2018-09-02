@@ -3,12 +3,13 @@ package net.polarizedions.polarizedbot.commands;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.commands.impl.*;
 import net.polarizedions.polarizedbot.config.GuildConfig;
-import net.polarizedions.polarizedbot.exceptions.CommandException;
+import net.polarizedions.polarizedbot.exceptions.BotExceptions;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -36,7 +37,7 @@ public class CommandManager {
         this.registerCommand(new CommandWolframAlpha());
     }
 
-    public void registerCommand(ICommand command) {
+    private void registerCommand(@NotNull ICommand command) {
         CommandTree tree = command.getCommand();
         for (String alias : tree.getCommands()) {
             this.commands.put(alias, tree);
@@ -93,9 +94,9 @@ public class CommandManager {
     }
 
     private void handleCommandException(IMessage message, Exception ex) {
-        if (ex instanceof CommandException) {
+        if (ex instanceof BotExceptions) {
             logger.warn("Failed to handle command: threw {}", ex.getClass().getSimpleName());
-            MessageUtil.reply(message, ((CommandException) ex).getError(), ((CommandException) ex).getErrorConext());
+            MessageUtil.reply(message, ((BotExceptions) ex).getError(), ((BotExceptions) ex).getErrorContext());
         }
         else if (ex instanceof MissingPermissionsException) {
             String neededPerms = ((MissingPermissionsException) ex).getMissingPermissions().toString();

@@ -1,5 +1,7 @@
 package net.polarizedions.polarizedbot.util;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
@@ -13,7 +15,8 @@ public class TimeUtil {
     };
 
 
-    public static String formatDuration(Localizer localizer, Duration duration) {
+    @NotNull
+    public static String formatDuration(Localizer localizer, @NotNull Duration duration) {
         long[] time = new long[5];
         time[0] = duration.toDays() / 7;
         time[1] = duration.toDays() % 7;

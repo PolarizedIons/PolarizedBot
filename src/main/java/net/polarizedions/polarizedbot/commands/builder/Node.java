@@ -1,6 +1,6 @@
 package net.polarizedions.polarizedbot.commands.builder;
 
-import net.polarizedions.polarizedbot.exceptions.CommandException;
+import net.polarizedions.polarizedbot.exceptions.BotExceptions;
 import net.polarizedions.polarizedbot.exceptions.NeedPermission;
 import net.polarizedions.polarizedbot.exceptions.UnknownFail;
 import net.polarizedions.polarizedbot.util.GuildManager;
@@ -32,23 +32,23 @@ public class Node {
     }
 
     public Node stringArg(String option, Consumer<Node> optionNode) {
-        return this.addArgument(CommandArg.String(option), optionNode);
+        return this.addArgument(CommandArg.string(option), optionNode);
     }
 
     public Node pingArg(Consumer<Node> optionNode) {
-        return this.addArgument(CommandArg.Ping(), optionNode);
+        return this.addArgument(CommandArg.ping(), optionNode);
     }
 
     public Node channelArg(Consumer<Node> optionNode) {
-        return this.addArgument(CommandArg.Channel(), optionNode);
+        return this.addArgument(CommandArg.channel(), optionNode);
     }
 
     public Node captureArg(Consumer<Node> optionNode) {
-        return this.addArgument(CommandArg.Any(), optionNode);
+        return this.addArgument(CommandArg.any(), optionNode);
     }
 
     public Node optionArg(String[] options, Consumer<Node> optionNode) {
-        return this.addArgument(CommandArg.Option(options), optionNode);
+        return this.addArgument(CommandArg.option(options), optionNode);
     }
 
     public Node addArgument(CommandArg arg, Consumer<Node> optionNode) {
@@ -83,17 +83,17 @@ public class Node {
         return this.help;
     }
 
-    void executeTree(List<String> treeOptions, IMessage command, List<Object> parsedArgs) throws CommandException {
+    void executeTree(List<String> treeOptions, IMessage command, List<Object> parsedArgs) throws BotExceptions {
         if (! GuildManager.userHasRank(command, this.rank)) {
             throw new NeedPermission(this.rank);
         }
-
 
         if (treeOptions.size() == 0) {
             if (this.isExecutable()) {
                 if (this.swallows) {
                     if (this.allowEmpty) {
                         parsedArgs.add("");
+                        this.run(command, parsedArgs);
                     }
                     else {
                         this.fail(command, parsedArgs, treeOptions);

@@ -174,7 +174,8 @@
                 "not_found": "No release found for repo %s",
                 "github": "Github error: %s",
                 "up_to_date": "The bot is already running version %s",
-                "error_downloading": "An error occurred while downloading the update. Canceled action"
+                "error_downloading": "An error occurred while downloading the update. Canceled action",
+                "asset_not_found": "The update jar could not be found"
             },
             "success": {
                 "downloading": "Downloading %s...",

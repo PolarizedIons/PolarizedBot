@@ -60,20 +60,6 @@ class CommandBuilderTest {
 
     @Test
     void command2() {
-        String[] commands = new String[] {"help", "whatdo", "wat"};
-
-        CommandTree tree = CommandBuilder.create("test")
-                .command(commands[0], commands[1], commands[2], (n) -> {})
-                .buildCommand();
-
-        assertIterableEquals(Arrays.asList(commands), tree.getCommands());
-
-        Set<Node> nodes = new HashSet<>(tree.commands.values());
-        assertEquals(1, nodes.size());
-    }
-
-    @Test
-    void command3() {
         String[] commands = new String[] {"help", "whatdo", "wat", "morealiases"};
 
         CommandTree tree = CommandBuilder.create("test")

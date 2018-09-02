@@ -5,6 +5,8 @@ import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.util.MessageUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.List;
@@ -31,7 +33,7 @@ public class CommandWolframAlpha implements ICommand {
                 .buildCommand();
     }
 
-    private void fail(IMessage message, List<Object> parsedArgs, List<String> unparsedArgs) {
+    private void fail(IMessage message, @NotNull List<Object> parsedArgs, List<String> unparsedArgs) {
         if (parsedArgs.size() == 1) {
             MessageUtil.reply(message, "command.wolfram.error.no_arg");
         }
@@ -40,6 +42,7 @@ public class CommandWolframAlpha implements ICommand {
         }
     }
 
+    @Nullable
     private Map<String, List<String>> get(IMessage message, List<Object> args) {
         if (!WolframAlphaApi.hasApiKey()) {
             MessageUtil.reply(message, "command.wolfram.error.no_api_key");

@@ -1,7 +1,7 @@
 package net.polarizedions.polarizedbot.commands.builder;
 
 import mocks.MockMessage;
-import net.polarizedions.polarizedbot.exceptions.CommandException;
+import net.polarizedions.polarizedbot.exceptions.BotExceptions;
 import net.polarizedions.polarizedbot.exceptions.UnknownFail;
 import net.polarizedions.polarizedbot.util.UserRank;
 import org.junit.jupiter.api.Test;
@@ -16,10 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class NodeTest {
 
@@ -86,7 +83,7 @@ class NodeTest {
     }
 
     @Test
-    void ping() throws CommandException {
+    void ping() throws BotExceptions {
         AtomicBoolean pinged = new AtomicBoolean(false);
         CommandBuilder builder = CommandBuilder.create("ping");
         Node node = new Node(builder);

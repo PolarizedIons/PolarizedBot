@@ -4,6 +4,7 @@ import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
+import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class CommandInvite implements ICommand {
                 .buildCommand();
     }
 
-    private void invite(IMessage message, List<Object> args) {
+    private void invite(@NotNull IMessage message, List<Object> args) {
         message.getChannel().sendMessage(String.format(INVITE_URL, Bot.instance.getClient().getApplicationClientID()));
     }
 }

@@ -2,6 +2,7 @@ package net.polarizedions.polarizedbot.util;
 
 import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.config.GuildConfig;
+import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -17,7 +18,7 @@ public class GuildManager {
         configs = new HashMap<>();
     }
 
-    public static GuildConfig getConfig(IGuild guild) {
+    public static GuildConfig getConfig(@NotNull IGuild guild) {
         configs.computeIfAbsent(guild.getLongID(), id -> {
             try {
                 return ConfigManager.loadGuildConfig(id);

@@ -32,21 +32,24 @@ public class CommandAbout implements ICommand {
                         .setHelp("command.about.help.about")
                 )
                 .command("info", info -> info
-                    .onExecute(this::info)
-                    .setHelp("command.about.help.info")
+                        .onExecute(this::info)
+                        .setHelp("command.about.help.info")
                 )
-                 .setHelp("command.about.help")
+                .setHelp("command.about.help")
                 .buildCommand();
     }
 
     private void about(IMessage message, List<Object> args) {
         Localizer loc = new Localizer(message);
-        EmbedBuilder builder = new EmbedBuilder();
+
         Bot bot = Bot.instance;
-        GlobalConfig globalConfig = bot.getGlobalConfig();
-        IGuild guild = message.getGuild();
-        GuildConfig guildConfig = GuildManager.getConfig(guild);
         CommandManager commandManager = bot.getCommandManager();
+        IGuild guild = message.getGuild();
+        GlobalConfig globalConfig = bot.getGlobalConfig();
+        GuildConfig guildConfig = GuildManager.getConfig(guild);
+
+        EmbedBuilder builder = new EmbedBuilder();
+
         IUser owner = bot.getClient().getUserByID(Long.parseLong(globalConfig.owner));
         IUser botUser = bot.getClient().getOurUser();
 

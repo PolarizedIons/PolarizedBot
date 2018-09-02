@@ -3,7 +3,7 @@ package net.polarizedions.polarizedbot.commands.builder;
 import mocks.MockDiscordClient;
 import mocks.MockMessage;
 import net.polarizedions.polarizedbot.Bot;
-import net.polarizedions.polarizedbot.exceptions.CommandException;
+import net.polarizedions.polarizedbot.exceptions.BotExceptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sx.blah.discord.handle.obj.IMessage;
@@ -11,12 +11,11 @@ import sx.blah.discord.handle.obj.IMessage;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CommandTreeTest {
 
@@ -33,7 +32,7 @@ class CommandTreeTest {
 
 
     @Test
-    void pingPong() throws CommandException {
+    void pingPong() throws BotExceptions {
         AtomicBoolean pinged = new AtomicBoolean(false);
         AtomicBoolean ponged = new AtomicBoolean(false);
         AtomicBoolean pingedPerson = new AtomicBoolean(false);

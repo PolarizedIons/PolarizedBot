@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import net.polarizedions.polarizedbot.util.WebHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,14 +15,15 @@ import java.util.Date;
 import java.util.List;
 
 public class GW2ForumApi {
-    private static final String RELEASE_NOTES_FORUM_CATAGORY_URL = "https://en-forum.guildwars2.com/categories/game-release-notes.json";
+    private static final String RELEASE_NOTES_FORUM_CATEGORY_URL = "https://en-forum.guildwars2.com/categories/game-release-notes.json";
     private static final String DISCUSSION_URL_PART = "https://en-forum.guildwars2.com/discussion/%s.json";
     private static final Logger logger = LogManager.getLogger("Gw2ForumApi");
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+    @Nullable
     public static List<GW2UpdateLising> fetchUpdates() {
         logger.debug("Fetching latest release notes from forum");
-        JsonObject listingsJson = WebHelper.fetchJson(RELEASE_NOTES_FORUM_CATAGORY_URL);
+        JsonObject listingsJson = WebHelper.fetchJson(RELEASE_NOTES_FORUM_CATEGORY_URL);
         if (listingsJson == null) {
             return null;
         }
@@ -55,6 +57,7 @@ public class GW2ForumApi {
         return updates;
     }
 
+    @Nullable
     public static List<GW2Comment> fetchComments(int postId) {
         logger.debug("Fetching comments for post {}", postId);
         JsonObject postJson = WebHelper.fetchJson(String.format(DISCUSSION_URL_PART, postId));

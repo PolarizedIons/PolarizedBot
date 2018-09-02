@@ -10,6 +10,7 @@ import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
+import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -72,7 +73,7 @@ public class CommandGuild implements ICommand {
                 .buildCommand();
     }
 
-    private void subcommandFail(IMessage message, List<Object> parsedArgs, List<String> unparsedArgs) {
+    private void subcommandFail(IMessage message, List<Object> parsedArgs, @NotNull List<String> unparsedArgs) {
         if (unparsedArgs.size() == 0) {
             MessageUtil.reply(message,"command.guild.error.no_subcommand", String.join(", ", subcommands));
         }
@@ -85,9 +86,9 @@ public class CommandGuild implements ICommand {
         MessageUtil.reply(message,"command.guild.error." + suffix, context);
     }
 
-    private void setLang(IMessage message, List<Object> args) {
-
+    private void setLang(IMessage message, @NotNull List<Object> args) {
         String newLang = (String) args.get(2);
+
         if (!Localizer.supports(newLang)) {
             MessageUtil.reply(message,"command.guild.error.unknown_lang", newLang, String.join(", "), Localizer.AVAILABLE_LANGUAGES);
             return;
@@ -98,7 +99,7 @@ public class CommandGuild implements ICommand {
         MessageUtil.reply(message,"command.guild.success.setlang", newLang);
     }
 
-    private void setRank(IMessage message, List<Object> args) {
+    private void setRank(IMessage message, @NotNull List<Object> args) {
         String rankName = (String) args.get(3);
         IUser user = (IUser) args.get(4);
 
@@ -112,7 +113,7 @@ public class CommandGuild implements ICommand {
         MessageUtil.reply(message,"command.guild.success.set_rank", user.toString(), rank.toString());
     }
 
-    private void disableCommand(IMessage message, List<Object> args) {
+    private void disableCommand(@NotNull IMessage message, @NotNull List<Object> args) {
         GuildConfig config = GuildManager.getConfig(message.getGuild());
         String commandName = (String) args.get(3);
         CommandTree command = Bot.instance.getCommandManager().get(commandName);
@@ -133,10 +134,11 @@ public class CommandGuild implements ICommand {
         }
     }
 
-    private void enableCommand(IMessage message, List<Object> args) {
+    private void enableCommand(@NotNull IMessage message, @NotNull List<Object> args) {
         GuildConfig guildConfig = GuildManager.getConfig(message.getGuild());
         String commandName = (String) args.get(3);
         CommandTree command = Bot.instance.getCommandManager().get(commandName);
+
         if (command == null) {
             MessageUtil.reply(message,"command.guild.error.no_command_found", commandName);
             return;
@@ -152,12 +154,12 @@ public class CommandGuild implements ICommand {
         MessageUtil.reply(message,"command.guild.success.enable.command", command.getName());
     }
 
-    private void disableResponder(IMessage message, List<Object> args) {
+    private void disableResponder(@NotNull IMessage message, @NotNull List<Object> args) {
         ResponderManager manager = Bot.instance.getResponderManager();
         String toDisable = ((String) args.get(3)).toLowerCase();
         IGuild guild = message.getGuild();
 
-        if (!manager.getIDs().contains(toDisable)) {
+        if (! manager.getIDs().contains(toDisable)) {
             MessageUtil.reply(message,"command.guild.error.no_responder_found", toDisable, String.join(", ", manager.getIDs()));
             return;
         }
@@ -171,7 +173,7 @@ public class CommandGuild implements ICommand {
         MessageUtil.reply(message,"command.guild.success.disable.responder", toDisable);
     }
 
-    private void enableResponder(IMessage message, List<Object> args) {
+    private void enableResponder(@NotNull IMessage message, @NotNull List<Object> args) {
         ResponderManager manager = Bot.instance.getResponderManager();
         String toDisable = ((String) args.get(3)).toLowerCase();
         IGuild guild = message.getGuild();
@@ -190,7 +192,7 @@ public class CommandGuild implements ICommand {
         MessageUtil.reply(message,"command.guild.success.enable.responder", toDisable);
     }
 
-    private void setPrefix(IMessage message, List<Object> args) {
+    private void setPrefix(@NotNull IMessage message, @NotNull List<Object> args) {
         GuildManager.getConfig(message.getGuild()).commandPrefix = (String) args.get(3);
         GuildManager.saveConfig(message.getGuild());
         MessageUtil.reply(message,"command.guild.success.set_prefix", args.get(3));

@@ -26,8 +26,8 @@ public class AnnouncerManager {
         this.subData = new HashMap<>();
         this.timers = new ArrayList<>();
 
-        registerAnnouncer(new AnnouncerMcNotifier());
-        registerAnnouncer(new AnnouncerGW2Update());
+        this.registerAnnouncer(new AnnouncerMcNotifier());
+        this.registerAnnouncer(new AnnouncerGW2Update());
     }
 
     private void registerAnnouncer(IAnnouncer announcer) {
@@ -36,10 +36,12 @@ public class AnnouncerManager {
 
     public void initAnnouncers() {
         for (IAnnouncer announcer : this.announcers.values()) {
+            AnnouncerManager that = this;
             TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
-                    if (subData.getOrDefault(announcer, Collections.emptyList()).size() == 0) {
+                    List<IChannel> subscriptionData = that.getSubData(announcer);
+                    if (subscriptionData.size() == 0) {
                         return;
                     }
 
@@ -47,11 +49,11 @@ public class AnnouncerManager {
                         boolean result = announcer.check();
                         logger.debug("Checking announcer '{}': {}", announcer.getName(), result);
                         if (result) {
-                            announcer.execute(getSubData(announcer));
+                            announcer.execute(subscriptionData);
                         }
                     }
-                    catch (Exception e) {
-                        logger.debug("Exception while executing announcer " + announcer.getName(), e);
+                    catch (Exception ex) {
+                        logger.debug("Exception while executing announcer " + announcer.getName(), ex);
                     }
                 }
             };
@@ -88,7 +90,7 @@ public class AnnouncerManager {
         this.subData.computeIfAbsent(announcer, a -> new ArrayList<>());
         this.subData.get(announcer).add(channel);
 
-        save();
+        this.save();
     }
 
     public void forgetSub(IAnnouncer announcer, IChannel channel) {
@@ -97,7 +99,7 @@ public class AnnouncerManager {
             this.subData.remove(announcer);
         }
 
-        save();
+        this.save();
     }
 
     public List<IChannel> getSubData(IAnnouncer announcer) {

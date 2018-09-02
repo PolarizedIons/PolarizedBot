@@ -15,29 +15,37 @@ public class CommandPing implements ICommand {
     @Override
     public CommandTree getCommand() {
         return CommandBuilder.create("Ping")
-                             .command("ping", "pong", ping -> ping
-                                     .onExecute(this::run)
-                                     .setHelp("command.ping.help.pingpong")
-                             )
-                             .setHelp("command.ping.help")
-                             .buildCommand();
+                .command("ping", ping -> ping
+                        .onExecute(this::ping)
+                        .setHelp("command.ping.help.pingpong")
+                )
+                .command("pong", pong -> pong
+                        .onExecute(this::pong)
+                        .setHelp("command.ping.help.pingpong")
+                )
+                .setHelp("command.ping.help")
+                .buildCommand();
     }
 
-    public void run(IMessage message, List<Object> args) {
-        Localizer loc = new Localizer(message);
-        String arg1 = (String) args.get(0);
-        String replyKey = "command.ping.reply";
-        if (arg1.equals("pong")) {
-            replyKey += "_alt";
-        }
-        Instant ping = Instant.now();
-        String msgText = loc.localize(replyKey + ".1", "<@!" + message.getAuthor().getLongID() + ">");
+    void ping(IMessage message, List<Object> args) {
+        this.run(message, "command.ping.reply");
+    }
 
-        IMessage msg = message.getChannel().sendMessage(msgText);
+    void pong(IMessage message, List<Object> args) {
+        this.run(message, "command.ping.reply_alt");
+    }
+
+    void run(IMessage message, String replyKey) {
+        Localizer loc = new Localizer(message);
+
+        Instant ping = Instant.now();
+        String initialText = loc.localize(replyKey + ".1", "<@!" + message.getAuthor().getLongID() + ">");
+
+        IMessage msg = message.getChannel().sendMessage(initialText);
 
         Instant pong = msg.getTimestamp();
         Duration duration = Duration.between(ping, pong);
-        String msgText2 = loc.localize(replyKey + ".2", "<@!" + message.getAuthor().getLongID() + ">", duration.toMillis());
-        msg.edit(msgText2);
+        String latancyText = loc.localize(replyKey + ".2", "<@!" + message.getAuthor().getLongID() + ">", duration.toMillis());
+        msg.edit(latancyText);
     }
 }

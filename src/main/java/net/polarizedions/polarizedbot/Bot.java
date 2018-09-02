@@ -4,11 +4,14 @@ import net.polarizedions.polarizedbot.announcer.AnnouncerManager;
 import net.polarizedions.polarizedbot.autoresponders.ResponderManager;
 import net.polarizedions.polarizedbot.commands.CommandManager;
 import net.polarizedions.polarizedbot.config.GlobalConfig;
+import net.polarizedions.polarizedbot.util.Args;
 import net.polarizedions.polarizedbot.util.ConfigManager;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.IListener;
@@ -17,7 +20,6 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.DiscordException;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -36,7 +38,7 @@ public class Bot {
     private CommandManager commandManager;
     private ResponderManager responderManager;
 
-    Bot() {
+    private Bot() {
         if (Bot.version == null) {
             Bot.loadBuildInfo();
         }
@@ -44,13 +46,11 @@ public class Bot {
         logger.info("Starting bot {}...", Bot.getFullVersion());
         instance = this;
 
-
         try {
             ConfigManager.loadGlobalConfig();
         }
-        catch (IOException e) {
-            logger.error("Error loading config", e);
-            System.exit(1);
+        catch (IOException ex) {
+            throw new RuntimeException("Cannot load config!", ex);
         }
 
         Localizer.init();
@@ -73,7 +73,7 @@ public class Bot {
             IMessage message = messageEvent.getMessage();
             logger.debug("[UserID: {}, GuildID: {}, MessageID: {}, User: {}]: {}",
                     message.getAuthor().getStringID(),
-                    message.getGuild() == null ? "  0  " : message.getGuild().getStringID(),
+                    message.getGuild() == null ? "PM" : message.getGuild().getStringID(),
                     message.getStringID(),
                     message.getAuthor().getName() + "#" + message.getAuthor().getDiscriminator(),
                     message.getContent()
@@ -99,7 +99,7 @@ public class Bot {
         }
 
         if (config.owner.isEmpty() || config.botToken.isEmpty()) {
-            System.exit(1);
+            throw new RuntimeException("Please enter the required value(s) in the config!");
         }
 
         ClientBuilder clientBuilder = new ClientBuilder();
@@ -111,13 +111,9 @@ public class Bot {
                 return clientBuilder.build();
             }
         }
-        catch (DiscordException e) {
-            logger.error("Error creating/logging in client", e);
-            System.exit(1);
+        catch (DiscordException ex) {
+            throw new RuntimeException("Error creating/logging in client", ex);
         }
-
-        // THIS SHOULDN'T HAPPEN REALLY
-        return null;
     }
 
     public void shutdown() {
@@ -162,6 +158,12 @@ public class Bot {
         return this.connectedInstant;
     }
 
+    @NotNull
+    @Contract(pure = true)
+    public static String getFullVersion() {
+        return Bot.version + " / " + Bot.buildDate;
+    }
+
     private static void loadBuildInfo() {
         Properties versionProp = new Properties();
         try {
@@ -174,30 +176,15 @@ public class Bot {
         }
     }
 
-    public static String getFullVersion() {
-        return Bot.version + " / " + Bot.buildDate;
-    }
-
     public static void main(String[] args) {
-        for (int i = 0; i < args.length; i++) {
-            // Delete old jar after update
-            if (args[i].equals("--update")) {
-                i++;
-                File oldJar = new File(args[i]);
-                if (!oldJar.delete()) {
-                    logger.info("Error deleting old jar {} after update!", args[i]);
-                }
-                else {
-                    logger.info("Deleted old jar {} because of update", args[i]);
-                }
-            }
-        }
+        Args.handle(args);
 
         // This is needed because even if I call ProcessBuilder#inheritIO, it doesn't seem to pass
         // SIGINT to the child process, and thus soft-restarting, or updating the bot, cannot be
         // killed by just pressing Control+C.
         new Thread(() -> {
             try {
+                //noinspection StatementWithEmptyBody
                 while (System.in.read() != -1) { /* NOOP */ }
             }
             catch (IOException e) { /* NOOP */ }

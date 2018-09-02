@@ -6,12 +6,16 @@ import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.util.List;
 
 public class CommandIgnore implements ICommand {
+    private static final Logger logger = LogManager.getLogger("CommandIgnore");
 
     @Override
     public CommandTree getCommand() {
@@ -38,7 +42,7 @@ public class CommandIgnore implements ICommand {
     }
 
 
-    private void ignore(IMessage message, List<Object> args) {
+    private void ignore(@NotNull IMessage message, @NotNull List<Object> args) {
         IUser toIgnore = args.size() == 1 ? message.getAuthor() : (IUser) args.get(1);
 
         if (GuildManager.getUserRank(message.getGuild(), toIgnore) == UserRank.BOT_OWNER) {
@@ -52,14 +56,13 @@ public class CommandIgnore implements ICommand {
         MessageUtil.reply(message,"command.ignore.success.ignore", toIgnore.getName()+"#"+toIgnore.getDiscriminator());
     }
 
-    private void unignore(IMessage message, List<Object> args) {
+    private void unignore(@NotNull IMessage message, @NotNull List<Object> args) {
         IUser toUnignore = (IUser) args.get(1);
 
         logger.debug("Unignoring {}", toUnignore);
         GuildManager.getConfig(message.getGuild()).ignoredUsers.remove(toUnignore.getLongID());
         GuildManager.saveConfig(message.getGuild());
         MessageUtil.reply(message,"command.ignore.success.unignore", toUnignore.toString());
-
     }
 
     private void fail(IMessage message, List<Object> parsedArgs, List<String> unparsedArgs) {

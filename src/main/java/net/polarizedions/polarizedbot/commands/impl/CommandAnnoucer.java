@@ -8,6 +8,7 @@ import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
+import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 
@@ -76,7 +77,7 @@ public class CommandAnnoucer implements ICommand {
         MessageUtil.reply(message,"command.announce.list", announcers);
     }
 
-    private void fail(IMessage message, List<Object> parsedArgs, List<String> unparsedArgs) {
+    private void fail(IMessage message, @NotNull List<Object> parsedArgs, List<String> unparsedArgs) {
         if (parsedArgs.size() == 1) {
             MessageUtil.reply(message,"command.announce.error.no_subcommand", String.join(", ", subcommands));
         } else if (parsedArgs.size() == 2) {
@@ -90,7 +91,7 @@ public class CommandAnnoucer implements ICommand {
         MessageUtil.reply(message,"command.announce.error.no_channel");
     }
 
-    private void listGuild(IMessage message, List<Object> args) {
+    private void listGuild(@NotNull IMessage message, List<Object> args) {
         Map<IAnnouncer, List<IChannel>> announcers = Bot.instance.getAnnouncerManager().getAnnouncersForGuild(message.getGuild());
 
         if (announcers.size() == 0) {
@@ -111,6 +112,6 @@ public class CommandAnnoucer implements ICommand {
             }
         }
 
-        MessageUtil.sendAutosplit(message.getChannel(), response.append("```").toString());
+        MessageUtil.sendAutosplit(message.getChannel(), response.append("```").toString(), "```", "```");
     }
 }

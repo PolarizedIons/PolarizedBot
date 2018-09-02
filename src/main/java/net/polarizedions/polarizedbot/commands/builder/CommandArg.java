@@ -1,6 +1,8 @@
 package net.polarizedions.polarizedbot.commands.builder;
 
 import net.polarizedions.polarizedbot.Bot;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -20,16 +22,21 @@ public class CommandArg {
         return this.matchingFunc.apply(commandPart);
     }
 
-    public static CommandArg String(String option) {
+    @NotNull
+    @Contract("_ -> new")
+    public static CommandArg string(String option) {
         return new CommandArg((in) -> {
             if (option.equalsIgnoreCase(in)) {
                 return in;
             }
+
             return null;
         });
     }
 
-    public static CommandArg Ping() {
+    @NotNull
+    @Contract(" -> new")
+    public static CommandArg ping() {
         return new CommandArg((in) -> {
             Matcher m = USER_PING_PATTERN.matcher(in);
             if (m.matches()) {
@@ -40,7 +47,9 @@ public class CommandArg {
         });
     }
 
-    public static CommandArg Channel() {
+    @NotNull
+    @Contract(" -> new")
+    public static CommandArg channel() {
         return new CommandArg((in) -> {
             Matcher m = CHANNEL_PATTERN.matcher(in);
             if (m.matches()) {
@@ -51,19 +60,22 @@ public class CommandArg {
         });
     }
 
-    public static CommandArg Any() {
-        return new CommandArg((in) -> {
-            return in.isEmpty() ? null : in;
-        });
+    @NotNull
+    @Contract(" -> new")
+    public static CommandArg any() {
+        return new CommandArg((in) -> in.isEmpty() ? null : in);
     }
 
-    public static CommandArg Option(String[] options) {
+    @NotNull
+    @Contract("_ -> new")
+    public static CommandArg option(String[] options) {
         return new CommandArg((in) -> {
             for (String option : options) {
                 if (option.equalsIgnoreCase(in)) {
                     return in;
                 }
             }
+
             return null;
         });
     }

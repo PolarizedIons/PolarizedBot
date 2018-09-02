@@ -17,10 +17,6 @@ public class ResponderManager {
     public ResponderManager() {
         this.responders = new ArrayList<>();
 
-        this.init();
-    }
-
-    private void init() {
         this.responders.add(new AutoUnitConverter());
     }
 
@@ -46,6 +42,7 @@ public class ResponderManager {
             if (guildConfig.disabledResponders.contains(responder.getID())) {
                 continue;
             }
+
             responder.run(message);
         }
     }

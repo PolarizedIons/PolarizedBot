@@ -5,11 +5,13 @@ import com.google.gson.JsonObject;
 import net.polarizedions.polarizedbot.util.WebHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 public class MojangApi {
     private static final String VERSION_MANIFEST_URL = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
     private static final Logger logger = LogManager.getLogger("MinecraftApi");
 
+    @Nullable
     public static MinecraftVersions fetchLatestVersions() {
         logger.debug("Fetching latest minecraft versions");
 

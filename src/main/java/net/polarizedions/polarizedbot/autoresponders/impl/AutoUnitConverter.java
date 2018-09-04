@@ -75,13 +75,20 @@ public class AutoUnitConverter implements IResponder {
         StringBuilder response = new StringBuilder("```\n");
         boolean matched = false;
 
+        Set<String> alreadyDone = new HashSet<>();
         while (matcher.find()) {
             matched = true;
             String matchingUnit = matcher.group(2);
             logger.debug("Found unit '{}' to convert", matchingUnit);
             double in = Double.parseDouble(matcher.group(1));
+
             for (Conversion converter : this.conversions.get(matchingUnit)) {
-                response.append(in).append(" ").append(converter.from.get(0)).append(" -> ")
+                String from = FORMAT.format(in) + " " + converter.from.get(0);
+                if (alreadyDone.contains(from)) {
+                    continue;
+                }
+                alreadyDone.add(from);
+                response.append(from).append(" -> ")
                         .append(FORMAT.format(converter.run(in))).append(" ").append(converter.to.get(0)).append("\n");
             }
         }

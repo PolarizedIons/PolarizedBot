@@ -1,6 +1,7 @@
 package net.polarizedions.polarizedbot.autoresponders.impl;
 
 import mocks.MockMessage;
+import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.util.MessageUtilTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -29,9 +30,10 @@ class AutoUnitConverterTest {
                 " even 30 K would be bad. -40C");
 
         converter.run(message);
+        Bot.logger.debug("Running temp convection: {}", message.channel.sentMessages);
         assertEquals(1, message.channel.sentMessages.size());
         List<String> temps = Arrays.stream(message.channel.sentMessages.get(0).split("\n")).filter(s -> s.contains("->")).collect(Collectors.toList());
-        System.out.println(temps);
+        Bot.logger.debug("Converted temps: {}", temps);
         assertTrue(temps.contains("30.0 °C -> 86 °F"));
         assertTrue(temps.contains("30.0 °F -> -1.11 °C"));
         assertTrue(temps.contains("30.0 K -> 303.15 °C"));
@@ -43,9 +45,10 @@ class AutoUnitConverterTest {
     void length() {
         MockMessage message = new MockMessage("5'3\" 21.5\" 0.2 meters 8km 40 cm 1 foot 7 in");
         converter.run(message);
+        Bot.logger.debug("Running length conversion: {}", message.channel.sentMessages);
         assertEquals(1, message.channel.sentMessages.size());
         List<String> lengths = Arrays.stream(message.channel.sentMessages.get(0).split("\n")).filter(s -> s.contains("->")).collect(Collectors.toList());
-        System.out.println(lengths);
+        Bot.logger.debug("Converted lengths: {}", lengths);
         assertTrue(lengths.contains("5.0 ft -> 1.52 m"));
         assertTrue(lengths.contains("3.0 in -> 7.62 cm"));
         assertTrue(lengths.contains("21.5 in -> 54.61 cm"));

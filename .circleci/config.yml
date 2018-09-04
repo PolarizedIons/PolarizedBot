@@ -41,6 +41,11 @@ jobs:
     - store_artifacts: # store the compiled jars as artifacts
         path: target/artifacts
 
+    - persist_to_workspace:
+        root: /tmp/workspace
+        paths:
+        - target/artifacts/*
+
   publish-github-release:
     docker:
     - image: cibuilds/github:0.10

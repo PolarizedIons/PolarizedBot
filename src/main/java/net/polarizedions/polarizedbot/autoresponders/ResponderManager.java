@@ -34,8 +34,11 @@ public class ResponderManager {
             return;
         }
 
-        if (message.getContent().startsWith(guildConfig.commandPrefix)) {
-            return;
+        String content = message.getContent();
+        if (content.startsWith(guildConfig.commandPrefix)) {
+            if (guildConfig.commandPrefix.equals("-") && !Character.isDigit(content.charAt(1))) {
+                return;
+            }
         }
 
         for (IResponder responder : this.responders) {

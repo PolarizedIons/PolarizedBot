@@ -54,6 +54,10 @@ public class CommandManager {
             return;
         }
 
+        if (user.isBot()) {
+            return;
+        }
+
         GuildConfig guildConfig = GuildManager.getConfig(guild);
         if (guildConfig.ignoredUsers.contains(user.getLongID())) {
             logger.debug("From ignored user");

@@ -80,7 +80,6 @@ public class CommandManager {
 
         CommandTree commandTree = this.commands.get(command);
         if (commandTree == null) {
-            MessageUtil.reply(message,"error.no_such_command", command);
             return;
         }
 

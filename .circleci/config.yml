@@ -39,4 +39,29 @@ jobs:
         path: target/surefire-reports
 
     - store_artifacts: # store the compiled jars as artifacts
-        path: "target/artifacts"
+        path: target/artifacts
+
+  publish-github-release:
+    docker:
+    - image: circleci/golang:1.8
+    steps:
+    - attach_workspace:
+        at: ./target/artifacts
+    - run:
+        name: "Publish Release on GitHub"
+        command: |
+          go get github.com/tcnksm/ghr
+          VERSION=$(git tag --list --points-at HEAD)
+          ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./target/artifacts/
+
+workflows:
+  version: 2
+  main:
+    jobs:
+    - build:
+    - publish-github-release:
+        requires:
+        - build
+        filters:
+          tags:
+            only: /^v?\d+\.\d+\.\d+$/

@@ -6,7 +6,7 @@
 
     <groupId>net.polarizedions.polarizedbot</groupId>
     <artifactId>polarizedbot</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -59,7 +59,8 @@
                     <dependency>
                         <groupId>org.junit.platform</groupId>
                         <artifactId>junit-platform-surefire-provider</artifactId>
-                        <version>1.2.0</version>                   </dependency>
+                        <version>1.2.0</version>
+                    </dependency>
                 </dependencies>
             </plugin>
         </plugins>

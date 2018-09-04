@@ -55,7 +55,7 @@ class AutoUnitConverterTest {
 
     @Test
     void length() {
-        MockMessage message = new MockMessage("5'3\" 21.5\" 0.2 meters 8km 40 cm 1 foot 7 in");
+        MockMessage message = new MockMessage("5'3\" 21.5\" 0.2 meters 8km 8km 8km 40 cm 1 foot 7 in");
         converter.run(message);
         Bot.logger.debug("Running length conversion: {}", message.channel.sentMessages);
         assertEquals(1, message.channel.sentMessages.size());

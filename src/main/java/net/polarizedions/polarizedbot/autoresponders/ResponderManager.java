@@ -28,6 +28,10 @@ public class ResponderManager {
             return;
         }
 
+        if (user.isBot()) {
+            return;
+        }
+
         GuildConfig guildConfig = GuildManager.getConfig(guild);
 
         if (guildConfig.ignoredUsers.contains(user.getLongID())) {

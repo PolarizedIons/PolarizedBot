@@ -46,10 +46,10 @@ class AutoUnitConverterTest {
         assertEquals(1, message.channel.sentMessages.size());
         List<String> temps = Arrays.stream(message.channel.sentMessages.get(0).split("\n")).filter(s -> s.contains("->")).collect(Collectors.toList());
         Bot.logger.debug("Converted temps: {}", temps);
-        assertTrue(temps.contains("30.0 °C -> 86 °F"));
-        assertTrue(temps.contains("30.0 °F -> -1.11 °C"));
-        assertTrue(temps.contains("30.0 K -> 303.15 °C"));
-        assertTrue(temps.contains("-40.0 °C -> -40 °F"));
+        assertTrue(temps.contains("30 °C -> 86 °F"));
+        assertTrue(temps.contains("30 °F -> -1.11 °C"));
+        assertTrue(temps.contains("30 K -> 303.15 °C"));
+        assertTrue(temps.contains("-40 °C -> -40 °F"));
         assertEquals(4, temps.size());
     }
 
@@ -61,14 +61,14 @@ class AutoUnitConverterTest {
         assertEquals(1, message.channel.sentMessages.size());
         List<String> lengths = Arrays.stream(message.channel.sentMessages.get(0).split("\n")).filter(s -> s.contains("->")).collect(Collectors.toList());
         Bot.logger.debug("Converted lengths: {}", lengths);
-        assertTrue(lengths.contains("5.0 ft -> 1.52 m"));
-        assertTrue(lengths.contains("3.0 in -> 7.62 cm"));
+        assertTrue(lengths.contains("5 ft -> 1.52 m"));
+        assertTrue(lengths.contains("3 in -> 7.62 cm"));
         assertTrue(lengths.contains("21.5 in -> 54.61 cm"));
         assertTrue(lengths.contains("0.2 m -> 0.66 ft"));
-        assertTrue(lengths.contains("8.0 km -> 4.97 mi"));
-        assertTrue(lengths.contains("40.0 cm -> 15.75 in"));
-        assertTrue(lengths.contains("1.0 ft -> 0.3 m"));
-        assertTrue(lengths.contains("7.0 in -> 17.78 cm"));
+        assertTrue(lengths.contains("8 km -> 4.97 mi"));
+        assertTrue(lengths.contains("40 cm -> 15.75 in"));
+        assertTrue(lengths.contains("1 ft -> 0.3 m"));
+        assertTrue(lengths.contains("7 in -> 17.78 cm"));
         assertEquals(8, lengths.size());
     }
 

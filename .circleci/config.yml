@@ -42,7 +42,7 @@ jobs:
         path: target/artifacts
 
     - persist_to_workspace:
-        root: /tmp/workspace
+        root: ~/repo
         paths:
         - target/artifacts/*
 
@@ -51,7 +51,7 @@ jobs:
     - image: circleci/golang:1.8
     steps:
     - attach_workspace:
-        at: /tmp/workspace
+        at: ~/repo
     - run:
         name: "Publish Release on GitHub"
         command: |
@@ -65,7 +65,7 @@ workflows:
     - build:
         filters:
           tags:
-            ignore: /^v?\d+\.\d+\.\d+$/
+            only: /^v?\d+\.\d+\.\d+$/
     - publish-github-release:
         requires:
         - build

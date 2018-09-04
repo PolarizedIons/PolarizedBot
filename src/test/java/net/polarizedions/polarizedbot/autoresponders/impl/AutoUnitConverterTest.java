@@ -2,10 +2,13 @@ package net.polarizedions.polarizedbot.autoresponders.impl;
 
 import mocks.MockMessage;
 import net.polarizedions.polarizedbot.Bot;
+import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.MessageUtilTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import sx.blah.discord.handle.obj.IMessage;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +25,15 @@ class AutoUnitConverterTest {
 
         // Because otherwise the messages will never "send"
         MessageUtilTest.disableRatelimitHandling();
+    }
+
+    @BeforeAll
+    static void resetMaxLen() throws NoSuchFieldException, IllegalAccessException {
+        // Because MessageUtilTest#changeMaxLen changes it
+        Class<MessageUtil> clazz = MessageUtil.class;
+        Field maxLen = clazz.getDeclaredField("MAX_MESSAGE_LENGTH");
+        maxLen.setAccessible(true);
+        maxLen.set(null, IMessage.MAX_MESSAGE_LENGTH);
     }
 
     @Test

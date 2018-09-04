@@ -19,8 +19,6 @@ public class MessageUtilTest {
         Field maxLen = clazz.getDeclaredField("MAX_MESSAGE_LENGTH");
         maxLen.setAccessible(true);
         maxLen.set(null, 65);
-
-
     }
 
     @BeforeAll

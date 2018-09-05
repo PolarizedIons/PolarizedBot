@@ -13,21 +13,16 @@ import java.io.File;
 public class Args {
     private static final Logger logger = LogManager.getLogger("ArgParser");
     public static Args instance;
+    @Parameter(names = { "--log" }, description = "Set the logging level")
+    public String logLevel = Level.DEBUG.name();
+    @Parameter(names = { "--update" }, hidden = true)
+    public File updateFile;
+    @Parameter(names = "--config", description = "Set the config directory")
+    public File configDir;
 
     private Args() {
         instance = this;
     }
-
-    @Parameter(names = {"--log"}, description = "Set the logging level")
-    public String logLevel = Level.DEBUG.name();
-
-    @Parameter(names = {"--update"}, hidden = true)
-    public File updateFile;
-
-    @Parameter(names = "--config", description = "Set the config directory")
-    public File configDir;
-
-
 
     public static void handle(String[] argv) {
         try {
@@ -53,12 +48,12 @@ public class Args {
         }
 
         if (args.updateFile != null) {
-                if (!args.updateFile.delete()) {
-                    logger.info("Error deleting old jar {} after update!", args.updateFile);
-                }
-                else {
-                    logger.info("Deleted old jar {} because of update", args.updateFile);
-                }
+            if (!args.updateFile.delete()) {
+                logger.info("Error deleting old jar {} after update!", args.updateFile);
+            }
+            else {
+                logger.info("Deleted old jar {} because of update", args.updateFile);
+            }
         }
 
         if (args.configDir != null) {

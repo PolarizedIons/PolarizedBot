@@ -17,44 +17,45 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 public class CommandAnnoucer implements ICommand {
-    private static String[] subcommands = new String[] {"subscribe", "unsubscribe", "list", "guild"};
+    private static String[] subcommands = new String[] { "subscribe", "unsubscribe", "list", "guild" };
+
     @Override
     public CommandTree getCommand() {
         return CommandBuilder.create("Announcer")
-                 .setRank(UserRank.GUILD_ADMIN)
-                 .setHelp("announces things")
-                 .command("announce", announce -> announce
-                         .optionArg(new String[]{"subscribe", "sub"}, sub -> sub
-                                 .captureArg(name -> name
-                                         .channelArg(channel -> channel
-                                                 .onExecute((msg, args) -> this.manageSubscription(msg, true, (String) args.get(2), (IChannel) args.get(3)))
-                                                 .onFail(this::failChannel)
-                                         )
-                                         .onExecute((msg, args) -> this.manageSubscription(msg, true, (String) args.get(2), msg.getChannel()))
-                                         .onFail(this::fail)
-                                 )
-                         )
-                         .optionArg(new String[]{"unsubscribe", "unsub"}, unsub -> unsub
-                                 .captureArg(name -> name
-                                         .channelArg(channel -> channel
-                                                 .onExecute((msg, args) -> this.manageSubscription(msg, false, (String) args.get(2), (IChannel) args.get(3)))
-                                                 .onFail(this::failChannel)
-                                         )
-                                         .onExecute((msg, args) -> this.manageSubscription(msg, false, (String) args.get(2), msg.getChannel()))
-                                         .onFail(this::fail)
-                                 )
-                         )
-                         .stringArg("list", list -> list
-                                 .onExecute(this::listAnnouncements)
-                         )
-                         .stringArg("guild", guild -> guild
-                                 .onExecute(this::listGuild)
-                         )
-                         .onFail(this::fail)
-                         .setHelp("command.announce.help.usage")
-                 )
-                 .setHelp("command.announce.help")
-                 .buildCommand();
+                .setRank(UserRank.GUILD_ADMIN)
+                .setHelp("announces things")
+                .command("announce", announce -> announce
+                        .optionArg(new String[] { "subscribe", "sub" }, sub -> sub
+                                .captureArg(name -> name
+                                        .channelArg(channel -> channel
+                                                .onExecute((msg, args) -> this.manageSubscription(msg, true, (String)args.get(2), (IChannel)args.get(3)))
+                                                .onFail(this::failChannel)
+                                        )
+                                        .onExecute((msg, args) -> this.manageSubscription(msg, true, (String)args.get(2), msg.getChannel()))
+                                        .onFail(this::fail)
+                                )
+                        )
+                        .optionArg(new String[] { "unsubscribe", "unsub" }, unsub -> unsub
+                                .captureArg(name -> name
+                                        .channelArg(channel -> channel
+                                                .onExecute((msg, args) -> this.manageSubscription(msg, false, (String)args.get(2), (IChannel)args.get(3)))
+                                                .onFail(this::failChannel)
+                                        )
+                                        .onExecute((msg, args) -> this.manageSubscription(msg, false, (String)args.get(2), msg.getChannel()))
+                                        .onFail(this::fail)
+                                )
+                        )
+                        .stringArg("list", list -> list
+                                .onExecute(this::listAnnouncements)
+                        )
+                        .stringArg("guild", guild -> guild
+                                .onExecute(this::listGuild)
+                        )
+                        .onFail(this::fail)
+                        .setHelp("command.announce.help.usage")
+                )
+                .setHelp("command.announce.help")
+                .buildCommand();
     }
 
     private void manageSubscription(IMessage message, boolean isSub, String announcerName, IChannel channel) {
@@ -62,40 +63,42 @@ public class CommandAnnoucer implements ICommand {
 
         IAnnouncer announcer = announcerManager.getAnnouncer(announcerName);
         if (announcer == null) {
-            MessageUtil.reply(message,"command.announce.error.no_such_announcement", announcerName);
+            MessageUtil.reply(message, "command.announce.error.no_such_announcement", announcerName);
             return;
         }
 
         BiConsumer<IAnnouncer, IChannel> method = isSub ? announcerManager::addSub : announcerManager::forgetSub;
         method.accept(announcer, channel);
-        MessageUtil.reply(message,"command.announce.success." + (isSub ? "sub" : "unsub"), announcer.getName(), channel.toString());
+        MessageUtil.reply(message, "command.announce.success." + ( isSub ? "sub" : "unsub" ), announcer.getName(), channel.toString());
     }
 
     private void listAnnouncements(IMessage message, List<Object> args) {
         AnnouncerManager announcerManager = Bot.instance.getAnnouncerManager();
         String announcers = String.join(", ", announcerManager.getNames());
-        MessageUtil.reply(message,"command.announce.list", announcers);
+        MessageUtil.reply(message, "command.announce.list", announcers);
     }
 
     private void fail(IMessage message, @NotNull List<Object> parsedArgs, List<String> unparsedArgs) {
         if (parsedArgs.size() == 1) {
-            MessageUtil.reply(message,"command.announce.error.no_subcommand", String.join(", ", subcommands));
-        } else if (parsedArgs.size() == 2) {
-            MessageUtil.reply(message,"command.announce.error.channel_or_announcer_missing");
-        } else {
-            MessageUtil.reply(message,"command.announce.error.announcer_missing");
+            MessageUtil.reply(message, "command.announce.error.no_subcommand", String.join(", ", subcommands));
+        }
+        else if (parsedArgs.size() == 2) {
+            MessageUtil.reply(message, "command.announce.error.channel_or_announcer_missing");
+        }
+        else {
+            MessageUtil.reply(message, "command.announce.error.announcer_missing");
         }
     }
 
     private void failChannel(IMessage message, List<Object> parsedArgs, List<String> unparsedArgs) {
-        MessageUtil.reply(message,"command.announce.error.no_channel");
+        MessageUtil.reply(message, "command.announce.error.no_channel");
     }
 
     private void listGuild(@NotNull IMessage message, List<Object> args) {
         Map<IAnnouncer, List<IChannel>> announcers = Bot.instance.getAnnouncerManager().getAnnouncersForGuild(message.getGuild());
 
         if (announcers.size() == 0) {
-            MessageUtil.reply(message,"command.announce.error.no_announcements");
+            MessageUtil.reply(message, "command.announce.error.no_announcements");
             return;
         }
 

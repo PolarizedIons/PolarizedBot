@@ -5,9 +5,16 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LocalizerTest {
     @BeforeAll
@@ -33,7 +40,7 @@ class LocalizerTest {
     void loadedData() throws NoSuchFieldException, IllegalAccessException {
         Field langDataField = Localizer.class.getDeclaredField("langData");
         langDataField.setAccessible(true);
-        Map<String, Properties> langData = (Map<String, Properties>) langDataField.get(null);
+        Map<String, Properties> langData = (Map<String, Properties>)langDataField.get(null);
 
         assertNotNull(langData);
 

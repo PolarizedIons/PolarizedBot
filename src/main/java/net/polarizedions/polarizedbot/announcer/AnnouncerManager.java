@@ -1,6 +1,10 @@
 package net.polarizedions.polarizedbot.announcer;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.util.ConfigManager;
 import org.apache.logging.log4j.LogManager;
@@ -9,9 +13,20 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.stream.Collectors;
 
 public class AnnouncerManager {
@@ -117,7 +132,8 @@ public class AnnouncerManager {
         JsonObject json;
         try {
             json = new JsonParser().parse(new FileReader(saveFile)).getAsJsonObject();
-        } catch (FileNotFoundException ex) {
+        }
+        catch (FileNotFoundException ex) {
             logger.error("Save file not found", ex);
             return;
         }
@@ -159,7 +175,8 @@ public class AnnouncerManager {
             Writer writer = new FileWriter(saveFile);
             GSON.toJson(data, writer);
             writer.close();
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             logger.error("Error saving announcement data", ex);
         }
     }

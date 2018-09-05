@@ -39,8 +39,8 @@ class CommandTreeTest {
 
         CommandTree tree = CommandBuilder.create("ping")
                 .command("ping", p -> p
-                    .pingArg(u -> u.onExecute((iMessage, objects) -> pingedPerson.set(true)))
-                    .onExecute((iMessage, objects) -> pinged.set(true))
+                        .pingArg(u -> u.onExecute((iMessage, objects) -> pingedPerson.set(true)))
+                        .onExecute((iMessage, objects) -> pinged.set(true))
                 )
                 .command("pong", p -> p
                         .onExecute((iMessage, objects) -> ponged.set(true))

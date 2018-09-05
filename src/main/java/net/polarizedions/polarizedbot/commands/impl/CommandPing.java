@@ -39,13 +39,13 @@ public class CommandPing implements ICommand {
         Localizer loc = new Localizer(message);
 
         Instant ping = Instant.now();
-        String initialText = loc.localize(replyKey + ".1", "<@!" + message.getAuthor().getLongID() + ">");
+        String initialText = loc.localize(replyKey + ".1", message.getAuthor().mention());
 
         IMessage msg = message.getChannel().sendMessage(initialText);
 
         Instant pong = msg.getTimestamp();
         Duration duration = Duration.between(ping, pong);
-        String latancyText = loc.localize(replyKey + ".2", "<@!" + message.getAuthor().getLongID() + ">", duration.toMillis());
-        msg.edit(latancyText);
+        String latencyText = loc.localize(replyKey + ".2", message.getAuthor().mention(), duration.toMillis());
+        msg.edit(latencyText);
     }
 }

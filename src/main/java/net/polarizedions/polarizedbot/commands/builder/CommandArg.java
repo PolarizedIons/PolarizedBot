@@ -18,10 +18,6 @@ public class CommandArg {
         this.matchingFunc = matchingFunc;
     }
 
-    public Object match(String commandPart) {
-        return this.matchingFunc.apply(commandPart);
-    }
-
     @NotNull
     @Contract("_ -> new")
     public static CommandArg string(String option) {
@@ -78,5 +74,9 @@ public class CommandArg {
 
             return null;
         });
+    }
+
+    public Object match(String commandPart) {
+        return this.matchingFunc.apply(commandPart);
     }
 }

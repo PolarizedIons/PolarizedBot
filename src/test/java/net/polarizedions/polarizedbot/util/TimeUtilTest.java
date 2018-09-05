@@ -29,7 +29,7 @@ class TimeUtilTest {
                 .plusMinutes(1)
                 .plusHours(18)
                 .plusDays(13);
-        
+
         Localizer loc = new Localizer("en");
 
         assertEquals("1 second", TimeUtil.formatDuration(loc, oneSec));

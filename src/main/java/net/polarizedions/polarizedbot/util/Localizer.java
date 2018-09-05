@@ -17,11 +17,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Localizer {
-    private static final Logger logger = LogManager.getLogger("Localizer");
-    private static final JsonParser parser = new JsonParser();
     public static final String[] AVAILABLE_LANGUAGES = new String[] {
             "en",
     };
+    private static final Logger logger = LogManager.getLogger("Localizer");
+    private static final JsonParser parser = new JsonParser();
     private static Map<String, Map<String, String>> langData;
 
 
@@ -45,37 +45,6 @@ public class Localizer {
         }
     }
 
-    public void setCurrentLang(String newLang) {
-        for (String lang : AVAILABLE_LANGUAGES) {
-            if (lang.equalsIgnoreCase(newLang)) {
-                this.currentLang = lang;
-                return;
-            }
-        }
-    }
-
-    public String getCurrentLang() {
-        return this.currentLang;
-    }
-
-
-    public String localize(String key, Object... values) {
-        Map<String, String> langFile = langData.get(this.currentLang);
-        String translated = langFile == null ? null : (langFile.get(key));
-        if (translated == null) {
-            String context = Arrays.toString(values);
-            logger.warn("Unable to translate '{}' for lang {}. Context: {}", key, this.currentLang, context);
-            translated = key + (values.length == 0 ? "" : "#" + context);
-        }
-        return String.format(translated, values);
-    }
-
-    public boolean doesKeyExist(String key) {
-        Map<String, String> langFile = langData.get(this.currentLang);
-        return langFile != null && (langFile.containsKey(key));
-    }
-
-
     public static void init() {
         logger.info("Loading localization files...");
         langData = new HashMap<>();
@@ -97,7 +66,7 @@ public class Localizer {
             langData.put(langCode, new HashMap<>());
             parseLangData(langCode, "", object);
         }
-        catch (JSONException |JsonSyntaxException ex) {
+        catch (JSONException | JsonSyntaxException ex) {
             logger.error("Failed to parse language file for '{}'", ex);
             return;
         }
@@ -129,5 +98,34 @@ public class Localizer {
             }
         }
         return false;
+    }
+
+    public String getCurrentLang() {
+        return this.currentLang;
+    }
+
+    public void setCurrentLang(String newLang) {
+        for (String lang : AVAILABLE_LANGUAGES) {
+            if (lang.equalsIgnoreCase(newLang)) {
+                this.currentLang = lang;
+                return;
+            }
+        }
+    }
+
+    public String localize(String key, Object... values) {
+        Map<String, String> langFile = langData.get(this.currentLang);
+        String translated = langFile == null ? null : ( langFile.get(key) );
+        if (translated == null) {
+            String context = Arrays.toString(values);
+            logger.warn("Unable to translate '{}' for lang {}. Context: {}", key, this.currentLang, context);
+            translated = key + ( values.length == 0 ? "" : "#" + context );
+        }
+        return String.format(translated, values);
+    }
+
+    public boolean doesKeyExist(String key) {
+        Map<String, String> langFile = langData.get(this.currentLang);
+        return langFile != null && ( langFile.containsKey(key) );
     }
 }

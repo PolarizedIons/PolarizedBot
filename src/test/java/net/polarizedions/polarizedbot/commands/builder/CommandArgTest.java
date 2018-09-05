@@ -43,8 +43,8 @@ class CommandArgTest {
         assertNull(arg.match("<12344321>"));
         assertNull(arg.match("<#124425124213>"));
         assertNull(arg.match("<!12344321>"));
-        assertEquals(123456789, ((IUser)arg.match("<@123456789>")).getLongID());
-        assertEquals(123456789, ((IUser)arg.match("<@!123456789>")).getLongID());
+        assertEquals(123456789, ( (IUser)arg.match("<@123456789>") ).getLongID());
+        assertEquals(123456789, ( (IUser)arg.match("<@!123456789>") ).getLongID());
     }
 
     @Test
@@ -57,7 +57,7 @@ class CommandArgTest {
         assertNull(arg.match("<!12344321>"));
         assertNull(arg.match("<@123456789>"));
         assertNull(arg.match("<@!123456789>"));
-        assertEquals(124425124213L, ((IChannel)arg.match("<#124425124213>")).getLongID());
+        assertEquals(124425124213L, ( (IChannel)arg.match("<#124425124213>") ).getLongID());
     }
 
     @Test
@@ -75,7 +75,7 @@ class CommandArgTest {
 
     @Test
     void option() {
-        CommandArg arg = CommandArg.option(new String[] {"bla", "123321"});
+        CommandArg arg = CommandArg.option(new String[] { "bla", "123321" });
 
         assertEquals("bla", arg.match("bla"));
         assertEquals("123321", arg.match("123321"));

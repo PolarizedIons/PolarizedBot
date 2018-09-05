@@ -18,18 +18,18 @@ public class CommandWolframAlpha implements ICommand {
     public CommandTree getCommand() {
         return CommandBuilder.create("WolframAlpha")
                 .command("wolf", wolf -> wolf
-                    .swallow(false)
-                    .onExecute(this::replyFull)
-                    .onFail(this::fail)
-                    .setHelp("command.wolfram.help.wolf")
+                        .swallow(false)
+                        .onExecute(this::replyFull)
+                        .onFail(this::fail)
+                        .setHelp("command.wolfram.help.wolf")
                 )
                 .command("calc", calc -> calc
-                    .swallow(false)
-                    .onExecute(this::replyShort)
-                    .onFail(this::fail)
-                    .setHelp("command.wolfram.help.calc")
+                        .swallow(false)
+                        .onExecute(this::replyShort)
+                        .onFail(this::fail)
+                        .setHelp("command.wolfram.help.calc")
                 )
-                 .setHelp("command.wolfram.help")
+                .setHelp("command.wolfram.help")
                 .buildCommand();
     }
 
@@ -49,7 +49,7 @@ public class CommandWolframAlpha implements ICommand {
             return null;
         }
 
-        Map<String, List<String>> data = WolframAlphaApi.fetch((String) args.get(1));
+        Map<String, List<String>> data = WolframAlphaApi.fetch((String)args.get(1));
         if (data == null) {
             MessageUtil.reply(message, "command.wolfram.error.connection");
             return null;
@@ -116,7 +116,8 @@ public class CommandWolframAlpha implements ICommand {
             responseBuilder.append("**").append(podName).append("**");
             if (values.size() == 1) {
                 responseBuilder.append(": ").append(values.get(0).replaceAll("\\*", "\\\\*"));
-            } else {
+            }
+            else {
                 for (String value : values) {
                     responseBuilder.append("\n  -> ").append(value.replaceAll("\\*", "\\\\*"));
                 }

@@ -13,6 +13,7 @@ public enum UserRank {
 
     public int rank;
     public String rankName;
+
     UserRank(int rank, String rankName) {
         this.rank = rank;
         this.rankName = rankName;

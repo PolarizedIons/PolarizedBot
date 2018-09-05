@@ -43,7 +43,8 @@ public class GW2ForumApi {
             }
             try {
                 listing.date = dateFormat.parse(date.getAsString());
-            } catch (ParseException e) {
+            }
+            catch (ParseException e) {
                 logger.error("Error parsing date '{}'", date.getAsString());
             }
             JsonElement lastCommentId = listingJson.get("LastCommentID");
@@ -80,7 +81,8 @@ public class GW2ForumApi {
             }
             try {
                 comment.date = dateFormat.parse(date.toString());
-            } catch (ParseException e) {
+            }
+            catch (ParseException e) {
                 logger.error("Error parsing date '{}'", date.getAsString());
             }
         }

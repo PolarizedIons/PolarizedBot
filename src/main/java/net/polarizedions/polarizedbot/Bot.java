@@ -28,9 +28,9 @@ import java.util.Properties;
 public class Bot {
     public static final Logger logger = LogManager.getLogger("PolarizedBot");
     public static Bot instance;
-    private static Instant startInstant;
     public static String version;
     public static String buildDate;
+    private static Instant startInstant;
     private Instant connectedInstant;
 
     private IDiscordClient client;
@@ -60,16 +60,56 @@ public class Bot {
         this.responderManager = new ResponderManager();
     }
 
+    @NotNull
+    @Contract(pure = true)
+    public static String getFullVersion() {
+        return Bot.version + " / " + Bot.buildDate;
+    }
+
+    private static void loadBuildInfo() {
+        Properties versionProp = new Properties();
+        try {
+            versionProp.load(Bot.class.getResourceAsStream("/version.txt"));
+            Bot.version = "v" + versionProp.getProperty("version");
+            Bot.buildDate = versionProp.getProperty("time");
+        }
+        catch (IOException e) {
+            Bot.version = "unknown";
+            Bot.buildDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX").format(Instant.now());
+        }
+    }
+
+    public static void main(String[] args) {
+        Args.handle(args);
+
+        // This is needed because even if I call ProcessBuilder#inheritIO, it doesn't seem to pass
+        // SIGINT to the child process, and thus soft-restarting, or updating the bot, cannot be
+        // killed by just pressing Control+C.
+        new Thread(() -> {
+            try {
+                //noinspection StatementWithEmptyBody
+                while (System.in.read() != -1) { /* NOOP */ }
+            }
+            catch (IOException e) { /* NOOP */ }
+
+            System.out.println("Exiting because System.in is dead");
+            System.exit(0);
+        }, "SIGINT catcher").start();
+
+        Bot.startInstant = Instant.now();
+        new Bot().run();
+    }
+
     private void run() {
         this.client = createClient();
 
-        this.client.getDispatcher().registerListener((IListener<ReadyEvent>) readyEvent -> {
+        this.client.getDispatcher().registerListener((IListener<ReadyEvent>)readyEvent -> {
             this.connectedInstant = Instant.now();
             this.announcerManager.load();
             this.announcerManager.initAnnouncers();
         });
 
-        this.client.getDispatcher().registerListener((IListener<MessageReceivedEvent>) messageEvent -> {
+        this.client.getDispatcher().registerListener((IListener<MessageReceivedEvent>)messageEvent -> {
             IMessage message = messageEvent.getMessage();
             logger.debug("[UserID: {}, GuildID: {}, MessageID: {}, User: {}]: {}",
                     message.getAuthor().getStringID(),
@@ -107,7 +147,8 @@ public class Bot {
         try {
             if (login) {
                 return clientBuilder.login();
-            } else {
+            }
+            else {
                 return clientBuilder.build();
             }
         }
@@ -156,44 +197,5 @@ public class Bot {
 
     public Instant getConnectedInstant() {
         return this.connectedInstant;
-    }
-
-    @NotNull
-    @Contract(pure = true)
-    public static String getFullVersion() {
-        return Bot.version + " / " + Bot.buildDate;
-    }
-
-    private static void loadBuildInfo() {
-        Properties versionProp = new Properties();
-        try {
-            versionProp.load(Bot.class.getResourceAsStream("/version.txt"));
-            Bot.version = "v" + versionProp.getProperty("version");
-            Bot.buildDate = versionProp.getProperty("time");
-        } catch (IOException e) {
-            Bot.version = "unknown";
-            Bot.buildDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX").format(Instant.now());
-        }
-    }
-
-    public static void main(String[] args) {
-        Args.handle(args);
-
-        // This is needed because even if I call ProcessBuilder#inheritIO, it doesn't seem to pass
-        // SIGINT to the child process, and thus soft-restarting, or updating the bot, cannot be
-        // killed by just pressing Control+C.
-        new Thread(() -> {
-            try {
-                //noinspection StatementWithEmptyBody
-                while (System.in.read() != -1) { /* NOOP */ }
-            }
-            catch (IOException e) { /* NOOP */ }
-
-            System.out.println("Exiting because System.in is dead");
-            System.exit(0);
-        }, "SIGINT catcher").start();
-
-        Bot.startInstant = Instant.now();
-        new Bot().run();
     }
 }

@@ -74,17 +74,17 @@ public class Node {
         return this;
     }
 
+    public String getHelp() {
+        return this.help;
+    }
+
     public Node setHelp(String helpKey) {
         this.help = helpKey;
         return this;
     }
 
-    public String getHelp() {
-        return this.help;
-    }
-
     void executeTree(List<String> treeOptions, IMessage command, List<Object> parsedArgs) throws CommandExceptions {
-        if (! GuildManager.userHasRank(command, this.rank)) {
+        if (!GuildManager.userHasRank(command, this.rank)) {
             throw new NeedPermission(this.rank);
         }
 
@@ -128,7 +128,7 @@ public class Node {
             parsedArgs.add(head + " " + String.join(" ", treeOptions));
             this.run(command, parsedArgs);
         }
-        else{
+        else {
             treeOptions.add(0, head);
             this.fail(command, parsedArgs, treeOptions);
         }

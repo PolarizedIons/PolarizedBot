@@ -55,7 +55,7 @@ public class AnnouncerGW2Update implements IAnnouncer {
         for (IChannel channel : channels) {
             for (GW2ForumApi.GW2UpdateLising listing : this.toAnnounce) {
                 // TODO: localize
-                channel.sendMessage("GW2 update found: " +  listing.title);
+                channel.sendMessage("GW2 update found: " + listing.title);
             }
         }
 

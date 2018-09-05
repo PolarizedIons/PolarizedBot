@@ -5,7 +5,11 @@ import net.polarizedions.polarizedbot.exceptions.NoSuchCommand;
 import net.polarizedions.polarizedbot.util.UserRank;
 import sx.blah.discord.handle.obj.IMessage;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CommandTree {
     String name;

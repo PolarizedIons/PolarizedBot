@@ -26,7 +26,7 @@ public class WolframAlphaApi {
 
     @Nullable
     public static Map<String, List<String>> fetch(String input) {
-        if (! hasApiKey()) {
+        if (!hasApiKey()) {
             return null;
         }
 
@@ -48,7 +48,7 @@ public class WolframAlphaApi {
             NodeList posChildren = pod.getChildNodes();
             for (int j = 0; j < posChildren.getLength(); j++) {
                 Node subpod = posChildren.item(j);
-                if (! subpod.getNodeName().equals("subpod")) {
+                if (!subpod.getNodeName().equals("subpod")) {
                     continue;
                 }
 

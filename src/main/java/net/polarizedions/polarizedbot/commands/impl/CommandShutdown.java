@@ -20,48 +20,49 @@ public class CommandShutdown implements ICommand {
     @Override
     public CommandTree getCommand() {
         return CommandBuilder.create("Shutdown")
-                 .setRank(UserRank.GUILD_ADMIN)
-                 .command("shutdown", shutdown -> shutdown.onExecute(this::shutdown))
-                 .command("restart", restart -> restart
-                         .stringArg("soft", soft -> soft
-                                 .onExecute(this::softRestart)
-                         )
-                         .stringArg("hard", hard -> hard
-                                 .onExecute(this::hardRestart)
-                         )
-                         .onExecute(this::softRestart)
-                         .onFail(this::fail)
-                         .setHelp("command.restart.help")
-                 )
-                 .setHelp("command.shutdown.help")
-                 .buildCommand();
+                .setRank(UserRank.GUILD_ADMIN)
+                .command("shutdown", shutdown -> shutdown.onExecute(this::shutdown))
+                .command("restart", restart -> restart
+                        .stringArg("soft", soft -> soft
+                                .onExecute(this::softRestart)
+                        )
+                        .stringArg("hard", hard -> hard
+                                .onExecute(this::hardRestart)
+                        )
+                        .onExecute(this::softRestart)
+                        .onFail(this::fail)
+                        .setHelp("command.restart.help")
+                )
+                .setHelp("command.shutdown.help")
+                .buildCommand();
     }
 
     private void shutdown(IMessage message, List<Object> args) {
         Bot.logger.info("Shutting down bot...");
-        MessageUtil.reply(message,"command.shutdown.success");
+        MessageUtil.reply(message, "command.shutdown.success");
         Bot.instance.shutdown();
         try {
             Thread.sleep(500);
-        } catch (InterruptedException ex) {
+        }
+        catch (InterruptedException ex) {
             // NOOP
         }
         System.exit(0);
     }
 
     private void fail(IMessage message, List<Object> parsed, List<String> unparsed) {
-        MessageUtil.reply(message,"command.shutdown.error.restart_subcommand", "hard, soft");
+        MessageUtil.reply(message, "command.shutdown.error.restart_subcommand", "hard, soft");
     }
 
     private void hardRestart(IMessage message, List<Object> objects) {
-        MessageUtil.reply(message,"command.shutdown.success.restart_hard");
+        MessageUtil.reply(message, "command.shutdown.success.restart_hard");
 
         try {
             String javaBin = Paths.get(System.getProperty("java.home"), "bin", "java").toAbsolutePath().toString();
             File currentJar = new File(Bot.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 
-            if(!currentJar.getName().endsWith(".jar")) {
-                MessageUtil.reply(message,"command.restart.error.not_jar");
+            if (!currentJar.getName().endsWith(".jar")) {
+                MessageUtil.reply(message, "command.restart.error.not_jar");
                 return;
             }
 
@@ -77,15 +78,17 @@ public class CommandShutdown implements ICommand {
             Bot.logger.info("Hard restarting bot...");
             Bot.instance.shutdown();
             // Don't System.exit because that breaks inheritIO
-        } catch (URISyntaxException e) {
-            MessageUtil.reply(message,"command.shutdown.error.jar_uri_error");
-        } catch (IOException e) {
-            MessageUtil.reply(message,"command.shutdown.error.cannot_spawn_process");
+        }
+        catch (URISyntaxException e) {
+            MessageUtil.reply(message, "command.shutdown.error.jar_uri_error");
+        }
+        catch (IOException e) {
+            MessageUtil.reply(message, "command.shutdown.error.cannot_spawn_process");
         }
     }
 
     private void softRestart(IMessage message, List<Object> objects) {
-        MessageUtil.reply(message,"command.shutdown.success.restart_soft");
+        MessageUtil.reply(message, "command.shutdown.success.restart_soft");
         message.getChannel().setTypingStatus(false);
         Bot.logger.info("Soft restarting bot...");
         Bot.instance.softRestart();

@@ -74,7 +74,7 @@ class AutoUnitConverterTest {
 
     @Test
     void naughty() {
-        String[] naughtyMessages = new String[] {"bl4ck", "20 mins"};
+        String[] naughtyMessages = new String[] { "bl4ck", "20 mins" };
 
         for (String msgStr : naughtyMessages) {
             MockMessage message = new MockMessage(msgStr);

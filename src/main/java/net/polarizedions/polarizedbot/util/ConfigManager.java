@@ -11,7 +11,12 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
 import sx.blah.discord.handle.obj.IGuild;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.file.Paths;
 
 public class ConfigManager {
@@ -72,7 +77,7 @@ public class ConfigManager {
         return guildConfig;
     }
 
-    public static void saveGuildConfig (IGuild guild, GuildConfig config) throws IOException {
+    public static void saveGuildConfig(IGuild guild, GuildConfig config) throws IOException {
         File guildsFolder = Paths.get(configDir.getAbsolutePath(), "guilds").toFile();
         if (!guildsFolder.exists()) {
             logger.debug("Creating guilds config folder");

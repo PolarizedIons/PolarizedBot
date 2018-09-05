@@ -50,7 +50,7 @@ public class CommandUpdate implements ICommand {
         try {
             currentJar = new File(Bot.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 
-            if(!currentJar.getName().endsWith(".jar")) {
+            if (!currentJar.getName().endsWith(".jar")) {
                 MessageUtil.reply(message, "command.update.error.no_jar");
                 inProgress = false;
                 return;
@@ -58,8 +58,8 @@ public class CommandUpdate implements ICommand {
         }
         catch (URISyntaxException ex) {
             MessageUtil.reply(message, "command.error.no_jar");
-                inProgress = false;
-                return;
+            inProgress = false;
+            return;
         }
 
         GithubApi.Release release;

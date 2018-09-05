@@ -16,12 +16,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NodeTest {
 
     static Object getField(String field, Object obj) throws NoSuchFieldException, IllegalAccessException {
-        Field f =  obj.getClass().getDeclaredField(field);
+        Field f = obj.getClass().getDeclaredField(field);
         f.setAccessible(true);
         return f.get(obj);
     }
@@ -70,8 +73,12 @@ class NodeTest {
         AtomicBoolean failed = new AtomicBoolean(false);
         Method failMethod = getMethod("fail", node, IMessage.class, List.class, List.class);
         assertThrows(UnknownFail.class, () -> {
-            try {failMethod.invoke(node, new MockMessage(), Collections.emptyList(), Collections.emptyList());}
-            catch (InvocationTargetException e) {throw e.getCause();}
+            try {
+                failMethod.invoke(node, new MockMessage(), Collections.emptyList(), Collections.emptyList());
+            }
+            catch (InvocationTargetException e) {
+                throw e.getCause();
+            }
         });
         assertFalse(failed.get());
 

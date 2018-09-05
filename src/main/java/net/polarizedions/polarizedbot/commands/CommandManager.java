@@ -1,7 +1,17 @@
 package net.polarizedions.polarizedbot.commands;
 
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
-import net.polarizedions.polarizedbot.commands.impl.*;
+import net.polarizedions.polarizedbot.commands.impl.CommandAbout;
+import net.polarizedions.polarizedbot.commands.impl.CommandAnnoucer;
+import net.polarizedions.polarizedbot.commands.impl.CommandGuild;
+import net.polarizedions.polarizedbot.commands.impl.CommandHelp;
+import net.polarizedions.polarizedbot.commands.impl.CommandIgnore;
+import net.polarizedions.polarizedbot.commands.impl.CommandInvite;
+import net.polarizedions.polarizedbot.commands.impl.CommandPing;
+import net.polarizedions.polarizedbot.commands.impl.CommandSay;
+import net.polarizedions.polarizedbot.commands.impl.CommandShutdown;
+import net.polarizedions.polarizedbot.commands.impl.CommandUpdate;
+import net.polarizedions.polarizedbot.commands.impl.CommandWolframAlpha;
 import net.polarizedions.polarizedbot.config.GuildConfig;
 import net.polarizedions.polarizedbot.exceptions.CommandExceptions;
 import net.polarizedions.polarizedbot.util.GuildManager;
@@ -16,7 +26,13 @@ import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class CommandManager {
@@ -84,7 +100,7 @@ public class CommandManager {
         }
 
         if (guildConfig.disabledCommands.contains(command)) {
-            MessageUtil.reply(message,"error.command_disabled", commandTree.getName());
+            MessageUtil.reply(message, "error.command_disabled", commandTree.getName());
             return;
         }
 
@@ -103,33 +119,36 @@ public class CommandManager {
     private void handleCommandException(IMessage message, Exception ex) {
         if (ex instanceof CommandExceptions) {
             logger.warn("Failed to handle command: threw {}", ex.getClass().getSimpleName());
-            MessageUtil.reply(message, ((CommandExceptions) ex).getError(), ((CommandExceptions) ex).getErrorContext());
+            MessageUtil.reply(message, ( (CommandExceptions)ex ).getError(), ( (CommandExceptions)ex ).getErrorContext());
         }
         else if (ex instanceof MissingPermissionsException) {
-            String neededPerms = ((MissingPermissionsException) ex).getMissingPermissions().toString();
+            String neededPerms = ( (MissingPermissionsException)ex ).getMissingPermissions().toString();
             logger.error("No permission", neededPerms);
 
             String localized = new Localizer(message).localize("error.no_permission", neededPerms);
             try {
                 message.getChannel().sendMessage(localized);
-            } catch(Exception e) {
+            }
+            catch (Exception e) {
                 try {
                     message.getAuthor().getOrCreatePMChannel().sendMessage(localized);
                 }
-                catch(Exception exc) { /* NOOP */ }
+                catch (Exception exc) { /* NOOP */ }
             }
         }
         else if (ex instanceof DiscordException) {
             logger.error("Discord exception!", ex);
             try {
-                MessageUtil.reply(message,"error.discord_error", ((DiscordException) ex).getErrorMessage());
-            } catch(Exception e) { /* NOOP */ }
+                MessageUtil.reply(message, "error.discord_error", ( (DiscordException)ex ).getErrorMessage());
+            }
+            catch (Exception e) { /* NOOP */ }
         }
         else {
             logger.error("I f'ed up", ex);
             try {
-                MessageUtil.reply(message,"error.misc_error", ex.getClass().getCanonicalName() + ": " + ex.getMessage());
-            } catch(Exception e) { /* NOOP */ }
+                MessageUtil.reply(message, "error.misc_error", ex.getClass().getCanonicalName() + ": " + ex.getMessage());
+            }
+            catch (Exception e) { /* NOOP */ }
         }
 
     }

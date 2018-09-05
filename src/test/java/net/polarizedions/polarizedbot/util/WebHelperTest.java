@@ -8,12 +8,16 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 class WebHelperTest {
     private static boolean online;
     private static boolean checked;
+
     private static boolean isOnline() {
         if (!checked) {
             checked = true;
@@ -32,7 +36,8 @@ class WebHelperTest {
                 soc.connect(new InetSocketAddress(addr, openPort), timeOutMillis);
             }
             return true;
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             return false;
         }
     }

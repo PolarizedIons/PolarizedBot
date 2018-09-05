@@ -41,9 +41,10 @@ public class CommandHelp implements ICommand {
     }
 
     private void cmd(IMessage message, List<Object> args) {
-        String helpCommand = (String) args.get(1);
+        String helpCommand = (String)args.get(1);
         CommandTree command = null;
-        outer: for (CommandTree cmd : Bot.instance.getCommandManager().getCommands()) {
+        outer:
+        for (CommandTree cmd : Bot.instance.getCommandManager().getCommands()) {
             for (String alias : cmd.getCommands()) {
                 if (alias.equalsIgnoreCase(helpCommand)) {
                     command = cmd;
@@ -61,8 +62,8 @@ public class CommandHelp implements ICommand {
         StringBuilder resp = new StringBuilder("```\n")
                 .append(command.getName())
                 .append("\n  - ");
-        resp.append(loc.localize((loc.doesKeyExist(command.getHelp()) ? command.getHelp() : "command.help.error.no_command_help"), command.getName()))
-            .append("\n");
+        resp.append(loc.localize(( loc.doesKeyExist(command.getHelp()) ? command.getHelp() : "command.help.error.no_command_help" ), command.getName()))
+                .append("\n");
 
         Set<String> aliasSet = command.getCommands();
         int aliasLen = aliasSet.parallelStream().map(String::length).max(Integer::compareTo).orElse(10);
@@ -72,10 +73,10 @@ public class CommandHelp implements ICommand {
         for (String alias : aliasSet) {
             boolean helpAlias = alias.equalsIgnoreCase(helpCommand);
             resp.append("  ")
-                .append(helpAlias ? "*" : " ")
-                .append(String.format("%-" + (helpAlias ? aliasLen -1 : aliasLen) + "s", alias)).append(" - ")
-                .append(loc.localize(loc.doesKeyExist(command.getHelpFor(alias)) ? command.getHelpFor(alias) : "command.help.error.no_alias_help", alias))
-                .append("\n");
+                    .append(helpAlias ? "*" : " ")
+                    .append(String.format("%-" + ( helpAlias ? aliasLen - 1 : aliasLen ) + "s", alias)).append(" - ")
+                    .append(loc.localize(loc.doesKeyExist(command.getHelpFor(alias)) ? command.getHelpFor(alias) : "command.help.error.no_alias_help", alias))
+                    .append("\n");
         }
 
         MessageUtil.sendAutosplit(message.getChannel(), resp.append("```").toString());

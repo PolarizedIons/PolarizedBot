@@ -5,7 +5,14 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.IShard;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.obj.ReactionEmoji;
-import sx.blah.discord.handle.obj.*;
+import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IEmbed;
+import sx.blah.discord.handle.obj.IEmoji;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IReaction;
+import sx.blah.discord.handle.obj.IRole;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.MessageTokenizer;
 
 import java.time.Instant;
@@ -13,16 +20,16 @@ import java.util.List;
 import java.util.Optional;
 
 public class MockMessage implements IMessage {
+    public MockChannel channel;
     long messageID;
     String content;
-    public MockChannel channel;
 
     public MockMessage() {
         this("");
     }
 
     public MockMessage(String content) {
-        this((long) (Math.random() * 5000), new MockChannel(), content);
+        this((long)( Math.random() * 5000 ), new MockChannel(), content);
     }
 
     public MockMessage(long messageID, MockChannel channel, String content) {

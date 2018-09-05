@@ -22,7 +22,8 @@ public class GuildManager {
         configs.computeIfAbsent(guild.getLongID(), id -> {
             try {
                 return ConfigManager.loadGuildConfig(id);
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 return null;
             }
         });
@@ -33,7 +34,8 @@ public class GuildManager {
     public static void saveConfig(IGuild guild) {
         try {
             ConfigManager.saveGuildConfig(guild, getConfig(guild));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             // NOOP
         }
     }
@@ -62,7 +64,7 @@ public class GuildManager {
 
     public static boolean userHasRank(IGuild guild, IUser user, UserRank requiredRank) {
         if (guild == null) {
-            return requiredRank == UserRank.DEFAULT || (requiredRank == UserRank.BOT_OWNER && Bot.instance.getGlobalConfig().owner.equals(user.getStringID()));
+            return requiredRank == UserRank.DEFAULT || ( requiredRank == UserRank.BOT_OWNER && Bot.instance.getGlobalConfig().owner.equals(user.getStringID()) );
         }
 
         return getUserRank(guild, user).rank >= requiredRank.rank;

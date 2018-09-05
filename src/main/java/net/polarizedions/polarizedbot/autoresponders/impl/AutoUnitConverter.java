@@ -7,21 +7,22 @@ import org.apache.logging.log4j.Logger;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AutoUnitConverter implements IResponder {
     private static final Logger logger = LogManager.getLogger("AutoUnitConverter");
+    private static final DecimalFormat FORMAT = new DecimalFormat("#.##");
     private Map<String, List<Conversion>> conversions;
     private Pattern matchPattern;
-    private static final DecimalFormat FORMAT = new DecimalFormat("#.##");
-
-    @Override
-    public String getID() {
-        return "units";
-    }
 
     public AutoUnitConverter() {
         conversions = new HashMap<>();
@@ -48,7 +49,7 @@ public class AutoUnitConverter implements IResponder {
 
         // TEMPERATURE
 
-        new Conversion("°F", "°C", f -> (f - 32) / 1.8)
+        new Conversion("°F", "°C", f -> ( f - 32 ) / 1.8)
                 .alias("F", "C")
                 .alias("fahrenheit", "celsius").register()
                 .reverse(c -> c * 1.8 + 32).register();
@@ -58,15 +59,20 @@ public class AutoUnitConverter implements IResponder {
                 .alias("kelvin", "celsius").register()
                 .reverse(c -> c - 273.15).register();
 
-        new Conversion("K", "°F", k -> k * 9.0/5.0 - 459.67)
+        new Conversion("K", "°F", k -> k * 9.0 / 5.0 - 459.67)
                 .alias("K", "F").register()
                 .alias("kelvin", "fahrenheit").register()
-                .reverse(f -> (f + 459.67) * 5.0 / 9.0).register();
+                .reverse(f -> ( f + 459.67 ) * 5.0 / 9.0).register();
 
         // DONE WITH UNIT INIT
 
         String matchRegexString = "(?<![a-zA-Z])((?:-)?(?:[0-9]+)(?:\\.(?:[0-9]+))?) ?(%s)(?![a-zA-Z])";
         this.matchPattern = Pattern.compile(String.format(matchRegexString, String.join("|", this.conversions.keySet())), Pattern.MULTILINE);
+    }
+
+    @Override
+    public String getID() {
+        return "units";
     }
 
     @Override

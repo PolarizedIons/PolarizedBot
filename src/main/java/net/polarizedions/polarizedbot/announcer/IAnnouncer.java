@@ -6,8 +6,10 @@ import java.util.List;
 
 public interface IAnnouncer {
     String getName();
+
     long updateFrequency();
 
     boolean check();
+
     void execute(List<IChannel> channels);
 }

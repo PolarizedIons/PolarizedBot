@@ -31,7 +31,8 @@ public class WebHelper {
         URL url;
         try {
             url = new URL(uri);
-        } catch (MalformedURLException e) {
+        }
+        catch (MalformedURLException e) {
             logger.error("Error fetching url: Malformed url!", e);
             return null;
         }
@@ -39,7 +40,8 @@ public class WebHelper {
         URLConnection httpConn;
         try {
             httpConn = url.openConnection();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             logger.error("Error fetching url: IOException while opening connection!", e);
             return null;
         }
@@ -47,7 +49,8 @@ public class WebHelper {
 
         try {
             return httpConn.getInputStream();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             logger.error("Error fetching url: Can't open stream!", e);
             return null;
         }
@@ -73,14 +76,16 @@ public class WebHelper {
         DocumentBuilder builder;
         try {
             builder = factory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
+        }
+        catch (ParserConfigurationException e) {
             e.printStackTrace();
             return null;
         }
 
         try {
             return builder.parse(is);
-        } catch (SAXException | IOException e) {
+        }
+        catch (SAXException | IOException e) {
             e.printStackTrace();
             return null;
         }
@@ -92,13 +97,14 @@ public class WebHelper {
 
         try {
             result = URLEncoder.encode(s, "UTF-8")
-                               .replaceAll("\\+", "%20")
-                               .replaceAll("\\%21", "!")
-                               .replaceAll("\\%27", "'")
-                               .replaceAll("\\%28", "(")
-                               .replaceAll("\\%29", ")")
-                               .replaceAll("\\%7E", "~");
-        } catch (UnsupportedEncodingException e) {
+                    .replaceAll("\\+", "%20")
+                    .replaceAll("\\%21", "!")
+                    .replaceAll("\\%27", "'")
+                    .replaceAll("\\%28", "(")
+                    .replaceAll("\\%29", ")")
+                    .replaceAll("\\%7E", "~");
+        }
+        catch (UnsupportedEncodingException e) {
             result = s;
         }
 

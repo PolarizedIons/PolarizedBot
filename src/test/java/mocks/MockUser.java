@@ -3,10 +3,17 @@ package mocks;
 import net.polarizedions.polarizedbot.Bot;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.IShard;
-import sx.blah.discord.handle.obj.*;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IPresence;
+import sx.blah.discord.handle.obj.IPrivateChannel;
+import sx.blah.discord.handle.obj.IRole;
+import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.IVoiceChannel;
+import sx.blah.discord.handle.obj.IVoiceState;
+import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.cache.LongMap;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.EnumSet;
 import java.util.List;
 

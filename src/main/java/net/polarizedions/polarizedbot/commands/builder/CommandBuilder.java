@@ -31,11 +31,11 @@ public class CommandBuilder {
     }
 
     public CommandBuilder command(String command, Consumer<Node> consumer) {
-        return command(new String[] {command}, consumer);
+        return command(new String[] { command }, consumer);
     }
 
     public CommandBuilder command(String command, String alias, Consumer<Node> consumer) {
-        return command(new String[] {command, alias}, consumer);
+        return command(new String[] { command, alias }, consumer);
     }
 
     public CommandBuilder command(String[] aliases, Consumer<Node> consumer) {

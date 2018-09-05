@@ -39,7 +39,7 @@ public class CommandBuilder {
     }
 
     public CommandBuilder command(String[] aliases, Consumer<Node> consumer) {
-        Node node = new Node(this);
+        Node node = new Node(this, null);
         for (String alias : aliases) {
             this.command.commands.put(alias, node);
         }

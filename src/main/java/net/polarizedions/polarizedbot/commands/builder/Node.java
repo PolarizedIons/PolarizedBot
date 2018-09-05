@@ -26,9 +26,9 @@ public class Node {
     private UserRank rank;
     private String help;
 
-    public Node(CommandBuilder builder) {
+    public Node(CommandBuilder builder, Node parent) {
         this.builder = builder;
-        this.rank = this.builder.command.rank;
+        this.rank = parent == null ? builder.command.rank : parent.rank;
     }
 
     public Node stringArg(String option, Consumer<Node> optionNode) {
@@ -52,7 +52,7 @@ public class Node {
     }
 
     public Node addArgument(CommandArg arg, Consumer<Node> optionNode) {
-        Node child = new Node(this.builder);
+        Node child = new Node(this.builder, this);
         this.options.put(arg, child);
         optionNode.accept(child);
         return this;

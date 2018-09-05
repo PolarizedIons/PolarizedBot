@@ -43,7 +43,7 @@ class NodeTest {
         CommandBuilder builder = CommandBuilder.create("test")
                 .setRank(UserRank.GUILD_ADMIN);
 
-        Node node = new Node(builder);
+        Node node = new Node(builder, null);
 
         // Test that rank is inherited
         assertEquals(UserRank.GUILD_ADMIN, getField("rank", node));
@@ -86,7 +86,7 @@ class NodeTest {
     void ping() throws CommandExceptions {
         AtomicBoolean pinged = new AtomicBoolean(false);
         CommandBuilder builder = CommandBuilder.create("ping");
-        Node node = new Node(builder);
+        Node node = new Node(builder, null);
         node.onFail((iMessage, objects, strings) -> pinged.set(false));
         node.onExecute((iMessage, objects) -> pinged.set(false));
 

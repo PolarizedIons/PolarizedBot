@@ -55,7 +55,6 @@ public class Bot {
 
         Localizer.init();
         GuildManager.init();
-        this.announcerManager = new AnnouncerManager();
         this.commandManager = new CommandManager();
         this.responderManager = new ResponderManager();
     }
@@ -105,6 +104,11 @@ public class Bot {
 
         this.client.getDispatcher().registerListener((IListener<ReadyEvent>)readyEvent -> {
             this.connectedInstant = Instant.now();
+
+            if (this.announcerManager != null) {
+                this.announcerManager.stop();
+            }
+            this.announcerManager = new AnnouncerManager();
             this.announcerManager.load();
             this.announcerManager.initAnnouncers();
         });

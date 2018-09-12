@@ -54,7 +54,7 @@ public class MessageUtil {
         if (ENABLE_RATELMIT_HANDLING) {
             AtomicInteger i = new AtomicInteger();
             RequestBuffer.request(() -> {
-                while (i.get() < messages.size() && channel.sendMessage(messages.get(0)) != null) {
+                while (i.get() < messages.size() && channel.sendMessage(messages.get(i.get())) != null) {
                     i.getAndIncrement();
                 }
             });

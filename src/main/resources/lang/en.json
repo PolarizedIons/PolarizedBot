@@ -52,7 +52,7 @@
             },
             "success": {
                 "sub": "Subscribed %2$s to %1$s",
-                "unsub": "Unsubscribed %2$s to %1$s"
+                "unsub": "Unsubscribed %2$s from %1$s"
             }
         },
         "guild": {

@@ -91,6 +91,8 @@ public class CommandUpdate implements ICommand {
 
                 // Download / transfer
                 fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+                
+                fileOutputStream.close();
 
                 logger.info("Done downloading update {}", release.name);
                 MessageUtil.reply(message, "command.update.success.starting", release.tag);

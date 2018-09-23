@@ -43,7 +43,7 @@ public class CommandPing implements ICommand {
 
         IMessage msg = message.getChannel().sendMessage(initialText);
 
-        Instant pong = msg.getTimestamp();
+        Instant pong = Instant.now();
         Duration duration = Duration.between(ping, pong);
         String latencyText = loc.localize(replyKey + ".2", message.getAuthor().mention(), duration.toMillis());
         msg.edit(latencyText);

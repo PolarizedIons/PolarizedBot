@@ -3,10 +3,9 @@ package net.polarizedions.polarizedbot.util;
 import mocks.MockChannel;
 import mocks.MockMessage;
 import mocks.SetupMocks;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -16,10 +15,12 @@ public class MessageUtilTest {
     @BeforeAll
     static void changeMaxLen() throws NoSuchFieldException, IllegalAccessException {
         // For the sake of testing, reduce the max length of messages
-        Class<MessageUtil> clazz = MessageUtil.class;
-        Field maxLen = clazz.getDeclaredField("MAX_MESSAGE_LENGTH");
-        maxLen.setAccessible(true);
-        maxLen.set(null, 65);
+        SetupMocks.setupMaxMessageLengthMock();
+    }
+
+    @AfterAll
+    static void resetMaxLen() throws NoSuchFieldException, IllegalAccessException {
+        SetupMocks.resetMaxMessageLength();
     }
 
     @BeforeAll

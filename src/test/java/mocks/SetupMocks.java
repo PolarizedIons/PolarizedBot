@@ -3,6 +3,7 @@ package mocks;
 import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.MessageUtil;
+import sx.blah.discord.handle.obj.IMessage;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -28,6 +29,20 @@ public class SetupMocks {
         Field rateLimitEnable = clazz.getDeclaredField("ENABLE_RATELMIT_HANDLING");
         rateLimitEnable.setAccessible(true);
         rateLimitEnable.set(null, false);
+    }
+
+    public static void setupMaxMessageLengthMock() throws IllegalAccessException, NoSuchFieldException {
+        Class<MessageUtil> clazz = MessageUtil.class;
+        Field maxLen = clazz.getDeclaredField("MAX_MESSAGE_LENGTH");
+        maxLen.setAccessible(true);
+        maxLen.set(null, 65);
+    }
+
+    public static void resetMaxMessageLength() throws NoSuchFieldException, IllegalAccessException {
+        Class<MessageUtil> clazz = MessageUtil.class;
+        Field maxLen = clazz.getDeclaredField("MAX_MESSAGE_LENGTH");
+        maxLen.setAccessible(true);
+        maxLen.set(null, IMessage.MAX_MESSAGE_LENGTH);
     }
 
     public static void setupLocalization() throws IllegalAccessException, NoSuchFieldException {

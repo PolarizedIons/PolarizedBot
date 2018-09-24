@@ -7,15 +7,23 @@ import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ResponderManager {
     private List<IResponder> responders;
+    private Set<String> prefixWhitelist;
 
     public ResponderManager() {
         this.responders = new ArrayList<>();
+        this.prefixWhitelist = new HashSet<>();
+    }
 
+    private void addResponder(IResponder responder) {
+        this.responders.add(responder);
+        this.prefixWhitelist.addAll(responder.getPrefixWhitelist());
     }
 
     public void messageHandler(IMessage message) {
@@ -38,7 +46,15 @@ public class ResponderManager {
 
         String content = message.getContent();
         if (content.startsWith(guildConfig.commandPrefix)) {
-            if (guildConfig.commandPrefix.equals("-") && !Character.isDigit(content.charAt(1))) {
+            boolean allow = false;
+
+            for (String prefix : this.prefixWhitelist) {
+                if (content.startsWith(prefix)) {
+                    allow = true;
+                }
+            }
+
+            if (! allow) {
                 return;
             }
         }

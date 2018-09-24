@@ -8,25 +8,16 @@ import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ResponderManager {
     private List<IResponder> responders;
-    private Set<String> prefixWhitelist;
 
     public ResponderManager() {
         this.responders = new ArrayList<>();
-        this.prefixWhitelist = new HashSet<>();
 
-        this.addResponder(new TempConverter());
-    }
-
-    private void addResponder(IResponder responder) {
-        this.responders.add(responder);
-        this.prefixWhitelist.addAll(responder.getPrefixWhitelist());
+        this.responders.add(new TempConverter());
     }
 
     public void messageHandler(IMessage message) {

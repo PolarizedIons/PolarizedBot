@@ -2,6 +2,7 @@ package net.polarizedions.polarizedbot.util;
 
 import mocks.MockChannel;
 import mocks.MockMessage;
+import mocks.SetupMocks;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -24,10 +25,7 @@ public class MessageUtilTest {
     @BeforeAll
     public static void disableRatelimitHandling() throws NoSuchFieldException, IllegalAccessException {
         // Because the ratelimiting handling wont work without the bot running
-        Class<MessageUtil> clazz = MessageUtil.class;
-        Field rateLimitEnable = clazz.getDeclaredField("ENABLE_RATELMIT_HANDLING");
-        rateLimitEnable.setAccessible(true);
-        rateLimitEnable.set(null, false);
+        SetupMocks.setupRatelimitMock();
     }
 
     @Test

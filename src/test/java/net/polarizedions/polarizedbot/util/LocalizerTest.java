@@ -1,13 +1,10 @@
 package net.polarizedions.polarizedbot.util;
 
+import mocks.SetupMocks;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -19,20 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class LocalizerTest {
     @BeforeAll
     static void mockLang() throws NoSuchFieldException, IllegalAccessException {
-        Class<Localizer> clazz = Localizer.class;
-        Field field = clazz.getField("AVAILABLE_LANGUAGES");
-        field.setAccessible(true);
-
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-
-        List<String> newSupports = new ArrayList<>();
-        Collections.addAll(newSupports, (String[])field.get(null));
-        newSupports.add(0, "testlang");
-        field.set(null, newSupports.toArray(new String[0]));
-
-        Localizer.init();
+        SetupMocks.setupLocalization();
     }
 
     @Test

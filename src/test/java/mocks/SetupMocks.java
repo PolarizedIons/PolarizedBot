@@ -61,4 +61,21 @@ public class SetupMocks {
 
         Localizer.init();
     }
+
+    public static void resetLocalization() throws IllegalAccessException, NoSuchFieldException {
+        Class<Localizer> clazz = Localizer.class;
+        Field field = clazz.getField("AVAILABLE_LANGUAGES");
+        field.setAccessible(true);
+
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+
+        List<String> newSupports = new ArrayList<>();
+        Collections.addAll(newSupports, (String[])field.get(null));
+        newSupports.remove("testlang");
+        field.set(null, newSupports.toArray(new String[0]));
+
+        Localizer.init();
+    }
 }

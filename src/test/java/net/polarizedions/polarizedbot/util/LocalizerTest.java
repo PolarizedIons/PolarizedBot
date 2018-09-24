@@ -1,6 +1,7 @@
 package net.polarizedions.polarizedbot.util;
 
 import mocks.SetupMocks;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -17,6 +18,11 @@ class LocalizerTest {
     @BeforeAll
     static void mockLang() throws NoSuchFieldException, IllegalAccessException {
         SetupMocks.setupLocalization();
+    }
+
+    @AfterAll
+    static void resetLang() throws NoSuchFieldException, IllegalAccessException {
+        SetupMocks.resetLocalization();
     }
 
     @Test
@@ -40,7 +46,7 @@ class LocalizerTest {
     }
 
     @Test
-    void changeLang() throws NoSuchFieldException, IllegalAccessException {
+    void changeLang() {
         Localizer loc = new Localizer("en");
         assertEquals("en", loc.getCurrentLang());
 

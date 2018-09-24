@@ -1,5 +1,6 @@
 package net.polarizedions.polarizedbot.util;
 
+import mocks.SetupMocks;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -10,8 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class TimeUtilTest {
 
     @BeforeAll
-    static void setup() {
-        Localizer.init();
+    static void setup() throws NoSuchFieldException, IllegalAccessException {
+        SetupMocks.resetLocalization();
     }
 
     @Test

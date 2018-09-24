@@ -2,7 +2,6 @@ package net.polarizedions.polarizedbot.autoresponders.impl;
 
 import mocks.MockMessage;
 import mocks.SetupMocks;
-import net.polarizedions.polarizedbot.util.Localizer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +16,7 @@ class TempConverterTest {
     @BeforeAll
     static void setup() throws Exception {
         SetupMocks.setupRatelimitMock();
-        Localizer.init();
+        SetupMocks.resetLocalization();
     }
 
     @Test

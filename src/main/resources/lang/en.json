@@ -218,5 +218,10 @@
             "*": "%s seconds",
             "1": "%s second"
         }
+    },
+    "autoresponder": {
+        "temperature": {
+            "impossible": "impossible"
+        }
     }
 }

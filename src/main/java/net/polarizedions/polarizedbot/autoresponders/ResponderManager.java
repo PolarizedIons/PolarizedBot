@@ -1,5 +1,6 @@
 package net.polarizedions.polarizedbot.autoresponders;
 
+import net.polarizedions.polarizedbot.autoresponders.impl.TempConverter;
 import net.polarizedions.polarizedbot.config.GuildConfig;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import sx.blah.discord.handle.obj.IGuild;
@@ -19,6 +20,8 @@ public class ResponderManager {
     public ResponderManager() {
         this.responders = new ArrayList<>();
         this.prefixWhitelist = new HashSet<>();
+
+        this.addResponder(new TempConverter());
     }
 
     private void addResponder(IResponder responder) {

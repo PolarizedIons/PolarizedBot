@@ -45,23 +45,25 @@ public class ResponderManager {
         }
 
         String content = message.getContent();
-        if (content.startsWith(guildConfig.commandPrefix)) {
-            boolean allow = false;
-
-            for (String prefix : this.prefixWhitelist) {
-                if (content.startsWith(prefix)) {
-                    allow = true;
-                }
-            }
-
-            if (! allow) {
-                return;
-            }
-        }
+        boolean commandPrefix = content.startsWith(guildConfig.commandPrefix);
 
         for (IResponder responder : this.responders) {
             if (guildConfig.disabledResponders.contains(responder.getID())) {
                 continue;
+            }
+
+            if (commandPrefix) {
+                boolean allow = false;
+                for (String prefix : responder.getPrefixWhitelist()) {
+                    if (content.startsWith(prefix)) {
+                        allow = true;
+                        break;
+                    }
+                }
+
+                if (! allow) {
+                    continue;
+                }
             }
 
             responder.run(message);

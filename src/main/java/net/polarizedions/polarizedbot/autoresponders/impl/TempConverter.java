@@ -46,7 +46,7 @@ public class TempConverter implements IResponder {
 
             Function<Double, Double> converter = unit.equals("C") ? C_TO_F : F_TO_C;
             double min = unit.equals("C") ? MIN_C : MIN_F;
-            Double result = converter.apply(temp);
+            double result = converter.apply(temp);
 
             builder.append(FORMATER.format(temp)).append(" °").append(unit).append(" -> ");
             if (result < min) {

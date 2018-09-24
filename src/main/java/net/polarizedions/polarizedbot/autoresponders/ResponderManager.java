@@ -1,6 +1,5 @@
 package net.polarizedions.polarizedbot.autoresponders;
 
-import net.polarizedions.polarizedbot.autoresponders.impl.AutoUnitConverter;
 import net.polarizedions.polarizedbot.config.GuildConfig;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import sx.blah.discord.handle.obj.IGuild;
@@ -17,7 +16,6 @@ public class ResponderManager {
     public ResponderManager() {
         this.responders = new ArrayList<>();
 
-        this.responders.add(new AutoUnitConverter());
     }
 
     public void messageHandler(IMessage message) {

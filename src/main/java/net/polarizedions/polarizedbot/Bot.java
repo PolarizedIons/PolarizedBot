@@ -104,6 +104,7 @@ public class Bot {
 
         this.client.getDispatcher().registerListener((IListener<ReadyEvent>)readyEvent -> {
             this.connectedInstant = Instant.now();
+            logger.info("Ready to go!");
 
             if (this.announcerManager != null) {
                 this.announcerManager.stop();
@@ -115,7 +116,7 @@ public class Bot {
 
         this.client.getDispatcher().registerListener((IListener<MessageReceivedEvent>)messageEvent -> {
             IMessage message = messageEvent.getMessage();
-            logger.debug("[UserID: {}, GuildID: {}, MessageID: {}, User: {}]: {}",
+            logger.info("[UserID: {}, GuildID: {}, MessageID: {}, User: {}]: {}",
                     message.getAuthor().getStringID(),
                     message.getGuild() == null ? "PM" : message.getGuild().getStringID(),
                     message.getStringID(),

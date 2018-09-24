@@ -18,8 +18,8 @@ public class TempConverter implements IResponder {
 
     private static final double MIN_C = -273.15;
     private static final double MIN_F = -459.67;
-    private static final Function<Double, Double> C_TO_F = c -> { double r = c * 1.8  + 32; return r < MIN_C ? null : r; };
-    private static final Function<Double, Double> F_TO_C = f -> { double r = ( f - 32 ) / 1.8; return r < MIN_F ? null : r; };
+    private static final Function<Double, Double> C_TO_F = c -> c * 1.8  + 32;
+    private static final Function<Double, Double> F_TO_C = f -> ( f - 32 ) / 1.8;
 
     @Override
     public String getID() {
@@ -45,10 +45,11 @@ public class TempConverter implements IResponder {
             String otherUnit = unit.equals("C") ? "F" : "C";
 
             Function<Double, Double> converter = unit.equals("C") ? C_TO_F : F_TO_C;
+            double min = unit.equals("C") ? MIN_C : MIN_F;
             Double result = converter.apply(temp);
 
             builder.append(FORMATER.format(temp)).append(" °").append(unit).append(" -> ");
-            if (result == null) {
+            if (result < min) {
                 builder.append(loc.localize("autoresponder.temperature.impossible")).append("\n");
             }
             else {

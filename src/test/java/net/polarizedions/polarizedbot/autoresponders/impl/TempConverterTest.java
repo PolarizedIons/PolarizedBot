@@ -52,6 +52,7 @@ class TempConverterTest {
         String[] phrases = new String[] {
                 "Punctiation.-34C",
                 "$325c4-24f54.3f",
+                "12 centimeters",
         };
 
         TempConverter converter = new TempConverter();

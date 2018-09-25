@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TempConverter implements IResponder {
-    private static final Pattern TEMPERATURE_REGEX = Pattern.compile("(?<=^|\\s)(-?[0-9]+(?:.[0-9]+)?)\\s?°?([CF])", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+    private static final Pattern TEMPERATURE_REGEX = Pattern.compile("(?<=^|\\s)(-?[0-9]+(?:.[0-9]+)?)\\s?°?([CF])(?![a-z])", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
     private static final DecimalFormat FORMATER = new DecimalFormat("#.##");
 
     private static final double MIN_C = -273.15;

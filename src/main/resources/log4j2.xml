@@ -14,7 +14,15 @@
                 <TimeBasedTriggeringPolicy/>
                 <SizeBasedTriggeringPolicy size="5 MB"/>
             </Policies>
-            <DefaultRolloverStrategy max="5"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="logs" maxDepth="1">
+                    <IfFileName glob="log-????-??-??-*.log.gz">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingRandomAccessFile>
 
     </Appenders>

@@ -3,12 +3,12 @@ package net.polarizedions.polarizedbot.commands.impl;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
+import net.polarizedions.polarizedbot.commands.builder.ParsedArguments;
 import net.polarizedions.polarizedbot.util.Localizer;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
 
 public class CommandPing implements ICommand {
 
@@ -27,11 +27,11 @@ public class CommandPing implements ICommand {
                 .buildCommand();
     }
 
-    void ping(IMessage message, List<Object> args) {
+    void ping(IMessage message, ParsedArguments args) {
         this.run(message, "command.ping.reply");
     }
 
-    void pong(IMessage message, List<Object> args) {
+    void pong(IMessage message, ParsedArguments args) {
         this.run(message, "command.ping.reply_alt");
     }
 

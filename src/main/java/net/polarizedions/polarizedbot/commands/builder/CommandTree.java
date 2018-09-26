@@ -6,7 +6,6 @@ import net.polarizedions.polarizedbot.util.UserRank;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +35,7 @@ public class CommandTree {
             throw new NoSuchCommand(head);
         }
 
-        LinkedList<Object> parsed = new LinkedList<>();
+        ParsedArguments parsed = new ParsedArguments();
         parsed.add(head);
         alias.executeTree(fragments, msg, parsed);
     }

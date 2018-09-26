@@ -4,6 +4,7 @@ import net.polarizedions.polarizedbot.api_handlers.WolframAlphaApi;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
+import net.polarizedions.polarizedbot.commands.builder.ParsedArguments;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +34,7 @@ public class CommandWolframAlpha implements ICommand {
                 .buildCommand();
     }
 
-    private void fail(IMessage message, @NotNull List<Object> parsedArgs, List<String> unparsedArgs) {
+    private void fail(IMessage message, @NotNull ParsedArguments parsedArgs, List<String> unparsedArgs) {
         if (parsedArgs.size() == 1) {
             MessageUtil.reply(message, "command.wolfram.error.no_arg");
         }
@@ -43,13 +44,13 @@ public class CommandWolframAlpha implements ICommand {
     }
 
     @Nullable
-    private Map<String, List<String>> get(IMessage message, List<Object> args) {
+    private Map<String, List<String>> get(IMessage message, ParsedArguments args) {
         if (!WolframAlphaApi.hasApiKey()) {
             MessageUtil.reply(message, "command.wolfram.error.no_api_key");
             return null;
         }
 
-        Map<String, List<String>> data = WolframAlphaApi.fetch((String)args.get(1));
+        Map<String, List<String>> data = WolframAlphaApi.fetch(args.getAsString(1));
         if (data == null) {
             MessageUtil.reply(message, "command.wolfram.error.connection");
             return null;
@@ -63,7 +64,7 @@ public class CommandWolframAlpha implements ICommand {
         return data;
     }
 
-    private void replyFull(IMessage message, List<Object> args) {
+    private void replyFull(IMessage message, ParsedArguments args) {
         Map<String, List<String>> data = this.get(message, args);
         if (data == null) {
             return;
@@ -94,7 +95,7 @@ public class CommandWolframAlpha implements ICommand {
     }
 
 
-    private void replyShort(IMessage message, List<Object> args) {
+    private void replyShort(IMessage message, ParsedArguments args) {
         Map<String, List<String>> data = this.get(message, args);
         if (data == null) {
             return;

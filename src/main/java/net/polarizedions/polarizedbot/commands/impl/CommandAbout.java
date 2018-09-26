@@ -5,6 +5,7 @@ import net.polarizedions.polarizedbot.commands.CommandManager;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
+import net.polarizedions.polarizedbot.commands.builder.ParsedArguments;
 import net.polarizedions.polarizedbot.config.GlobalConfig;
 import net.polarizedions.polarizedbot.config.GuildConfig;
 import net.polarizedions.polarizedbot.util.BuildInfo;
@@ -19,7 +20,6 @@ import sx.blah.discord.util.EmbedBuilder;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandAbout implements ICommand {
@@ -38,7 +38,7 @@ public class CommandAbout implements ICommand {
                 .buildCommand();
     }
 
-    private void about(IMessage message, List<Object> args) {
+    private void about(IMessage message, ParsedArguments args) {
         Localizer loc = new Localizer(message);
 
         Bot bot = Bot.instance;
@@ -84,7 +84,7 @@ public class CommandAbout implements ICommand {
         message.getChannel().sendMessage(builder.build());
     }
 
-    private void info(IMessage message, List<Object> args) {
+    private void info(IMessage message, ParsedArguments args) {
         Localizer loc = new Localizer(message);
         EmbedBuilder builder = new EmbedBuilder();
         IUser user = message.getAuthor();

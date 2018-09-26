@@ -55,8 +55,8 @@ class NodeTest {
         assertFalse(node.isExecutable());
 
         AtomicBoolean ran = new AtomicBoolean(false);
-        Method runMethod = getMethod("run", node, IMessage.class, List.class);
-        runMethod.invoke(node, new MockMessage(), Collections.emptyList());
+        Method runMethod = getMethod("run", node, IMessage.class, ParsedArguments.class);
+        runMethod.invoke(node, new MockMessage(), new ParsedArguments());
         assertFalse(ran.get());
 
         node.onExecute((iMessage, objects) -> ran.set(true));
@@ -64,17 +64,17 @@ class NodeTest {
         assertTrue(node.isExecutable());
 
 
-        runMethod.invoke(node, new MockMessage(), Collections.emptyList());
+        runMethod.invoke(node, new MockMessage(), new ParsedArguments());
 
         assertTrue(ran.get());
 
         // Test fail behavior
 
         AtomicBoolean failed = new AtomicBoolean(false);
-        Method failMethod = getMethod("fail", node, IMessage.class, List.class, List.class);
+        Method failMethod = getMethod("fail", node, IMessage.class, ParsedArguments.class, List.class);
         assertThrows(UnknownFail.class, () -> {
             try {
-                failMethod.invoke(node, new MockMessage(), Collections.emptyList(), Collections.emptyList());
+                failMethod.invoke(node, new MockMessage(), new ParsedArguments(), Collections.emptyList());
             }
             catch (InvocationTargetException e) {
                 throw e.getCause();
@@ -84,7 +84,7 @@ class NodeTest {
 
         node.onFail((iMessage, objects, strings) -> failed.set(true));
 
-        failMethod.invoke(node, new MockMessage(), Collections.emptyList(), Collections.emptyList());
+        failMethod.invoke(node, new MockMessage(), new ParsedArguments(), Collections.emptyList());
         assertTrue(failed.get());
 
     }
@@ -102,13 +102,13 @@ class NodeTest {
             n.onExecute((iMessage, objects) -> pinged.set(true));
             pinged.set(true);
         });
-        node.executeTree(new LinkedList<>(Arrays.asList("bla", "foo", "bar")), new MockMessage(), new LinkedList<>());
+        node.executeTree(new LinkedList<>(Arrays.asList("bla", "foo", "bar")), new MockMessage(), new ParsedArguments());
         assertFalse(pinged.get());
 
-        node.executeTree(new LinkedList<>(Arrays.asList("ping", "foo", "bar")), new MockMessage(), new LinkedList<>());
+        node.executeTree(new LinkedList<>(Arrays.asList("ping", "foo", "bar")), new MockMessage(), new ParsedArguments());
         assertFalse(pinged.get());
 
-        node.executeTree(new LinkedList<>(Collections.singletonList("ping")), new MockMessage(), new LinkedList<>());
+        node.executeTree(new LinkedList<>(Collections.singletonList("ping")), new MockMessage(), new ParsedArguments());
         assertTrue(pinged.get());
     }
 }

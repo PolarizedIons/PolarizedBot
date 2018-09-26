@@ -3,6 +3,7 @@ package net.polarizedions.polarizedbot.commands.impl;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
+import net.polarizedions.polarizedbot.commands.builder.ParsedArguments;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
@@ -42,8 +43,8 @@ public class CommandIgnore implements ICommand {
     }
 
 
-    private void ignore(@NotNull IMessage message, @NotNull List<Object> args) {
-        IUser toIgnore = args.size() == 1 ? message.getAuthor() : (IUser)args.get(1);
+    private void ignore(@NotNull IMessage message, @NotNull ParsedArguments args) {
+        IUser toIgnore = args.size() == 1 ? message.getAuthor() : args.getAsUser(1);
 
         if (GuildManager.getUserRank(message.getGuild(), toIgnore) == UserRank.BOT_OWNER) {
             MessageUtil.reply(message, "command.ignore.error.bot_owner");
@@ -56,8 +57,8 @@ public class CommandIgnore implements ICommand {
         MessageUtil.reply(message, "command.ignore.success.ignore", toIgnore.getName() + "#" + toIgnore.getDiscriminator());
     }
 
-    private void unignore(@NotNull IMessage message, @NotNull List<Object> args) {
-        IUser toUnignore = (IUser)args.get(1);
+    private void unignore(@NotNull IMessage message, @NotNull ParsedArguments args) {
+        IUser toUnignore = args.getAsUser(1);
 
         logger.debug("Unignoring {}", toUnignore);
         GuildManager.getConfig(message.getGuild()).ignoredUsers.remove(toUnignore.getLongID());
@@ -65,7 +66,7 @@ public class CommandIgnore implements ICommand {
         MessageUtil.reply(message, "command.ignore.success.unignore", toUnignore.toString());
     }
 
-    private void fail(IMessage message, List<Object> parsedArgs, List<String> unparsedArgs) {
+    private void fail(IMessage message, ParsedArguments parsedArgs, List<String> unparsedArgs) {
         MessageUtil.reply(message, "command.ignore.error.no_user");
     }
 }

@@ -5,11 +5,12 @@ import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
+import net.polarizedions.polarizedbot.commands.builder.ParsedArguments;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.MessageUtil;
+import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.obj.IMessage;
 
-import java.util.List;
 import java.util.Set;
 
 public class CommandHelp implements ICommand {
@@ -27,7 +28,7 @@ public class CommandHelp implements ICommand {
                 .buildCommand();
     }
 
-    private void list(IMessage message, List<Object> args) {
+    private void list(IMessage message, ParsedArguments args) {
         Set<CommandTree> commandSet = Bot.instance.getCommandManager().getCommands();
         int commandLen = commandSet.parallelStream().map(tree -> tree.getName().length()).max(Integer::compareTo).orElse(10);
 
@@ -40,8 +41,8 @@ public class CommandHelp implements ICommand {
         MessageUtil.sendAutosplit(message.getChannel(), resp.append("```").toString());
     }
 
-    private void cmd(IMessage message, List<Object> args) {
-        String helpCommand = (String)args.get(1);
+    private void cmd(IMessage message, @NotNull ParsedArguments args) {
+        String helpCommand = args.getAsString(1);
         CommandTree command = null;
         outer:
         for (CommandTree cmd : Bot.instance.getCommandManager().getCommands()) {

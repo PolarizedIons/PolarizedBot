@@ -16,8 +16,8 @@ import java.util.function.Consumer;
 
 public class Node {
     private Map<CommandArg, Node> options = new LinkedHashMap<>();
-    private BiConsumer<IMessage, List<Object>> successConsumer;
-    private TriConsumer<IMessage, List<Object>, List<String>> failConsumer;
+    private BiConsumer<IMessage, ParsedArguments> successConsumer;
+    private TriConsumer<IMessage, ParsedArguments, List<String>> failConsumer;
 
     private CommandBuilder builder;
     private boolean swallows;
@@ -58,12 +58,12 @@ public class Node {
         return this;
     }
 
-    public Node onExecute(BiConsumer<IMessage, List<Object>> consumer) {
+    public Node onExecute(BiConsumer<IMessage, ParsedArguments> consumer) {
         this.successConsumer = consumer;
         return this;
     }
 
-    public Node onFail(TriConsumer<IMessage, List<Object>, List<String>> failConsumer) {
+    public Node onFail(TriConsumer<IMessage, ParsedArguments, List<String>> failConsumer) {
         this.failConsumer = failConsumer;
         return this;
     }
@@ -83,7 +83,7 @@ public class Node {
         return this;
     }
 
-    void executeTree(List<String> treeOptions, IMessage command, List<Object> parsedArgs) throws CommandExceptions {
+    void executeTree(List<String> treeOptions, IMessage command, ParsedArguments parsedArgs) throws CommandExceptions {
         if (!GuildManager.userHasRank(command, this.rank)) {
             throw new NeedPermission(this.rank);
         }
@@ -143,13 +143,13 @@ public class Node {
         return this;
     }
 
-    private void run(IMessage command, List<Object> parsedArgs) {
+    private void run(IMessage command, ParsedArguments parsedArgs) {
         if (this.successConsumer != null) {
             this.successConsumer.accept(command, parsedArgs);
         }
     }
 
-    private void fail(IMessage command, List<Object> parsedArgs, List<String> unparsedArgs) throws UnknownFail {
+    private void fail(IMessage command, ParsedArguments parsedArgs, List<String> unparsedArgs) throws UnknownFail {
         if (this.failConsumer != null) {
             this.failConsumer.accept(command, parsedArgs, unparsedArgs);
         }

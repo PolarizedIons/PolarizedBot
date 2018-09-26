@@ -5,6 +5,7 @@ import net.polarizedions.polarizedbot.api_handlers.GithubApi;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
+import net.polarizedions.polarizedbot.commands.builder.ParsedArguments;
 import net.polarizedions.polarizedbot.exceptions.ApiException;
 import net.polarizedions.polarizedbot.util.Args;
 import net.polarizedions.polarizedbot.util.BuildInfo;
@@ -22,7 +23,6 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 
 public class CommandUpdate implements ICommand {
     private static final Logger logger = LogManager.getLogger("CommandUpdate");
@@ -38,7 +38,7 @@ public class CommandUpdate implements ICommand {
                 .buildCommand();
     }
 
-    private void update(IMessage message, List<Object> args) {
+    private void update(IMessage message, ParsedArguments args) {
         if (inProgress) {
             MessageUtil.reply(message, "command.update.error.in_progress");
             return;

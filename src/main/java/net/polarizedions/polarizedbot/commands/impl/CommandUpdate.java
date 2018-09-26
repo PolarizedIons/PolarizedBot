@@ -7,6 +7,7 @@ import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.exceptions.ApiException;
 import net.polarizedions.polarizedbot.util.Args;
+import net.polarizedions.polarizedbot.util.BuildInfo;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
 import org.apache.logging.log4j.LogManager;
@@ -72,7 +73,7 @@ public class CommandUpdate implements ICommand {
             return;
         }
 
-        if (release.tag.equals(Bot.version)) {
+        if (release.tag.equals(BuildInfo.version)) {
             MessageUtil.reply(message, "command.update.error.up_to_date", release.tag);
             inProgress = false;
             return;

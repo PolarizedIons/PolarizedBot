@@ -5,13 +5,12 @@ import net.polarizedions.polarizedbot.autoresponders.ResponderManager;
 import net.polarizedions.polarizedbot.commands.CommandManager;
 import net.polarizedions.polarizedbot.config.GlobalConfig;
 import net.polarizedions.polarizedbot.util.Args;
+import net.polarizedions.polarizedbot.util.BuildInfo;
 import net.polarizedions.polarizedbot.util.ConfigManager;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.IListener;
@@ -21,15 +20,11 @@ import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.DiscordException;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Properties;
 
 public class Bot {
     public static final Logger logger = LogManager.getLogger("PolarizedBot");
     public static Bot instance;
-    public static String version;
-    public static String buildDate;
     private static Instant startInstant;
     private Instant connectedInstant;
 
@@ -39,11 +34,7 @@ public class Bot {
     private ResponderManager responderManager;
 
     private Bot() {
-        if (Bot.version == null) {
-            Bot.loadBuildInfo();
-        }
-
-        logger.info("Starting bot {}...", Bot.getFullVersion());
+        logger.info("Starting bot v{} ({})...", BuildInfo.version, BuildInfo.buildtime);
         instance = this;
 
         try {
@@ -57,25 +48,6 @@ public class Bot {
         GuildManager.init();
         this.commandManager = new CommandManager();
         this.responderManager = new ResponderManager();
-    }
-
-    @NotNull
-    @Contract(pure = true)
-    public static String getFullVersion() {
-        return Bot.version + " / " + Bot.buildDate;
-    }
-
-    private static void loadBuildInfo() {
-        Properties versionProp = new Properties();
-        try {
-            versionProp.load(Bot.class.getResourceAsStream("/version.txt"));
-            Bot.version = "v" + versionProp.getProperty("version");
-            Bot.buildDate = versionProp.getProperty("time");
-        }
-        catch (IOException e) {
-            Bot.version = "unknown";
-            Bot.buildDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX").format(Instant.now());
-        }
     }
 
     public static void main(String[] args) {

@@ -1,0 +1,3 @@
+version=${pom.version}
+buildtime=${timestamp}
+githubRepo=https://github.com/polarizedions/polarizedbot

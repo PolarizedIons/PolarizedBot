@@ -7,6 +7,7 @@ import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.config.GlobalConfig;
 import net.polarizedions.polarizedbot.config.GuildConfig;
+import net.polarizedions.polarizedbot.util.BuildInfo;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.TimeUtil;
@@ -22,8 +23,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandAbout implements ICommand {
-    private static final String REPO_URL = "https://github.com/polarizedions/polarizedbot";
-
     @Override
     public CommandTree getCommand() {
         return CommandBuilder.create("About")
@@ -69,7 +68,7 @@ public class CommandAbout implements ICommand {
         builder.appendField(loc.localize("command.about.header.owner"), owner.getName() + "#" + owner.getDiscriminator(), false);
         builder.appendField(loc.localize("command.about.header.running"), TimeUtil.formatDuration(loc, runningTime), false);
         builder.appendField(loc.localize("command.about.header.connected"), TimeUtil.formatDuration(loc, connectedTime), false);
-        builder.appendField(loc.localize("command.about.header.source_code"), REPO_URL, false);
+        builder.appendField(loc.localize("command.about.header.source_code"), BuildInfo.githubRepo, false);
 
         builder.appendField(loc.localize("command.about.header.bot_user"), botUser.getName() + "#" + botUser.getDiscriminator(), false);
         builder.appendField(loc.localize("command.about.header.bot_id"), botUser.getStringID(), false);
@@ -80,7 +79,7 @@ public class CommandAbout implements ICommand {
 
         builder.withTitle(loc.localize("command.about.bot_info", bot.getClient().getOurUser().getDisplayName(guild)));
         builder.withThumbnail(bot.getClient().getApplicationIconURL());
-        builder.withFooterText("PolarizedBot " + Bot.getFullVersion());
+        builder.withFooterText("PolarizedBot v" + BuildInfo.version + ", built: " + BuildInfo.buildtime);
 
         message.getChannel().sendMessage(builder.build());
     }
@@ -97,7 +96,7 @@ public class CommandAbout implements ICommand {
 
         builder.withTitle(loc.localize("command.about.user_info", user.getDisplayName(guild)));
         builder.withThumbnail(message.getAuthor().getAvatarURL());
-        builder.withFooterText("PolarizedBot " + Bot.getFullVersion());
+        builder.withFooterText("PolarizedBot v" + BuildInfo.version + ", built: " + BuildInfo.buildtime);
 
         message.getChannel().sendMessage(builder.build());
     }

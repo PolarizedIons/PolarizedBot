@@ -28,7 +28,7 @@
     </Appenders>
     <Loggers>
         <Root level="debug">
-            <AppenderRef ref="Console"/>
+            <AppenderRef ref="Console" level="info"/>
             <AppenderRef ref="RollingRandomAccessFile"/>
         </Root>
         <Logger name="sx.blah.discord.Discord4J" level="info" additivity="false">

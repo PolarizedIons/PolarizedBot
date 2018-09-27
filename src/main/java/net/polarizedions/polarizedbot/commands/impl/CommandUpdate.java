@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 public class CommandUpdate implements ICommand {
     private static final Logger logger = LogManager.getLogger("CommandUpdate");
-    private static final String REPO = "PolarizedIons/polarizedbot";
+    private static final String REPO = BuildInfo.githubRepo.replaceAll("https?://github.com/", "");
     private static boolean inProgress = false;
 
     @Override

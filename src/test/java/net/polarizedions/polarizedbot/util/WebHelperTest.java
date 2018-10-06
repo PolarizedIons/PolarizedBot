@@ -2,7 +2,6 @@ package net.polarizedions.polarizedbot.util;
 
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.Test;
-import org.w3c.dom.Document;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -11,7 +10,6 @@ import java.net.Socket;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 class WebHelperTest {
@@ -61,16 +59,6 @@ class WebHelperTest {
             assertNotNull(json);
 
             assertEquals("pong", json.getAsJsonObject("args").get("ping").getAsString());
-        });
-    }
-
-    @Test
-    void fetchDom() {
-        // Don't fail because we are in an no-internet environment
-        assumingThat(WebHelperTest::isOnline, () -> {
-            Document doc = WebHelper.fetchDom("https://httpbin.org/xml");
-            assertNotNull(doc);
-            assertTrue(doc.getElementsByTagName("slide").getLength() > 0);
         });
     }
 

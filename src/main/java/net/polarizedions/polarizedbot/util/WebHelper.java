@@ -5,12 +5,7 @@ import com.google.gson.JsonParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -60,35 +55,6 @@ public class WebHelper {
     public static JsonObject fetchJson(String uri) {
         InputStream is = fetchUrl(uri);
         return is == null ? null : parser.parse(new InputStreamReader(is)).getAsJsonObject();
-    }
-
-    @Nullable
-    public static Document fetchDom(String uri) {
-        InputStream is = fetchUrl(uri);
-
-        if (is == null) {
-            return null;
-        }
-
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//        factory.setValidating(true);
-        factory.setIgnoringElementContentWhitespace(true);
-        DocumentBuilder builder;
-        try {
-            builder = factory.newDocumentBuilder();
-        }
-        catch (ParserConfigurationException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        try {
-            return builder.parse(is);
-        }
-        catch (SAXException | IOException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     // From: https://stackoverflow.com/a/14424783

@@ -1,19 +1,16 @@
 package net.polarizedions.polarizedbot.api_handlers;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import net.polarizedions.polarizedbot.Bot;
+import net.polarizedions.polarizedbot.exceptions.ApiException;
 import net.polarizedions.polarizedbot.util.WebHelper;
-import org.jetbrains.annotations.Nullable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Comparator;
+import java.util.LinkedList;
 
 public class WolframAlphaApi {
-    private static final String API_URL = "http://api.wolframalpha.com/v2/query?input=%s&appid=%s";
+    private static final String API_URL = "http://api.wolframalpha.com/v2/query?input=%s&appid=%s&format=plaintext&output=json";
     private static String API_KEY = null;
 
     public static boolean hasApiKey() {
@@ -24,50 +21,75 @@ public class WolframAlphaApi {
         return !API_KEY.isEmpty();
     }
 
-    @Nullable
-    public static Map<String, List<String>> fetch(String input) {
+    public static WolframAlphaReply fetch(String input) throws ApiException {
         if (!hasApiKey()) {
-            return null;
+            throw new ApiException("no_api_key");
         }
 
-        Document doc = WebHelper.fetchDom(String.format(API_URL, WebHelper.encodeURIComponent(input), API_KEY));
-        if (doc == null) {
-            return null;
+        JsonObject json = WebHelper.fetchJson(String.format(API_URL, WebHelper.encodeURIComponent(input), API_KEY));
+        if (json == null || json.get("queryresult") == null) {
+            throw new ApiException("connection");
         }
 
-        Map<String, List<String>> data = new LinkedHashMap<>();
+        json = json.getAsJsonObject("queryresult");
 
-        NodeList pods = doc.getElementsByTagName("pod");
-        for (int i = 0; i < pods.getLength(); i++) {
-            Node pod = pods.item(i);
-//            System.out.println("Node #" + i + ":");
-            String podTitle = pod.getAttributes().getNamedItem("title").getTextContent();
-//            System.out.println("   Title: " + podTitle);
-            data.put(podTitle, new ArrayList<>());
+        if (json.get("parsetimedout").getAsBoolean()) {
+            throw new ApiException("timed_out");
+        }
 
-            NodeList posChildren = pod.getChildNodes();
-            for (int j = 0; j < posChildren.getLength(); j++) {
-                Node subpod = posChildren.item(j);
-                if (!subpod.getNodeName().equals("subpod")) {
+        if (! json.get("success").getAsBoolean()) {
+            throw new ApiException("unknown");
+        }
+
+        WolframAlphaReply data = new WolframAlphaReply();
+
+        LinkedList<Pod> pods = new LinkedList<>();
+        for (JsonElement podJsonEl : json.getAsJsonArray("pods")) {
+            JsonObject podJson = podJsonEl.getAsJsonObject();
+
+            if (podJson.get("error").getAsBoolean()) {
+                continue;
+            }
+
+            Pod pod = new Pod();
+            pod.name = podJson.get("title").getAsString();
+            pod.index = podJson.get("position").getAsInt();
+
+            LinkedList<String> podData = new LinkedList<>();
+            for (JsonElement subpodJsonEl : podJson.getAsJsonArray("subpods")) {
+                JsonObject subpodJson = subpodJsonEl.getAsJsonObject();
+                JsonElement textJson = subpodJson.get("plaintext");
+                JsonElement imageJson = subpodJson.get("imagesource");
+
+                String subpodText = ((textJson == null ? "" : textJson.getAsString()) + "\n" + (imageJson == null ? "" : imageJson.getAsString())).trim();
+                if (subpodText.isEmpty()) {
                     continue;
                 }
 
-                NodeList subpodChildren = subpod.getChildNodes();
-                for (int k = 0; k < subpodChildren.getLength(); k++) {
-                    Node plaintextNode = subpodChildren.item(k);
-                    if (!plaintextNode.getNodeName().equals("plaintext")) {
-                        continue;
-                    }
-
-                    String plaintext = plaintextNode.getTextContent();
-//                    System.out.println("       -> " + plaintext);
-                    if (!plaintext.isEmpty()) {
-                        data.get(podTitle).add(plaintext);
-                    }
-                }
+                podData.add(subpodText);
             }
+
+            if (podData.size() == 0) {
+                continue;
+            }
+
+            pod.data = podData;
+            pods.add(pod);
         }
 
+        pods.sort(Comparator.comparingInt(pod -> pod.index));
+        data.pods = pods;
+
         return data;
+    }
+
+    public static class WolframAlphaReply {
+        public LinkedList<Pod> pods;
+    }
+
+    public static class Pod {
+        public String name;
+        public int index;
+        public LinkedList<String> data;
     }
 }

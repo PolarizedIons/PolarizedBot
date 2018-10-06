@@ -5,13 +5,14 @@ import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.commands.builder.ParsedArguments;
+import net.polarizedions.polarizedbot.exceptions.ApiException;
 import net.polarizedions.polarizedbot.util.MessageUtil;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.List;
-import java.util.Map;
 
 public class CommandWolframAlpha implements ICommand {
 
@@ -44,20 +45,18 @@ public class CommandWolframAlpha implements ICommand {
     }
 
     @Nullable
-    private Map<String, List<String>> get(IMessage message, ParsedArguments args) {
-        if (!WolframAlphaApi.hasApiKey()) {
-            MessageUtil.reply(message, "command.wolfram.error.no_api_key");
+    private WolframAlphaApi.WolframAlphaReply get(IMessage message, @NotNull ParsedArguments args) {
+        WolframAlphaApi.WolframAlphaReply data;
+        try {
+            data = WolframAlphaApi.fetch(args.getAsString(1));
+        }
+        catch (ApiException ex) {
+            MessageUtil.reply(message, "command.wolfram.error." + ex.getError(), ex.getErrorContext());
             return null;
         }
 
-        Map<String, List<String>> data = WolframAlphaApi.fetch(args.getAsString(1));
-        if (data == null) {
-            MessageUtil.reply(message, "command.wolfram.error.connection");
-            return null;
-        }
-
-        if (data.size() == 0) {
-            MessageUtil.reply(message, "command.wolfram.error.no_reply");
+        if (data.pods.size() == 0) {
+            MessageUtil.reply(message, "command.wolfram.error.no_data");
             return null;
         }
 
@@ -65,68 +64,58 @@ public class CommandWolframAlpha implements ICommand {
     }
 
     private void replyFull(IMessage message, ParsedArguments args) {
-        Map<String, List<String>> data = this.get(message, args);
-        if (data == null) {
+        WolframAlphaApi.@Nullable WolframAlphaReply reply = this.get(message, args);
+        if (reply == null) {
             return;
         }
 
+        this.reply(message, reply, reply.pods.size());
+    }
+
+
+    private void replyShort(IMessage message, ParsedArguments args) {
+        WolframAlphaApi.@Nullable WolframAlphaReply reply = this.get(message, args);
+        if (reply == null) {
+            return;
+        }
+
+        this.reply(message, reply, 2);
+    }
+
+    private void reply(IMessage message, WolframAlphaApi.WolframAlphaReply wolfData, int count) {
         StringBuilder responseBuilder = new StringBuilder();
-        for (Map.Entry<String, List<String>> entry : data.entrySet()) {
-            String podName = entry.getKey();
-            List<String> values = entry.getValue();
-            if (values.size() == 0) {
-                continue;
-            }
+        for (int i = 0; i < count; i++) {
+            WolframAlphaApi.Pod pod = wolfData.pods.get(i);
 
-            responseBuilder.append("**").append(podName).append("**");
+            responseBuilder.append("**").append(pod.name).append("**: ");
 
-            if (values.size() == 1) {
-                responseBuilder.append(": ").append(values.get(0).replaceAll("\\*", "\\\\*"));
+            if (pod.data.size() == 1 && !pod.data.get(0).contains("\n")) {
+                responseBuilder.append(this.escapeData(pod.data.get(0)));
             }
             else {
-                for (String value : values) {
-                    responseBuilder.append("\n  -> ").append(value.replaceAll("\\*", "\\\\*"));
+                String prefix = "    ";
+
+                for (String data : pod.data) {
+                    String[] splitLines = data.split("\n");
+                    responseBuilder.append("\n").append(prefix).append("- ").append(this.escapeData(splitLines[0]));
+                    for (int j = 1; j < splitLines.length; j++) {
+                        responseBuilder.append("\n").append(prefix).append("  ").append(this.escapeData(splitLines[j]));
+                    }
+//                    for (String line : data.split("\n")) {
+//                        responseBuilder.append("\n").append(prefix).append("- ").append(this.escapeData(line));
+//                    }
                 }
             }
+
             responseBuilder.append("\n");
         }
 
         MessageUtil.sendAutosplit(message.getChannel(), responseBuilder.toString());
     }
 
-
-    private void replyShort(IMessage message, ParsedArguments args) {
-        Map<String, List<String>> data = this.get(message, args);
-        if (data == null) {
-            return;
-        }
-        int i = 0;
-
-        StringBuilder responseBuilder = new StringBuilder();
-        for (Map.Entry<String, List<String>> entry : data.entrySet()) {
-            String podName = entry.getKey();
-            List<String> values = entry.getValue();
-            if (values.size() == 0) {
-                continue;
-            }
-
-            if (i >= 2) {
-                break;
-            }
-
-            responseBuilder.append("**").append(podName).append("**");
-            if (values.size() == 1) {
-                responseBuilder.append(": ").append(values.get(0).replaceAll("\\*", "\\\\*"));
-            }
-            else {
-                for (String value : values) {
-                    responseBuilder.append("\n  -> ").append(value.replaceAll("\\*", "\\\\*"));
-                }
-            }
-            responseBuilder.append("\n");
-            i++;
-        }
-
-        MessageUtil.sendAutosplit(message.getChannel(), responseBuilder.toString());
+    @NotNull
+    @Contract(pure = true)
+    private String escapeData(@NotNull String text) {
+        return text.replaceAll("([*_])", "\\\\$1");
     }
 }

@@ -121,7 +121,13 @@ public class CommandUpdate implements ICommand {
                 builder.start();
 
                 Bot.instance.shutdown();
-                // Don't System.exit because that breaks inheritIO
+                try {
+                    Thread.sleep(100);
+                }
+                catch (InterruptedException e) {
+                    // NOOP
+                }
+                System.exit(0);
             }
             catch (Exception ex) {
                 logger.error("Exception while downloading update {}: {}", release.tag, ex);

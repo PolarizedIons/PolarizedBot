@@ -78,7 +78,13 @@ public class CommandShutdown implements ICommand {
             message.getChannel().setTypingStatus(false);
             Bot.logger.info("Hard restarting bot...");
             Bot.instance.shutdown();
-            // Don't System.exit because that breaks inheritIO
+            try {
+                Thread.sleep(100);
+            }
+            catch (InterruptedException e) {
+                // NOOP
+            }
+            System.exit(0);
         }
         catch (URISyntaxException e) {
             MessageUtil.reply(message, "command.shutdown.error.jar_uri_error");

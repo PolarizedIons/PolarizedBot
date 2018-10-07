@@ -52,21 +52,6 @@ public class Bot {
 
     public static void main(String[] args) {
         Args.handle(args);
-
-        // This is needed because even if I call ProcessBuilder#inheritIO, it doesn't seem to pass
-        // SIGINT to the child process, and thus soft-restarting, or updating the bot, cannot be
-        // killed by just pressing Control+C.
-        new Thread(() -> {
-            try {
-                //noinspection StatementWithEmptyBody
-                while (System.in.read() != -1) { /* NOOP */ }
-            }
-            catch (IOException e) { /* NOOP */ }
-
-            System.out.println("Exiting because System.in is dead");
-            System.exit(0);
-        }, "SIGINT catcher").start();
-
         Bot.startInstant = Instant.now();
         new Bot().run();
     }

@@ -6,6 +6,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.polarizedions.polarizedbot.Bot;
+import net.polarizedions.polarizedbot.announcer.impl.AnnouncerGW2Update;
+import net.polarizedions.polarizedbot.announcer.impl.AnnouncerMcNotifier;
 import net.polarizedions.polarizedbot.util.ConfigManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -123,6 +125,7 @@ public class AnnouncerManager {
 
     public void load() {
         File saveFile = Paths.get(ConfigManager.configDir.getAbsolutePath(), "announcements.json").toFile();
+        boolean dirty = false;
 
         if (!saveFile.exists()) {
             return;
@@ -144,6 +147,7 @@ public class AnnouncerManager {
             IAnnouncer announcer = getAnnouncer(entry.getKey());
             if (announcer == null) {
                 logger.error("Error loading data: unknown announcer '{}'", entry.getKey());
+                dirty = true;
                 continue;
             }
 
@@ -153,12 +157,17 @@ public class AnnouncerManager {
                 IChannel channel = client.getChannelByID(channelID);
                 if (channel == null) {
                     logger.error("Unable to get channel from id ({}) while loading announcement data for {}, dropping.", channelID, announcer.getName());
+                    dirty = true;
                     continue;
                 }
                 channels.add(channel);
             }
 
             subData.put(announcer, channels);
+        }
+
+        if (dirty) {
+            this.save();
         }
     }
 

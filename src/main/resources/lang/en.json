@@ -225,5 +225,14 @@
         "temperature": {
             "impossible": "impossible"
         }
+    },
+    "announcer": {
+        "minecraft": {
+            "header": {
+                "snapshot": "A new snapshot was released!",
+                "full": "A new version was released!"
+            },
+            "version": "%s has been published to the launcher"
+        }
     }
 }

@@ -1,5 +1,6 @@
-package net.polarizedions.polarizedbot.announcer;
+package net.polarizedions.polarizedbot.announcer.impl;
 
+import net.polarizedions.polarizedbot.announcer.IAnnouncer;
 import net.polarizedions.polarizedbot.api_handlers.GW2ForumApi;
 import sx.blah.discord.handle.obj.IChannel;
 
@@ -13,7 +14,7 @@ public class AnnouncerGW2Update implements IAnnouncer {
 
     @Override
     public String getName() {
-        return "gw2-updates";
+        return "gw2";
     }
 
     @Override

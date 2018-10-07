@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.InputStream;
@@ -28,7 +29,11 @@ public class Localizer {
     private String currentLang;
 
     public Localizer(@NotNull IMessage message) {
-        this(message.getGuild() == null ? AVAILABLE_LANGUAGES[0] : GuildManager.getConfig(message.getGuild()).lang);
+        this(message.getGuild());
+    }
+
+    public Localizer(IGuild guild) {
+        this(guild == null ? AVAILABLE_LANGUAGES[0] : GuildManager.getConfig(guild).lang);
     }
 
     public Localizer(String lang) {

@@ -7,15 +7,18 @@ import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.commands.builder.ParsedArguments;
+import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
 import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public class CommandAnnoucer implements ICommand {
     private static String[] subcommands = new String[] { "subscribe", "unsubscribe", "list", "guild" };
@@ -59,23 +62,26 @@ public class CommandAnnoucer implements ICommand {
                 .buildCommand();
     }
 
-    private void manageSubscription(IMessage message, boolean isSub, String announcerName, IChannel channel) {
+    private void manageSubscription(IMessage message, boolean isSub, String announcerID, IChannel channel) {
         AnnouncerManager announcerManager = Bot.instance.getAnnouncerManager();
 
-        IAnnouncer announcer = announcerManager.getAnnouncer(announcerName);
+        IAnnouncer announcer = announcerManager.getAnnouncer(announcerID);
         if (announcer == null) {
-            MessageUtil.reply(message, "command.announce.error.no_such_announcement", announcerName);
+            MessageUtil.reply(message, "command.announce.error.no_such_announcement", announcerID);
             return;
         }
 
         BiConsumer<IAnnouncer, IChannel> method = isSub ? announcerManager::addSub : announcerManager::forgetSub;
         method.accept(announcer, channel);
-        MessageUtil.reply(message, "command.announce.success." + ( isSub ? "sub" : "unsub" ), announcer.getName(), channel.toString());
+        Localizer loc = new Localizer(message);
+        String name = loc.localize("announcer." + announcer.getID() + ".name");
+        MessageUtil.reply(message, "command.announce.success." + ( isSub ? "sub" : "unsub" ), name, channel.toString());
     }
 
     private void listAnnouncements(IMessage message, ParsedArguments args) {
         AnnouncerManager announcerManager = Bot.instance.getAnnouncerManager();
-        String announcers = String.join(", ", announcerManager.getNames());
+        Localizer loc = new Localizer(message);
+        String announcers = String.join(", ", Arrays.stream(announcerManager.getIDs()).map(id -> loc.localize("announcer." + id + ".name")).collect(Collectors.toList()));
         MessageUtil.reply(message, "command.announce.list", announcers);
     }
 
@@ -106,8 +112,8 @@ public class CommandAnnoucer implements ICommand {
         StringBuilder response = new StringBuilder("```\n");
         for (Map.Entry<IAnnouncer, List<IChannel>> entry : announcers.entrySet()) {
             List<IChannel> channels = entry.getValue();
-            response.append(" * ").append(entry.getKey().getName()).append(": ").append("#").append(channels.get(0).getName()).append("\n");
-            int len = 3 + entry.getKey().getName().length() + 2;
+            response.append(" * ").append(entry.getKey().getID()).append(": ").append("#").append(channels.get(0).getName()).append("\n");
+            int len = 3 + entry.getKey().getID().length() + 2;
             for (int i = 1; i < channels.size(); i++) {
                 for (int j = 0; j < len; j++) {
                     response.append(" ");

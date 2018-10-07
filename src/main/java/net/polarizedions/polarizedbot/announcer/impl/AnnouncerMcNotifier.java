@@ -16,7 +16,7 @@ public class AnnouncerMcNotifier implements IAnnouncer {
     private boolean newSnapshot, newRelease;
 
     @Override
-    public String getName() {
+    public String getID() {
         return "minecraft";
     }
 
@@ -39,7 +39,7 @@ public class AnnouncerMcNotifier implements IAnnouncer {
 
         this.newSnapshot = !prevVersions.snapshot.equals(newVersions.snapshot);
         this.newRelease = !prevVersions.release.equals(newVersions.release);
-
+newRelease = true;
         prevVersions = newVersions;
         return this.newSnapshot || this.newRelease;
     }
@@ -57,6 +57,7 @@ public class AnnouncerMcNotifier implements IAnnouncer {
             builder.withColor(color);
 
             Localizer loc = new Localizer(channel.getGuild());
+            builder.withTitle(loc.localize("announcer.minecraft.header.title"));
             builder.appendField(loc.localize("announcer.minecraft.header." + releaseType), loc.localize("announcer.minecraft.version", version), false);
 
             RequestBuffer.request(() -> {

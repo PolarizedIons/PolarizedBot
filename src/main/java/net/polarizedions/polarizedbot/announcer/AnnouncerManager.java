@@ -48,7 +48,7 @@ public class AnnouncerManager {
     }
 
     private void registerAnnouncer(IAnnouncer announcer) {
-        this.announcers.put(announcer.getName(), announcer);
+        this.announcers.put(announcer.getID(), announcer);
     }
 
     public void initAnnouncers() {
@@ -64,13 +64,13 @@ public class AnnouncerManager {
 
                     try {
                         boolean result = announcer.check();
-                        logger.debug("Checking announcer '{}': {}", announcer.getName(), result);
+                        logger.debug("Checking announcer '{}': {}", announcer.getID(), result);
                         if (result) {
                             announcer.execute(subscriptionData);
                         }
                     }
                     catch (Exception ex) {
-                        logger.debug("Exception while executing announcer " + announcer.getName(), ex);
+                        logger.debug("Exception while executing announcer " + announcer.getID(), ex);
                     }
                 }
             };
@@ -85,7 +85,7 @@ public class AnnouncerManager {
         return announcers.get(name);
     }
 
-    public String[] getNames() {
+    public String[] getIDs() {
         return this.announcers.keySet().toArray(new String[0]);
     }
 
@@ -156,7 +156,7 @@ public class AnnouncerManager {
                 long channelID = jsonLong.getAsLong();
                 IChannel channel = client.getChannelByID(channelID);
                 if (channel == null) {
-                    logger.error("Unable to get channel from id ({}) while loading announcement data for {}, dropping.", channelID, announcer.getName());
+                    logger.error("Unable to get channel from id ({}) while loading announcement data for {}, dropping.", channelID, announcer.getID());
                     dirty = true;
                     continue;
                 }
@@ -177,7 +177,7 @@ public class AnnouncerManager {
 
         Map<String, List<Long>> data = new HashMap<>();
         for (Map.Entry<IAnnouncer, List<IChannel>> entry : subData.entrySet()) {
-            data.put(entry.getKey().getName(), entry.getValue().parallelStream().map(channel -> channel.getLongID()).collect(Collectors.toList()));
+            data.put(entry.getKey().getID(), entry.getValue().parallelStream().map(channel -> channel.getLongID()).collect(Collectors.toList()));
         }
 
         try {

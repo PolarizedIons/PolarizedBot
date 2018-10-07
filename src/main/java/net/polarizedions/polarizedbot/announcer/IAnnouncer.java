@@ -5,7 +5,7 @@ import sx.blah.discord.handle.obj.IChannel;
 import java.util.List;
 
 public interface IAnnouncer {
-    String getName();
+    String getID();
 
     long updateFrequency();
 

@@ -62,7 +62,7 @@ public class CommandAbout implements ICommand {
         int respondersNum = bot.getResponderManager().getResponders().size();
         int respondersDisabled = guildConfig.disabledResponders.size();
 
-        int announcersNum = bot.getAnnouncerManager().getNames().length;
+        int announcersNum = bot.getAnnouncerManager().getIDs().length;
         int announcersEnabled = bot.getAnnouncerManager().getAnnouncersForGuild(guild).size();
 
         builder.appendField(loc.localize("command.about.header.owner"), owner.getName() + "#" + owner.getDiscriminator(), false);

@@ -13,7 +13,7 @@ public class AnnouncerGW2Update implements IAnnouncer {
     private int lastUpdateID;
 
     @Override
-    public String getName() {
+    public String getID() {
         return "gw2";
     }
 

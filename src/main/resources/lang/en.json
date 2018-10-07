@@ -230,9 +230,11 @@
         "minecraft": {
             "header": {
                 "snapshot": "A new snapshot was released!",
-                "full": "A new version was released!"
+                "full": "A new version was released!",
+                "title": "Minecraft Update"
             },
-            "version": "%s has been published to the launcher"
+            "version": "%s has been published to the launcher",
+            "name": "Minecraft Update Notifications"
         }
     }
 }

@@ -44,10 +44,18 @@ public class MessageUtil {
         handleRateLimit(channel, messages);
     }
 
-    public static void reply(IMessage message, String localizationKey, Object... context) {
-        String localized = new Localizer(message).localize(localizationKey, context);
+    public static void reply(@NotNull IMessage message, String localizationKey, Object... context) {
+        reply(message.getChannel(), localizationKey, context);
+    }
 
-        handleRateLimit(message.getChannel(), Collections.singletonList(localized));
+    public static void reply(@NotNull IChannel channel, String localizationKey, Object... context) {
+        String localized = new Localizer(channel.getGuild()).localize(localizationKey, context);
+
+        handleRateLimit(channel, Collections.singletonList(localized));
+    }
+
+    public static void replyUnlocalized(IChannel channel, String reply) {
+        handleRateLimit(channel, Collections.singletonList(reply));
     }
 
     public static void handleRateLimit(IChannel channel, List<String> messages) {

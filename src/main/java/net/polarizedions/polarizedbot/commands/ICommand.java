@@ -1,7 +1,8 @@
 package net.polarizedions.polarizedbot.commands;
 
-import net.polarizedions.polarizedbot.commands.builder.CommandTree;
+import com.mojang.brigadier.CommandDispatcher;
 
 public interface ICommand {
-    CommandTree getCommand();
+    void registerCommand(CommandDispatcher<CommandSource> dispatcher);
+    void help(CommandDispatcher<CommandSource> dispatcher, CommandSource source);
 }

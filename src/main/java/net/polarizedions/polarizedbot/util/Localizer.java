@@ -37,17 +37,7 @@ public class Localizer {
     }
 
     public Localizer(String lang) {
-        for (String l : AVAILABLE_LANGUAGES) {
-            if (l.equalsIgnoreCase(lang)) {
-                this.currentLang = l;
-                break;
-            }
-        }
-
-        if (this.currentLang == null) {
-            logger.debug("Failed to create localizer for language {}, defauling to {}", lang, AVAILABLE_LANGUAGES[0]);
-            this.currentLang = AVAILABLE_LANGUAGES[0];
-        }
+        this.currentLang = lang.toLowerCase();
     }
 
     public static void init() {
@@ -110,12 +100,7 @@ public class Localizer {
     }
 
     public void setCurrentLang(String newLang) {
-        for (String lang : AVAILABLE_LANGUAGES) {
-            if (lang.equalsIgnoreCase(newLang)) {
-                this.currentLang = lang;
-                return;
-            }
-        }
+        this.currentLang = newLang.toLowerCase();
     }
 
     public String localize(String key, Object... values) {

@@ -16,9 +16,17 @@ public class BuildInfo {
 
     static {
         load();
+
+        // TODO: BAD
+        if (BuildInfo.githubRepo.startsWith("git@github.com:")) {
+            BuildInfo.githubRepo = BuildInfo.githubRepo.replace("git@github.com:", "https://github.com").replace(".git", "");
+        }
+        else if (BuildInfo.githubRepo.startsWith("${")) {
+            BuildInfo.githubRepo = "";
+        }
     }
 
-    public static void load() {
+    static void load() {
         Properties buildInfo = new Properties();
         try {
             buildInfo.load(Bot.class.getResourceAsStream("/buildinfo.txt"));

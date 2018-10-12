@@ -105,7 +105,8 @@ public class Bot {
         }
 
         if (config.owner.isEmpty() || config.botToken.isEmpty()) {
-            throw new RuntimeException("Please enter the required value(s) in the config!");
+            logger.error("Please enter the required value(s) in the config!");
+            System.exit(1);
         }
 
         ClientBuilder clientBuilder = new ClientBuilder();

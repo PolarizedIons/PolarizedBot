@@ -122,7 +122,7 @@ public class MeasurementConverter implements IResponder {
             cursor++;
         }
 
-        if (working.length() > 0 && (cursor == str.length() || !this.isWordChar(str.charAt(cursor)))) {
+        if (working.length() > 0 && (cursor == str.length() || Character.isSpaceChar(str.charAt(cursor)) || this.isPunctuation(str.charAt(cursor)))) {
             return new Pair<>(working.toString(), cursor);
         }
 
@@ -132,6 +132,11 @@ public class MeasurementConverter implements IResponder {
     @Contract(pure = true)
     private boolean isWordChar(char c) {
         return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+    }
+
+    @Contract(pure = true)
+    private boolean isPunctuation(char c) {
+        return c == '.' || c == '?' || c == ',' || c == '!' || c == '(' || c == ')';
     }
 
     private int skipWord(@NotNull String str, int cursor) {

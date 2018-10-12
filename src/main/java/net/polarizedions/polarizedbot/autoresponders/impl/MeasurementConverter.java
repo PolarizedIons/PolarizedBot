@@ -28,7 +28,6 @@ public class MeasurementConverter implements IResponder {
         int cursor = 0;
         while (cursor < contents.length()) {
             Pair<Double, Integer> value = this.readDouble(contents, cursor);
-            System.out.println(value);
             if (cursor == value.two) {
                 cursor++;
                 continue;
@@ -40,7 +39,6 @@ public class MeasurementConverter implements IResponder {
             }
 
             Pair<String, Integer> unit = this.readWord(contents, cursor);
-            System.out.println(unit);
             if (cursor == unit.two) {
                 cursor++;
                 continue;

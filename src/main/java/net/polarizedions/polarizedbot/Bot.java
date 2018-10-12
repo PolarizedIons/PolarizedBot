@@ -10,13 +10,16 @@ import net.polarizedions.polarizedbot.util.ConfigManager;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.PresenceUtil;
+import net.polarizedions.polarizedbot.util.UserRank;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
+import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.DiscordException;
 
@@ -73,6 +76,14 @@ public class Bot {
             this.announcerManager.load();
             this.announcerManager.initAnnouncers();
             this.presenceUtil.init();
+        });
+
+        this.client.getDispatcher().registerListener((IListener<GuildCreateEvent>) guildCreatedEvent -> {
+            IGuild guild = guildCreatedEvent.getGuild();
+            if (! GuildManager.userHasRank(guild, guild.getOwner(), UserRank.GUILD_ADMIN)) {
+                logger.debug("Set " + guild.getOwner() + " as guild owner for " + guild);
+                GuildManager.setRank(guild, guild.getOwner(), UserRank.GUILD_ADMIN);
+            }
         });
 
         this.client.getDispatcher().registerListener((IListener<MessageReceivedEvent>)messageEvent -> {

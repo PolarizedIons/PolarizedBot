@@ -48,12 +48,12 @@ public class TempConverter implements IResponder {
             double min = unit.equals("C") ? MIN_C : MIN_F;
             double result = converter.apply(temp);
 
-            builder.append(FORMATER.format(temp)).append(" °").append(unit).append(" -> ");
+            builder.append(FORMATER.format(temp)).append(" °").append(loc.localize("autoresponder.temperature." + unit)).append(" -> ");
             if (result < min) {
                 builder.append(loc.localize("autoresponder.temperature.impossible")).append("\n");
             }
             else {
-                builder.append(FORMATER.format(result)).append(" °").append(otherUnit).append("\n");
+                builder.append(FORMATER.format(result)).append(" °").append(loc.localize("autoresponder.temperature." + otherUnit)).append("\n");
             }
         }
 

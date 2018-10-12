@@ -223,7 +223,9 @@
     },
     "autoresponder": {
         "temperature": {
-            "impossible": "impossible"
+            "impossible": "impossible",
+            "C": "C",
+            "F": "F"
         },
         "measurement": {
             "mm": {

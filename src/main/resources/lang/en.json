@@ -224,6 +224,40 @@
     "autoresponder": {
         "temperature": {
             "impossible": "impossible"
+        },
+        "measurement": {
+            "mm": {
+                "*": "%s millimeters",
+                "1": "%s millimeter"
+            },
+            "cm": {
+                "*": "%s centimeters",
+                "1": "%s centimeter"
+            },
+            "meter": {
+                "*": "%s meters",
+                "1": "%s meter"
+            },
+            "km": {
+                "*": "%s kilometers",
+                "1": "%s kilometer"
+            },
+            "inch": {
+                "*": "%s inches",
+                "1": "%s inch"
+            },
+            "foot": {
+                "*": "%s feet",
+                "1": "%s foot"
+            },
+            "yard": {
+                "*": "%s yards",
+                "1": "%s yard"
+            },
+            "mile": {
+                "*": "%s miles",
+                "1": "%s mile"
+            }
         }
     },
     "announcer": {

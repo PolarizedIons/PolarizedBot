@@ -30,21 +30,7 @@ public class TimeUtil {
                 continue;
             }
 
-            String key = formatKeys[i];
-            if (localizer.doesKeyExist(key + "." + time[i])) {
-                key = key + "." + time[i];
-            }
-
-            formatted.append(localizer.localize(key, time[i])).append(" ");
-        }
-
-        if (formatted.length() == 0) { // WAT o.o
-            String key = formatKeys[4];
-            if (localizer.doesKeyExist(key + ".0")) {
-                key = key + ".0";
-            }
-
-            formatted.append(localizer.localize(key, 0));
+            formatted.append(localizer.localizeNumber(formatKeys[i], (int)time[i])).append(" ");
         }
 
         return formatted.toString().trim();

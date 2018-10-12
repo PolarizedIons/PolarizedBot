@@ -1,13 +1,17 @@
 package net.polarizedions.polarizedbot.autoresponders.impl.measurement_units;
 
+import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.Pair;
+import net.polarizedions.polarizedbot.util.TriFunction;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.text.DecimalFormat;
 import java.util.function.Function;
 
 public class UnitTypes {
+    private static final DecimalFormat NUMBER_FORMAT = new DecimalFormat("#.##");
 
     @Nullable
     @Contract(pure = true)
@@ -60,22 +64,26 @@ public class UnitTypes {
         }
     }
 
+    public static String defaultFormatter(@NotNull Localizer localizer, @NotNull IUnit<? extends IUnit> unit, Double value) {
+        return localizer.localizeNumber("autoresponder.measurement." + unit.getSuffix(), (int) (double)value, NUMBER_FORMAT.format(value));
+    }
+
     public interface IUnit<Other extends IUnit> {
         String getSuffix();
         Pair<Double, Other> convert(double from);
-        String format(double value);
+        String format(Localizer localizer, double value);
     }
 
     public enum Imperial implements IUnit<Metric> {
-        INCH("inch", ImperialUnits::fromInch, null),
-        FOOT("foot", ImperialUnits::fromFoot, null),
-        YARD("yard", ImperialUnits::fromYard, null),
-        MILE("mile", ImperialUnits::fromMile, null);
+        INCH("inch", ImperialUnits::fromInch, UnitTypes::defaultFormatter),
+        FOOT("foot", ImperialUnits::fromFoot, UnitTypes::defaultFormatter),
+        YARD("yard", ImperialUnits::fromYard, UnitTypes::defaultFormatter),
+        MILE("mile", ImperialUnits::fromMile, UnitTypes::defaultFormatter);
 
         String suffix;
         Function<Double, Pair<Double, Metric>> converter;
-        Function<Double, String> formatter;
-        Imperial(String suffix, Function<Double, Pair<Double, Metric>> converter, Function<Double, String> formatter) {
+        TriFunction<Localizer, IUnit<? extends IUnit>, Double, String> formatter;
+        Imperial(String suffix, Function<Double, Pair<Double, Metric>> converter, TriFunction<Localizer, IUnit<? extends IUnit>, Double, String> formatter) {
             this.suffix = suffix;
             this.converter = converter;
             this.formatter = formatter;
@@ -93,21 +101,21 @@ public class UnitTypes {
         }
 
         @Override
-        public String format(double value) {
-            return this.formatter == null ? String.format("%s %s", value, this.suffix) : this.formatter.apply(value);
+        public String format(Localizer localizer, double value) {
+            return this.formatter.apply(localizer, this, value);
         }
     }
 
     public enum Metric implements IUnit<Imperial> {
-        MILLIMETER("mm", MetricUnits::fromMillimeter, null),
-        CENTIMETER("cm", MetricUnits::fromCentimeter, null),
-        METER("meter", MetricUnits::fromMeter, null),
-        KILOMETER("km", MetricUnits::fromKilometer, null);
+        MILLIMETER("mm", MetricUnits::fromMillimeter, UnitTypes::defaultFormatter),
+        CENTIMETER("cm", MetricUnits::fromCentimeter, UnitTypes::defaultFormatter),
+        METER("meter", MetricUnits::fromMeter, UnitTypes::defaultFormatter),
+        KILOMETER("km", MetricUnits::fromKilometer, UnitTypes::defaultFormatter);
 
         String suffix;
         Function<Double, Pair<Double, Imperial>> converter;
-        Function<Double, String> formatter;
-        Metric(String suffix, Function<Double, Pair<Double, Imperial>> converter, Function<Double, String> formatter) {
+        TriFunction<Localizer, IUnit<? extends IUnit>, Double, String> formatter;
+        Metric(String suffix, Function<Double, Pair<Double, Imperial>> converter, TriFunction<Localizer, IUnit<? extends IUnit>, Double, String> formatter) {
             this.suffix = suffix;
             this.converter = converter;
             this.formatter = formatter;
@@ -125,8 +133,8 @@ public class UnitTypes {
         }
 
         @Override
-        public String format(double value) {
-            return this.formatter == null ? String.format("%s %s", value, this.suffix) : this.formatter.apply(value);
+        public String format(Localizer localizer, double value) {
+            return this.formatter.apply(localizer, this, value);
         }
     }
 }

@@ -129,6 +129,10 @@ public class Localizer {
         return String.format(translated, values);
     }
 
+    public String localizeNumber(String key, int number, Object... values) {
+        return this.localize(this.doesKeyExist(key + "." + number) ? key + "." + number : key, values);
+    }
+
     public boolean doesKeyExist(String key) {
         Map<String, String> langFile = langData.get(this.currentLang);
         return langFile != null && ( langFile.containsKey(key) );

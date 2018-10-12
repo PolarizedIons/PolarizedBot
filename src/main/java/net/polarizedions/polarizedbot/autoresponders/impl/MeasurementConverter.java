@@ -2,18 +2,17 @@ package net.polarizedions.polarizedbot.autoresponders.impl;
 
 import net.polarizedions.polarizedbot.autoresponders.IResponder;
 import net.polarizedions.polarizedbot.autoresponders.impl.measurement_units.UnitTypes;
+import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.Pair;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.obj.IMessage;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MeasurementConverter implements IResponder {
-    private static final DecimalFormat NUMBER_FORMAT = new DecimalFormat("#.##");
 
     @Override
     public String getID() {
@@ -58,19 +57,13 @@ public class MeasurementConverter implements IResponder {
             cursor++;
         }
 
+        Localizer localizer = new Localizer(message);
         StringBuilder response = new StringBuilder("```");
         for (Pair<Double, UnitTypes.IUnit<? extends UnitTypes.IUnit>> unit : foundUnits) {
             Double from = unit.one;
-            if (unit.two instanceof UnitTypes.Metric) {
-                UnitTypes.Metric fromUnit = (UnitTypes.Metric)unit.two;
-                Pair<Double, UnitTypes.Imperial> converted = fromUnit.convert(from);
-                response.append(NUMBER_FORMAT.format(from)).append(" ").append(fromUnit.getSuffix()).append(" = ").append(NUMBER_FORMAT.format(converted.one)).append(" ").append(converted.two.getSuffix()).append("\n");
-            }
-            else if (unit.two instanceof UnitTypes.Imperial) {
-                UnitTypes.Imperial fromUnit = (UnitTypes.Imperial)unit.two;
-                Pair<Double, UnitTypes.Metric> converted = fromUnit.convert(from);
-                response.append(NUMBER_FORMAT.format(from)).append(" ").append(fromUnit.getSuffix()).append(" = ").append(NUMBER_FORMAT.format(converted.one)).append(" ").append(converted.two.getSuffix()).append("\n");
-            }
+            UnitTypes.IUnit<? extends UnitTypes.IUnit> fromUnit = unit.two;
+            Pair<Double, ? extends UnitTypes.IUnit> converted = fromUnit.convert(from);
+            response.append(fromUnit.format(localizer, from)).append(" = ").append(converted.two.format(localizer, converted.one)).append("\n");
         }
 
         if (response.length() > 3) {

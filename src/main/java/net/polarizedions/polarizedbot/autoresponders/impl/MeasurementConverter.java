@@ -61,6 +61,10 @@ public class MeasurementConverter implements IResponder {
         StringBuilder response = new StringBuilder("```");
         for (Pair<Double, UnitTypes.IUnit<? extends UnitTypes.IUnit>> unit : foundUnits) {
             Double from = unit.one;
+            if (from <= 0.00) {
+                continue;
+            }
+
             UnitTypes.IUnit<? extends UnitTypes.IUnit> fromUnit = unit.two;
             Pair<Double, ? extends UnitTypes.IUnit> converted = fromUnit.convert(from);
             response.append(fromUnit.format(localizer, from)).append(" = ").append(converted.two.format(localizer, converted.one)).append("\n");

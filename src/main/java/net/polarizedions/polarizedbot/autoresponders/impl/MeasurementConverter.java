@@ -22,7 +22,7 @@ public class MeasurementConverter implements IResponder {
 
     @Override
     public void run(IMessage message) {
-        List<Pair<Double, Pair<UnitTypes.Metric, UnitTypes.Imperial>>> foundUnits = new ArrayList<>();
+        List<Pair<Double, UnitTypes.IUnit<? extends UnitTypes.IUnit>>> foundUnits = new ArrayList<>();
 
         String contents = message.getContent();
         int cursor = 0;
@@ -49,7 +49,7 @@ public class MeasurementConverter implements IResponder {
                 continue;
             }
 
-            Pair<UnitTypes.Metric, UnitTypes.Imperial> unitType = UnitTypes.identify(unit.one);
+            UnitTypes.IUnit<? extends UnitTypes.IUnit> unitType = UnitTypes.identify(unit.one);
             if (unitType != null) {
                 foundUnits.add(new Pair<>(value.one, unitType));
                 continue;
@@ -59,15 +59,15 @@ public class MeasurementConverter implements IResponder {
         }
 
         StringBuilder response = new StringBuilder("```");
-        for (Pair<Double, Pair<UnitTypes.Metric, UnitTypes.Imperial>> unit : foundUnits) {
+        for (Pair<Double, UnitTypes.IUnit<? extends UnitTypes.IUnit>> unit : foundUnits) {
             Double from = unit.one;
-            if (unit.two.one != null) {
-                UnitTypes.Metric fromUnit = unit.two.one;
+            if (unit.two instanceof UnitTypes.Metric) {
+                UnitTypes.Metric fromUnit = (UnitTypes.Metric)unit.two;
                 Pair<Double, UnitTypes.Imperial> converted = fromUnit.convert(from);
                 response.append(NUMBER_FORMAT.format(from)).append(" ").append(fromUnit.getSuffix()).append(" = ").append(NUMBER_FORMAT.format(converted.one)).append(" ").append(converted.two.getSuffix()).append("\n");
             }
-            else if (unit.two.two != null) {
-                UnitTypes.Imperial fromUnit = unit.two.two;
+            else if (unit.two instanceof UnitTypes.Imperial) {
+                UnitTypes.Imperial fromUnit = (UnitTypes.Imperial)unit.two;
                 Pair<Double, UnitTypes.Metric> converted = fromUnit.convert(from);
                 response.append(NUMBER_FORMAT.format(from)).append(" ").append(fromUnit.getSuffix()).append(" = ").append(NUMBER_FORMAT.format(converted.one)).append(" ").append(converted.two.getSuffix()).append("\n");
             }

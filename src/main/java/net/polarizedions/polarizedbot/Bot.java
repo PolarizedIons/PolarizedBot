@@ -9,6 +9,7 @@ import net.polarizedions.polarizedbot.util.BuildInfo;
 import net.polarizedions.polarizedbot.util.ConfigManager;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
+import net.polarizedions.polarizedbot.util.PresenceUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sx.blah.discord.api.ClientBuilder;
@@ -32,6 +33,7 @@ public class Bot {
     private AnnouncerManager announcerManager;
     private CommandManager commandManager;
     private ResponderManager responderManager;
+    private PresenceUtil presenceUtil;
 
     private Bot() {
         logger.info("Starting bot v{} ({})...", BuildInfo.version, BuildInfo.buildtime);
@@ -48,6 +50,7 @@ public class Bot {
         GuildManager.init();
         this.commandManager = new CommandManager();
         this.responderManager = new ResponderManager();
+        this.presenceUtil = new PresenceUtil(this.getGlobalConfig().presenceStrings, this.getGlobalConfig().presenceDelay * 1000);
     }
 
     public static void main(String[] args) {
@@ -69,6 +72,7 @@ public class Bot {
             this.announcerManager = new AnnouncerManager();
             this.announcerManager.load();
             this.announcerManager.initAnnouncers();
+            this.presenceUtil.init();
         });
 
         this.client.getDispatcher().registerListener((IListener<MessageReceivedEvent>)messageEvent -> {
@@ -121,6 +125,7 @@ public class Bot {
 
     public void shutdown() {
         this.announcerManager.stop();
+        this.presenceUtil.stop();
         this.client.logout();
     }
 

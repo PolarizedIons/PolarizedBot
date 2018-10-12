@@ -12,6 +12,8 @@ public class DefaultGlobalConfig implements InstanceCreator<GlobalConfig> {
         defaultConfig.owner = "";
         defaultConfig.wolframAlphaApi = "";
         defaultConfig.botToken = "";
+        defaultConfig.presenceDelay = 300;
+        defaultConfig.presenceStrings = new String[] { "Serving {guilds-num} guilds dutifully", "Playing with {owner-name}'s chemicals", "Napping..."};
         return defaultConfig;
     }
 }

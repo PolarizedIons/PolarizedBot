@@ -37,7 +37,7 @@ public class MeasurementConverter implements IResponder {
                 continue;
             }
 
-            Pair<String, Integer> unit = this.readWord(contents, cursor);
+            Pair<String, Integer> unit = this.readUnit(contents, cursor);
             if (cursor == unit.two) {
                 cursor++;
                 continue;
@@ -110,11 +110,11 @@ public class MeasurementConverter implements IResponder {
 
     @NotNull
     @Contract("_, _ -> new")
-    private Pair<String, Integer> readWord(String str, int cursor) {
+    private Pair<String, Integer> readUnit(String str, int cursor) {
         cursor = this.skipSpaces(str, cursor);
         StringBuilder working = new StringBuilder();
 
-        while (cursor < str.length() && this.isWordChar(str.charAt(cursor))) {
+        while (cursor < str.length() && (this.isWordChar(str.charAt(cursor)) || str.charAt(cursor) == '\'' || str.charAt(cursor) == '"')) {
             working.append(str.charAt(cursor));
             cursor++;
         }

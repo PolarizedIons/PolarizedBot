@@ -75,7 +75,7 @@ public class MeasurementConverter implements IResponder {
         }
     }
 
-    private int skipSpaces(@NotNull String str, int cursor) {
+    int skipSpaces(@NotNull String str, int cursor) {
         while (cursor < str.length() && Character.isSpaceChar(str.charAt(cursor))) {
             cursor++;
         }
@@ -85,7 +85,7 @@ public class MeasurementConverter implements IResponder {
 
     @NotNull
     @Contract("_, _ -> new")
-    private Pair<Double, Integer> readDouble(@NotNull String str, int cursor) {
+    Pair<Double, Integer> readDouble(@NotNull String str, int cursor) {
         cursor = this.skipSpaces(str, cursor);
         StringBuilder working = new StringBuilder();
 
@@ -104,13 +104,13 @@ public class MeasurementConverter implements IResponder {
         return new Pair<>(null, cursor);
     }
 
-    private boolean isDigit(char c) {
+    boolean isDigit(char c) {
         return Character.isDigit(c) || c == '.';
     }
 
     @NotNull
     @Contract("_, _ -> new")
-    private Pair<String, Integer> readUnit(String str, int cursor) {
+    Pair<String, Integer> readUnit(String str, int cursor) {
         cursor = this.skipSpaces(str, cursor);
         StringBuilder working = new StringBuilder();
 
@@ -127,16 +127,16 @@ public class MeasurementConverter implements IResponder {
     }
 
     @Contract(pure = true)
-    private boolean isWordChar(char c) {
+    boolean isWordChar(char c) {
         return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
     }
 
     @Contract(pure = true)
-    private boolean isPunctuation(char c) {
+    boolean isPunctuation(char c) {
         return c == '.' || c == '?' || c == ',' || c == '!' || c == '(' || c == ')';
     }
 
-    private int skipWord(@NotNull String str, int cursor) {
+    int skipWord(@NotNull String str, int cursor) {
         while (cursor < str.length() && this.isWordChar(str.charAt(cursor))) {
             cursor++;
         }

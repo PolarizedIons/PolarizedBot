@@ -8,10 +8,10 @@ public class MetricUnits {
     @NotNull
     @Contract("_ -> new")
     public static Pair<Double, UnitTypes.Imperial> fromMillimeter(Double from) {
-        if (from < 305) {
+        if (from < 305) { // < 12 in
             return new Pair<>(from / 25.4, UnitTypes.Imperial.INCH);
         }
-        else {
+        else { // > 12 in
             return new Pair<>(from / 304.8, UnitTypes.Imperial.FOOT);
         }
     }
@@ -19,13 +19,13 @@ public class MetricUnits {
     @NotNull
     @Contract("_ -> new")
     public static Pair<Double, UnitTypes.Imperial> fromCentimeter(Double from) {
-        if (from < 3) {
+        if (from < 31) { // < 1 ft
             return new Pair<>(from / 2.54, UnitTypes.Imperial.INCH);
         }
-        else if (from < 31) {
+        else if (from < 92) { // < 1 yd
             return new Pair<>(from / 30.48, UnitTypes.Imperial.FOOT);
         }
-        else {
+        else { // > 1 yd
             return new Pair<>(from / 91.44, UnitTypes.Imperial.YARD);
         }
     }

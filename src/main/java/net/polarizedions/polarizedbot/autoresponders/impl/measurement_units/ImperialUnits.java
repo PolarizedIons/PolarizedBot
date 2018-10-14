@@ -8,10 +8,10 @@ public class ImperialUnits {
     @NotNull
     @Contract("_ -> new")
     public static Pair<Double, UnitTypes.Metric> fromInch(Double from) {
-        if (from < 40) {
+        if (from < 40) { // < 100 cm
             return new Pair<>(from *  2.54, UnitTypes.Metric.CENTIMETER);
         }
-        else {
+        else { // > 100 cm
             return new Pair<>(from / 39.37, UnitTypes.Metric.METER);
         }
     }
@@ -19,10 +19,10 @@ public class ImperialUnits {
     @NotNull
     @Contract("_ -> new")
     public static Pair<Double, UnitTypes.Metric> fromFoot(Double from) {
-        if (from < 3) {
+        if (from < 4) { // < 120 cm
             return new Pair<>(from * 30.48, UnitTypes.Metric.CENTIMETER);
         }
-        else {
+        else { // > 120 cm
             return new Pair<>(from / 3.281, UnitTypes.Metric.METER);
         }
     }
@@ -30,10 +30,10 @@ public class ImperialUnits {
     @NotNull
     @Contract("_ -> new")
     public static Pair<Double, UnitTypes.Metric> fromYard(Double from) {
-        if (from < 2) {
+        if (from < 1.5) { // < 130 cm
             return new Pair<>(from * 91.44, UnitTypes.Metric.CENTIMETER);
         }
-        else {
+        else { // > 130 cm
             return new Pair<>(from / 1.094, UnitTypes.Metric.METER);
         }
     }

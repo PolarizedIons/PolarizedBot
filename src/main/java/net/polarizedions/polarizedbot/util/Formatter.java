@@ -14,12 +14,10 @@ public class Formatter {
     private static final Pattern MATCH_ARGS = Pattern.compile("(\\{(" + VALID_ARG_NAME.pattern() + ")})");
     private static final Logger logger = LogManager.getLogger("Formatter");
 
-    private Map<String, String> staticArgs;
-    private Map<String, Supplier<String>> dynamicArgs;
+    private Map<String, Supplier<String>> args;
 
     public Formatter() {
-        this.staticArgs = new HashMap<>();
-        this.dynamicArgs = new HashMap<>();
+        this.args = new HashMap<>();
     }
 
     public Formatter addArg(String key, String value) {
@@ -28,7 +26,7 @@ public class Formatter {
             return this;
         }
 
-        this.staticArgs.put(key, value);
+        this.args.put(key, () -> value);
         return this;
     }
 
@@ -38,17 +36,12 @@ public class Formatter {
             return this;
         }
 
-        this.dynamicArgs.put(key, value);
+        this.args.put(key, value);
         return this;
     }
 
     public String getArg(String key) {
-        String val = this.staticArgs.get(key);
-        if (val != null) {
-            return val;
-        }
-
-        Supplier<String> supplier = this.dynamicArgs.get(key);
+        Supplier<String> supplier = this.args.get(key);
         return supplier == null ? null : supplier.get();
     }
 

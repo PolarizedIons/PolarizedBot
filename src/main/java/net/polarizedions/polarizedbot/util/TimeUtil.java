@@ -30,7 +30,7 @@ public class TimeUtil {
                 continue;
             }
 
-            formatted.append(localizer.localizeNumber(formatKeys[i], (int)time[i], time[i])).append(" ");
+            formatted.append(localizer.localizeNumber(formatKeys[i], (int)time[i])).append(" ");
         }
 
         return formatted.toString().trim();

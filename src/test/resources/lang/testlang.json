@@ -6,5 +6,13 @@
         },
         "*": "success"
     },
-    "order": "%2$s %1$s"
+    "order": "%2$s %1$s",
+    "numberformat": {
+        "test": "%s meow",
+        "bla": {
+            "2": "two",
+            "-6" : "minus six",
+            "*": "%s"
+        }
+    }
 }

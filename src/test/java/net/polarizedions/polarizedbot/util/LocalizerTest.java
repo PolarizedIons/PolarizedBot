@@ -66,4 +66,17 @@ class LocalizerTest {
         assertEquals("hi polar", loc.localize("test.deep.keys", "polar"));
         assertEquals("2 1", loc.localize("order", "1", 2));
     }
+
+    @Test
+    void numberFormatting() {
+        Localizer loc = new Localizer("testlang");
+        assertEquals("1 meow", loc.localizeNumber("numberformat.test", 1));
+        assertEquals("-6 meow", loc.localizeNumber("numberformat.test", -6));
+        assertEquals("0 meow", loc.localizeNumber("numberformat.test", 0));
+
+        assertEquals("1", loc.localizeNumber("numberformat.bla", 1));
+        assertEquals("two", loc.localizeNumber("numberformat.bla", 2));
+        assertEquals("minus six", loc.localizeNumber("numberformat.bla", -6));
+        assertEquals("0", loc.localizeNumber("numberformat.bla", 0));
+    }
 }

@@ -38,7 +38,7 @@ public class WolframAlphaApi {
         }
 
         if (! json.get("success").getAsBoolean()) {
-            throw new ApiException("unknown");
+            throw new ApiException("fail");
         }
 
         WolframAlphaReply data = new WolframAlphaReply();

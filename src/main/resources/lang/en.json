@@ -195,7 +195,8 @@
                 "connection": "Error reaching WolframAlpha",
                 "no_reply": "WolframAlpha did not send back a reply",
                 "timed_out": "WolframAlpha took too long to parse that, try again.",
-                "no_data": "WolframAlpha does not have any data about that :("
+                "no_data": "WolframAlpha does not have any data about that :(",
+                "fail": "WolframAlpha failed to understand that, try rephrasing it?"
             }
         }
     },

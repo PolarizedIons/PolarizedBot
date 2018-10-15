@@ -16,13 +16,20 @@ public class GoodBot implements IResponder {
 
     private boolean inReplyToUs(@NotNull IMessage message) {
         IUser ourUser = Bot.instance.getClient().getOurUser();
-        MessageHistory messageHistory = message.getChannel().getMessageHistory(2);
+        MessageHistory channelMessages = message.getChannel().getMessageHistory(10);
+        boolean found = false;
+        for (IMessage msg : channelMessages) {
+            if (msg.equals(message)) {
+                found = true;
+            }
 
-        if (messageHistory.size() < 2) {
-            return false;
+            // Previous one triggered this class
+            if (found) {
+                return msg.getAuthor().equals(ourUser);
+            }
         }
 
-        return messageHistory.get(1).getAuthor().equals(ourUser);
+        return false;
     }
 
     @Override

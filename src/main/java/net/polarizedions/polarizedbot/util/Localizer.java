@@ -130,7 +130,7 @@ public class Localizer {
     }
 
     public String localizeNumber(String key, int number, Object... values) {
-        return this.localize(this.doesKeyExist(key + "." + number) ? key + "." + number : key, values.length == 0 ? number : values);
+        return this.localize(this.doesKeyExist(key + "." + number) ? key + "." + number : key, values.length == 0 ? new Object[] {number} : values);
     }
 
     public boolean doesKeyExist(String key) {

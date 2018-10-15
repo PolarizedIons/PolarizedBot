@@ -1,28 +1,52 @@
 package net.polarizedions.polarizedbot.autoresponders.impl;
 
+import mocks.MockChannel;
+import mocks.MockMessage;
+import mocks.SetupMocks;
+import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.Pair;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 class MeasurementConverterTest {
     private static MeasurementConverter converter;
 
     @BeforeAll
-    static void setup() {
+    static void setup() throws NoSuchFieldException, IllegalAccessException {
         converter = new MeasurementConverter();
+        SetupMocks.setupRatelimitMock();
+        Localizer.init();
     }
 
     @Test()
-    @Disabled("TODO")
-    void run() {
-        // TODO
-        fail();
+    void findUnits() {
+        MockMessage mockMsg = new MockMessage("31 cm to your right, 5 inches to your left, and 4000 ft down.");
+        converter.run(mockMsg);
+        assertEquals(1, mockMsg.channel.sentMessages.size());
+        List<String> messageLines = Arrays.stream(mockMsg.channel.sentMessages.get(0).split("\n")).filter(line -> ! line.equals("```")).collect(Collectors.toList());
+        System.out.println(messageLines);
+        assertEquals(3, messageLines.size());
+        assertTrue(messageLines.contains("31 centimeters = 1.02 foot"));
+        assertTrue(messageLines.contains("5 inches = 12.7 centimeters"));
+        assertTrue(messageLines.contains("4000 feet = 1219.14 meters"));
+    }
+
+    @Test
+    void naughtyStrings() {
+        MockChannel mockChannel = new MockChannel();
+        converter.run(new MockMessage(0, mockChannel, "We are 4 in here."));
+        converter.run(new MockMessage(0, mockChannel, "look whats up on the bridge now https://scontent-yyz1-1.xx.fbcdn.net/v/t1.0-9/43880116_2136757986643099_8466591188617527296_n.jpg?_nc_cat=108&oh=dbd6c9271c361c4a6854c9252b73e1a7&oe=5C51E275"));
+
+
+        assertEquals(0, mockChannel.sentMessages.size(), "Matched naughty strings!: " + mockChannel.sentMessages);
     }
 
     @Test

@@ -58,7 +58,7 @@ public class MeasurementConverter implements IResponder {
         }
 
         Localizer localizer = new Localizer(message);
-        StringBuilder response = new StringBuilder("```");
+        StringBuilder response = new StringBuilder("```\n");
         for (Pair<Double, UnitTypes.IUnit<? extends UnitTypes.IUnit>> unit : foundUnits) {
             Double from = unit.one;
             if (from <= 0.00) {
@@ -70,7 +70,7 @@ public class MeasurementConverter implements IResponder {
             response.append(fromUnit.format(localizer, from)).append(" = ").append(converted.two.format(localizer, converted.one)).append("\n");
         }
 
-        if (response.length() > 3) {
+        if (response.length() > 4) {
             MessageUtil.sendAutosplit(message.getChannel(), response.append("```").toString(), "```", "```");
         }
     }

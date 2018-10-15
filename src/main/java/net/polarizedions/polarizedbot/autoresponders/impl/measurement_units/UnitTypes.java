@@ -40,13 +40,13 @@ public class UnitTypes {
             // case "in":  // Too common
             case "inch":
             case "inches":
-            case "'":
+            case "\"":
                 return Imperial.INCH;
 
             case "ft":
             case "foot":
             case "feet":
-            case "\"":
+            case "'":
                 return Imperial.FOOT;
 
             case "yd":

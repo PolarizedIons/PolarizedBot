@@ -36,12 +36,12 @@ class UnitTypesTest {
         assertNull(UnitTypes.identify("in"));
         assertEquals(Imperial.INCH, UnitTypes.identify("inch"));
         assertEquals(Imperial.INCH, UnitTypes.identify("inches"));
-        assertEquals(Imperial.INCH, UnitTypes.identify("'"));
+        assertEquals(Imperial.INCH, UnitTypes.identify("\""));
 
         assertEquals(Imperial.FOOT, UnitTypes.identify("ft"));
         assertEquals(Imperial.FOOT, UnitTypes.identify("foot"));
         assertEquals(Imperial.FOOT, UnitTypes.identify("feet"));
-        assertEquals(Imperial.FOOT, UnitTypes.identify("\""));
+        assertEquals(Imperial.FOOT, UnitTypes.identify("'"));
 
         assertEquals(Imperial.YARD, UnitTypes.identify("yd"));
         assertEquals(Imperial.YARD, UnitTypes.identify("yard"));

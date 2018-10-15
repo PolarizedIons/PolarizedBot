@@ -9,8 +9,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.obj.IMessage;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MeasurementConverter implements IResponder {
 
@@ -21,7 +21,7 @@ public class MeasurementConverter implements IResponder {
 
     @Override
     public void run(IMessage message) {
-        List<Pair<Double, UnitTypes.IUnit<? extends UnitTypes.IUnit>>> foundUnits = new ArrayList<>();
+        Set<Pair<Double, UnitTypes.IUnit<? extends UnitTypes.IUnit>>> foundUnits = new HashSet<>();
 
         String contents = message.getContent();
         int cursor = 0;
@@ -133,7 +133,7 @@ public class MeasurementConverter implements IResponder {
 
     @Contract(pure = true)
     boolean isPunctuation(char c) {
-        return c == '.' || c == '?' || c == ',' || c == '!' || c == '(' || c == ')';
+        return c == '.' || c == '?' || c == ',' || c == '!' || c == '(' || c == ')' || c == '"' || c == '\'';
     }
 
     int skipWord(@NotNull String str, int cursor) {

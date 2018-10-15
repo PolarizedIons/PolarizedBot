@@ -28,7 +28,7 @@ class MeasurementConverterTest {
 
     @Test()
     void findUnits() {
-        MockMessage mockMsg = new MockMessage("31 cm to your right, 5 inches to your left, and 4000 ft down.");
+        MockMessage mockMsg = new MockMessage("31 cm to your right, 5 inches to your left, and 4000 ft down, and then 5 inches to your right."); // It's 3'14\" long."); // TODO: THIS COMMENTED OUT ONE
         converter.run(mockMsg);
         assertEquals(1, mockMsg.channel.sentMessages.size());
         List<String> messageLines = Arrays.stream(mockMsg.channel.sentMessages.get(0).split("\n")).filter(line -> ! line.equals("```")).collect(Collectors.toList());
@@ -37,6 +37,8 @@ class MeasurementConverterTest {
         assertTrue(messageLines.contains("31 centimeters = 1.02 foot"));
         assertTrue(messageLines.contains("5 inches = 12.7 centimeters"));
         assertTrue(messageLines.contains("4000 feet = 1219.14 meters"));
+//        assertTrue(messageLines.contains("3 feet = 91,44 centimeters"));
+//        assertTrue(messageLines.contains("14 inches = 35.56 centimeters"));
     }
 
     @Test
@@ -103,6 +105,8 @@ class MeasurementConverterTest {
         assertTrue(converter.isPunctuation(','));
         assertTrue(converter.isPunctuation('('));
         assertTrue(converter.isPunctuation(')'));
+        assertTrue(converter.isPunctuation('\''));
+        assertTrue(converter.isPunctuation('"'));
 
         assertFalse(converter.isPunctuation('$'));
         assertFalse(converter.isPunctuation('^'));

@@ -1,5 +1,6 @@
 package net.polarizedions.polarizedbot.autoresponders;
 
+import net.polarizedions.polarizedbot.autoresponders.impl.GoodBot;
 import net.polarizedions.polarizedbot.autoresponders.impl.MeasurementConverter;
 import net.polarizedions.polarizedbot.autoresponders.impl.TempConverter;
 import net.polarizedions.polarizedbot.config.GuildConfig;
@@ -20,6 +21,7 @@ public class ResponderManager {
 
         this.responders.add(new TempConverter());
         this.responders.add(new MeasurementConverter());
+        this.responders.add(new GoodBot());
     }
 
     public void messageHandler(IMessage message) {

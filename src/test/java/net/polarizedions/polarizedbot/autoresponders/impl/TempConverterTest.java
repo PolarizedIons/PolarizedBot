@@ -37,7 +37,7 @@ class TempConverterTest {
         converter.run(msg);
         assertEquals(1, msg.channel.sentMessages.size());
 
-        List<String> lines = Arrays.stream(msg.channel.sentMessages.get(0).split("\n")).filter(l -> ! l.equals("```")).collect(Collectors.toList());
+        List<String> lines = Arrays.stream(msg.channel.getSentContent().get(0).split("\n")).filter(l -> ! l.equals("```")).collect(Collectors.toList());
         System.out.println(lines);
         assertEquals(5, lines.size());
         assertTrue(lines.contains("34 °C -> 93.2 °F"));

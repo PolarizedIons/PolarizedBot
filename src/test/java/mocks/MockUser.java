@@ -53,12 +53,12 @@ public class MockUser implements IUser {
 
     @Override
     public String mention() {
-        return null;
+        return mention(true);
     }
 
     @Override
     public String mention(boolean mentionWithNickname) {
-        return null;
+        return "<@" + (mentionWithNickname ? "!" : "") + getLongID() + ">";
     }
 
     @Override

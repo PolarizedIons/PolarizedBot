@@ -72,7 +72,7 @@ public class MessageUtilTest {
                 "```", "```", "```");
 
         assertEquals(8, channel.sentMessages.size());
-        for (String msg : channel.sentMessages) {
+        for (String msg : channel.getSentContent()) {
             msg = msg.trim();
             assertTrue(msg.startsWith("```"));
             assertTrue(msg.endsWith("```"));

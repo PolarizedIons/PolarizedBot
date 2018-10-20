@@ -108,7 +108,7 @@ public class MockDiscordClient implements IDiscordClient {
 
     @Override
     public IUser getOurUser() {
-        return null;
+        return new MockUser(SetupMocks.BOT_USER_ID);
     }
 
     @Override

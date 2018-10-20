@@ -18,14 +18,14 @@ public class GoodBot implements IResponder {
         IUser ourUser = Bot.instance.getClient().getOurUser();
         MessageHistory channelMessages = message.getChannel().getMessageHistory(10);
         boolean found = false;
+
         for (IMessage msg : channelMessages) {
-            if (msg.equals(message)) {
-                found = true;
+            if (found) {
+                return msg.getAuthor().getLongID() == ourUser.getLongID();
             }
 
-            // Previous one triggered this class
-            if (found) {
-                return msg.getAuthor().equals(ourUser);
+            if (msg.equals(message)) {
+                found = true;
             }
         }
 

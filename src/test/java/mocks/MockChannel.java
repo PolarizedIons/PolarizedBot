@@ -27,10 +27,11 @@ import java.time.Instant;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MockChannel implements IChannel {
     private final long channelID;
-    public List<String> sentMessages;
+    public List<IMessage> sentMessages;
 
     public MockChannel() {
         this((long)( Math.random() * 7823 ));
@@ -42,6 +43,10 @@ public class MockChannel implements IChannel {
         Bot.logger.info("[Mock] IChannel {} created", channelID);
     }
 
+    public List<String> getSentContent() {
+        return this.sentMessages.parallelStream().map(IMessage::getContent).collect(Collectors.toList());
+    }
+
     @Override
     public String getName() {
         return null;
@@ -49,12 +54,15 @@ public class MockChannel implements IChannel {
 
     @Override
     public MessageHistory getMessageHistory() {
-        return null;
+        return new MessageHistory(this.sentMessages);
     }
 
     @Override
     public MessageHistory getMessageHistory(int messageCount) {
-        return null;
+        int start = Math.max(0, this.sentMessages.size() - messageCount - 1);
+        int end = Math.min(messageCount -1, this.sentMessages.size());
+        System.out.println(start + " " + end + " " + this.sentMessages);
+        return new MessageHistory(this.sentMessages.subList(start, end));
     }
 
     @Override
@@ -179,8 +187,9 @@ public class MockChannel implements IChannel {
 
     @Override
     public IMessage sendMessage(String content) {
-        this.sentMessages.add(content);
-        return null;
+        IMessage msg = new MockMessage(content);
+        this.sentMessages.add(msg);
+        return msg;
     }
 
     @Override

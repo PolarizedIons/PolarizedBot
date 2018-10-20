@@ -21,8 +21,10 @@ import java.util.Optional;
 
 public class MockMessage implements IMessage {
     public MockChannel channel;
-    long messageID;
-    String content;
+    public long messageID;
+    public String content;
+    public MockUser user;
+    public Instant time;
 
     public MockMessage() {
         this("");
@@ -33,9 +35,17 @@ public class MockMessage implements IMessage {
     }
 
     public MockMessage(long messageID, MockChannel channel, String content) {
+        this(messageID, channel, content, new MockUser((long)( Math.random() * 5000 )));
+    }
+
+    public MockMessage(long messageID, MockChannel channel, String content, MockUser user) {
         this.messageID = messageID;
         this.channel = channel;
         this.content = content;
+        this.user = user;
+
+        this.channel.sentMessages.add(this);
+        this.time = Instant.now();
     }
 
     @Override
@@ -50,12 +60,12 @@ public class MockMessage implements IMessage {
 
     @Override
     public IUser getAuthor() {
-        return null;
+        return this.user;
     }
 
     @Override
     public Instant getTimestamp() {
-        return null;
+        return time;
     }
 
     @Override
@@ -260,7 +270,7 @@ public class MockMessage implements IMessage {
 
     @Override
     public IMessage copy() {
-        return null;
+        return new MockMessage(this.messageID, this.channel, this.content, this.user);
     }
 
     @Override

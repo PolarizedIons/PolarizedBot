@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class SetupMocks {
+    public static final long BOT_USER_ID = 123456654321L;
+
     public static void botClient() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
         Class<Bot> clazz = Bot.class;
         Constructor<Bot> constructor = clazz.getDeclaredConstructor();

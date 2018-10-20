@@ -31,7 +31,7 @@ class MeasurementConverterTest {
         MockMessage mockMsg = new MockMessage("31 cm to your right, 5 inches to your left, and 4000 ft down, and then 5 inches to your right."); // It's 3'14\" long."); // TODO: THIS COMMENTED OUT ONE
         converter.run(mockMsg);
         assertEquals(1, mockMsg.channel.sentMessages.size());
-        List<String> messageLines = Arrays.stream(mockMsg.channel.sentMessages.get(0).split("\n")).filter(line -> ! line.equals("```")).collect(Collectors.toList());
+        List<String> messageLines = Arrays.stream(mockMsg.channel.getSentContent().get(0).split("\n")).filter(line -> ! line.equals("```")).collect(Collectors.toList());
         System.out.println(messageLines);
         assertEquals(3, messageLines.size());
         assertTrue(messageLines.contains("31 centimeters = 1.02 foot"));

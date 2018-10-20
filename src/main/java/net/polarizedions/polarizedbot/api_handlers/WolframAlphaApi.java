@@ -37,10 +37,6 @@ public class WolframAlphaApi {
             throw new ApiException("timed_out");
         }
 
-        if (! json.get("success").getAsBoolean()) {
-            throw new ApiException("fail");
-        }
-
         WolframAlphaReply data = new WolframAlphaReply();
 
         LinkedList<Pod> pods = new LinkedList<>();
@@ -79,6 +75,16 @@ public class WolframAlphaApi {
 
         pods.sort(Comparator.comparingInt(pod -> pod.index));
         data.pods = pods;
+
+        // Needs to be checked after parsing, because some pods's text repr are empty
+        if (pods.size() == 0) {
+            throw new ApiException("no_data");
+        }
+
+        // Needs to be checked *after* checking for no data, because that error is more specific
+        if (! json.get("success").getAsBoolean()) {
+            throw new ApiException("fail");
+        }
 
         return data;
     }

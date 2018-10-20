@@ -69,6 +69,12 @@ public class CommandWolframAlpha implements ICommand {
             return;
         }
 
+        // < 2, because one of those is the input interpretation
+        if (reply.pods.size() < 2) {
+            MessageUtil.reply(message, "command.wolfram.no_data");
+            return;
+        }
+
         this.reply(message, reply, reply.pods.size());
     }
 
@@ -76,6 +82,12 @@ public class CommandWolframAlpha implements ICommand {
     private void replyShort(IMessage message, ParsedArguments args) {
         WolframAlphaApi.@Nullable WolframAlphaReply reply = this.get(message, args);
         if (reply == null) {
+            return;
+        }
+
+        // < 2, because one of those is the input interpretation
+        if (reply.pods.size() < 2) {
+            MessageUtil.reply(message, "command.wolfram.error.no_data");
             return;
         }
 

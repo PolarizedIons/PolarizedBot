@@ -22,7 +22,7 @@ public class BuildInfo {
             BuildInfo.githubRepo = BuildInfo.githubRepo.replace("git@github.com:", "https://github.com/").replace(".git", "");
         }
         else if (BuildInfo.githubRepo.startsWith("${")) {
-            BuildInfo.githubRepo = "";
+            BuildInfo.githubRepo = "?";
         }
     }
 

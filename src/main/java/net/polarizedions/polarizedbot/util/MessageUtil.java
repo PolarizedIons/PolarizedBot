@@ -2,7 +2,9 @@ package net.polarizedions.polarizedbot.util;
 
 import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.util.RequestBuffer;
 
 import java.util.Collections;
@@ -49,7 +51,8 @@ public class MessageUtil {
     }
 
     public static void reply(@NotNull IChannel channel, String localizationKey, Object... context) {
-        String localized = new Localizer(channel.getGuild()).localize(localizationKey, context);
+        IGuild guild = channel instanceof IPrivateChannel ? null : channel.getGuild();
+        String localized = new Localizer(guild).localize(localizationKey, context);
 
         handleRateLimit(channel, Collections.singletonList(localized));
     }

@@ -27,7 +27,7 @@ public class CommandSay implements ICommand {
                                 .swallow(false)
                                 .onExecute((message, args) -> {
                                     IChannel channel = args.getAsUser(1).getOrCreatePMChannel();
-                                    MessageUtil.reply(channel, "command.say.success", message.getAuthor().toString(), args.getAsString(2));
+                                    MessageUtil.reply(channel, "command.say.success", message.getAuthor().mention(), args.getAsString(2));
                                 })
                         )
                         .setHelp("command.say.help.tell")

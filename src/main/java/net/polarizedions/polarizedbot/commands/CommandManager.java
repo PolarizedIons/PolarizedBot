@@ -111,12 +111,12 @@ public class CommandManager {
                 commandTree.execute(commandFragments, message);
             }
             catch (Exception ex) {
-                this.handleCommandException(message, ex);
+                this.handleCommandException(message, ex, commandTree);
             }
         });
     }
 
-    private void handleCommandException(IMessage message, Exception ex) {
+    private void handleCommandException(IMessage message, Exception ex, CommandTree commandTree) {
         if (ex instanceof CommandExceptions) {
             logger.warn("Failed to handle command: threw {}", ex.getClass().getSimpleName());
             MessageUtil.reply(message, ( (CommandExceptions)ex ).getError(), ( (CommandExceptions)ex ).getErrorContext());
@@ -146,7 +146,32 @@ public class CommandManager {
         else {
             logger.error("I f'ed up", ex);
             try {
-                MessageUtil.reply(message, "error.misc_error", ex.getClass().getCanonicalName() + ": " + ex.getMessage());
+                StringBuilder errorMsg = new StringBuilder("java\n")
+                        .append("In reply to: [").append(message.getStringID()).append("] ")
+                        .append(message.getAuthor().getName()).append("#").append(message.getAuthor().getDiscriminator())
+                        .append(": \"").append(message.getContent()).append("\"\n")
+                        .append("Command: ").append(commandTree.getName()).append("\n")
+                        .append("Exception:\n\n")
+                        .append(ex.getClass().getCanonicalName()).append(": ").append(ex.getMessage()).append("\n");
+
+                boolean myCode = false;
+                int i = 0;
+                for (StackTraceElement element : ex.getStackTrace()) {
+                    if (! myCode && element.getClassName().startsWith("net.polarizedions.polarizedbot")) {
+                        myCode = true;
+                        if (! element.equals(ex.getStackTrace()[0])) {
+                            errorMsg.append("   ...\n");
+                        }
+                    }
+                    else if (myCode) {
+                        errorMsg.append("   at ").append(element.toString()).append("\n");
+                        if (++i > 3) {
+                            break;
+                        }
+                    }
+                }
+
+                MessageUtil.reply(message, "error.misc_error", errorMsg.toString());
             }
             catch (Exception e) { /* NOOP */ }
         }

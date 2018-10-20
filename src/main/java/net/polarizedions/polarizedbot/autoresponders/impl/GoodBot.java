@@ -42,7 +42,7 @@ public class GoodBot implements IResponder {
                 ( content.startsWith("good " + ourUser.mention()) ) ||
                 ( content.startsWith(ourUser.mention() + " good bot") )
         ) {
-            MessageUtil.replyUnlocalized(message.getChannel(), "❤️");
+            MessageUtil.replyUnlocalized(message.getChannel(), ":heart:️");
         }
     }
 }

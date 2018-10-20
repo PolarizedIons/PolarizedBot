@@ -19,7 +19,7 @@ public class BuildInfo {
 
         // TODO: BAD
         if (BuildInfo.githubRepo.startsWith("git@github.com:")) {
-            BuildInfo.githubRepo = BuildInfo.githubRepo.replace("git@github.com:", "https://github.com").replace(".git", "");
+            BuildInfo.githubRepo = BuildInfo.githubRepo.replace("git@github.com:", "https://github.com/").replace(".git", "");
         }
         else if (BuildInfo.githubRepo.startsWith("${")) {
             BuildInfo.githubRepo = "";

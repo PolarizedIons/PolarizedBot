@@ -34,7 +34,7 @@ public class MessageUtilTest {
         MockChannel channel = new MockChannel();
         MessageUtil.sendAutosplit(channel, "short message\n");
         assertEquals(1, channel.sentMessages.size());
-        assertEquals("short message\n", channel.sentMessages.get(0));
+        assertEquals("short message\n", channel.getSentContent().get(0));
 
         channel.sentMessages.clear();
 
@@ -47,12 +47,12 @@ public class MessageUtilTest {
 
         assertEquals(4, channel.sentMessages.size());
 
-        assertEquals("Stop right there criminal scum!\n", channel.sentMessages.get(0));
+        assertEquals("Stop right there criminal scum!\n", channel.getSentContent().get(0));
         assertEquals("Let me guess... someone stole your sweetroll.\n" +
-                "No lollygaggin'.\n", channel.sentMessages.get(1));
+                "No lollygaggin'.\n", channel.getSentContent().get(1));
         assertEquals("What is it? Dragons?\n" +
-                "Wait... I know you.\n", channel.sentMessages.get(2));
-        assertEquals("I used to be an adventurer like you. Then I took an arrow in the knee...\n", channel.sentMessages.get(3));
+                "Wait... I know you.\n", channel.getSentContent().get(2));
+        assertEquals("I used to be an adventurer like you. Then I took an arrow in the knee...\n", channel.getSentContent().get(3));
     }
 
     @Test
@@ -88,8 +88,8 @@ public class MessageUtilTest {
         MessageUtil.reply(message, "test");
         MessageUtil.reply(message, "hello", "Polar");
 
-        assertEquals(2, message.channel.sentMessages.size());
-        assertEquals("success", message.channel.sentMessages.get(0));
-        assertEquals("Hello Polar", message.channel.sentMessages.get(1));
+        assertEquals(3, message.channel.sentMessages.size());
+        assertEquals("success", message.channel.getSentContent().get(1));
+        assertEquals("Hello Polar", message.channel.getSentContent().get(2));
     }
 }

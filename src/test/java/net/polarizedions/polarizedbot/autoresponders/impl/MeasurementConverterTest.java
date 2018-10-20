@@ -30,8 +30,8 @@ class MeasurementConverterTest {
     void findUnits() {
         MockMessage mockMsg = new MockMessage("31 cm to your right, 5 inches to your left, and 4000 ft down, and then 5 inches to your right."); // It's 3'14\" long."); // TODO: THIS COMMENTED OUT ONE
         converter.run(mockMsg);
-        assertEquals(1, mockMsg.channel.sentMessages.size());
-        List<String> messageLines = Arrays.stream(mockMsg.channel.getSentContent().get(0).split("\n")).filter(line -> ! line.equals("```")).collect(Collectors.toList());
+        assertEquals(2, mockMsg.channel.sentMessages.size());
+        List<String> messageLines = Arrays.stream(mockMsg.channel.getSentContent().get(1).split("\n")).filter(line -> ! line.equals("```")).collect(Collectors.toList());
         System.out.println(messageLines);
         assertEquals(3, messageLines.size());
         assertTrue(messageLines.contains("31 centimeters = 1.02 foot"));
@@ -48,7 +48,7 @@ class MeasurementConverterTest {
         converter.run(new MockMessage(0, mockChannel, "look whats up on the bridge now https://scontent-yyz1-1.xx.fbcdn.net/v/t1.0-9/43880116_2136757986643099_8466591188617527296_n.jpg?_nc_cat=108&oh=dbd6c9271c361c4a6854c9252b73e1a7&oe=5C51E275"));
 
 
-        assertEquals(0, mockChannel.sentMessages.size(), "Matched naughty strings!: " + mockChannel.sentMessages);
+        assertEquals(2, mockChannel.sentMessages.size(), "Matched naughty strings!: " + mockChannel.getSentContent());
     }
 
     @Test

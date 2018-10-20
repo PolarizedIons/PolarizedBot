@@ -44,7 +44,7 @@ public class MockChannel implements IChannel {
     }
 
     public List<String> getSentContent() {
-        return this.sentMessages.parallelStream().map(IMessage::getContent).collect(Collectors.toList());
+        return this.sentMessages.stream().map(IMessage::getContent).collect(Collectors.toList());
     }
 
     @Override
@@ -61,7 +61,6 @@ public class MockChannel implements IChannel {
     public MessageHistory getMessageHistory(int messageCount) {
         int start = Math.max(0, this.sentMessages.size() - messageCount - 1);
         int end = Math.min(messageCount -1, this.sentMessages.size());
-        System.out.println(start + " " + end + " " + this.sentMessages);
         return new MessageHistory(this.sentMessages.subList(start, end));
     }
 

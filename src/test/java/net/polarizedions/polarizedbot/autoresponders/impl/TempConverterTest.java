@@ -25,7 +25,7 @@ class TempConverterTest {
 
         MockMessage msg = new MockMessage("What is better - to be born good, or to overcome your evil nature through great effort?");
         converter.run(msg);
-        assertEquals(0, msg.channel.sentMessages.size());
+        assertEquals(1, msg.channel.sentMessages.size());
     }
 
     @Test
@@ -35,9 +35,9 @@ class TempConverterTest {
         MockMessage msg = new MockMessage("34 C weather I hate. 80f is okay. Should it be 15.5°c though," +
                 " that's nice. -40 °F is pretty neat, and -8000C is impossible");
         converter.run(msg);
-        assertEquals(1, msg.channel.sentMessages.size());
+        assertEquals(2, msg.channel.sentMessages.size());
 
-        List<String> lines = Arrays.stream(msg.channel.getSentContent().get(0).split("\n")).filter(l -> ! l.equals("```")).collect(Collectors.toList());
+        List<String> lines = Arrays.stream(msg.channel.getSentContent().get(1).split("\n")).filter(l -> ! l.equals("```")).collect(Collectors.toList());
         System.out.println(lines);
         assertEquals(5, lines.size());
         assertTrue(lines.contains("34 °C -> 93.2 °F"));
@@ -60,7 +60,7 @@ class TempConverterTest {
         for (String p : phrases) {
             MockMessage msg = new MockMessage(p);
             converter.run(msg);
-            assertEquals(0, msg.channel.sentMessages.size(), "Matched naughty phrase: " + p);
+            assertEquals(1, msg.channel.sentMessages.size(), "Matched naughty phrase: " + p);
         }
     }
 }

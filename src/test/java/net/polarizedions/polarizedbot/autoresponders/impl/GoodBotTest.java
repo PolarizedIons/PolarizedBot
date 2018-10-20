@@ -33,7 +33,7 @@ class GoodBotTest {
         goodBot.run(msg);
 
         assertEquals(2, channel.sentMessages.size());
-        assertEquals(":heart:", channel.getSentContent().get(1));
+        assertEquals(":heart:️", channel.getSentContent().get(1));
     }
 
     @Test
@@ -46,6 +46,6 @@ class GoodBotTest {
         goodBot.run(msg);
 
         assertEquals(3, msg.channel.sentMessages.size());
-        assertEquals(":heart:", msg.channel.getSentContent().get(2));
+        assertEquals(":heart:️", msg.channel.getSentContent().get(2));
     }
 }

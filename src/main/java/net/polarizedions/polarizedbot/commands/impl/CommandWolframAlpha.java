@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import sx.blah.discord.handle.obj.IMessage;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class CommandWolframAlpha implements ICommand {
@@ -55,8 +56,18 @@ public class CommandWolframAlpha implements ICommand {
             return null;
         }
 
-        if (data.pods.size() == 0) {
-            MessageUtil.reply(message, "command.wolfram.error.no_data");
+        if (data.didYouMeans.size() > 0) {
+            StringBuilder resp = new StringBuilder("\n");
+            DecimalFormat format = new DecimalFormat("#.##");
+            for (WolframAlphaApi.DidYouMean dym : data.didYouMeans) {
+                resp.append(" - ").append(dym.value).append(" (**").append(format.format(dym.chance)).append("%%**)\n");
+            }
+
+            MessageUtil.reply(message, "command.wolfram.didyoumean", resp.toString());
+        }
+
+        if (! data.error.isEmpty()) {
+            MessageUtil.reply(message, "command.wolfram.error." + data.error);
             return null;
         }
 

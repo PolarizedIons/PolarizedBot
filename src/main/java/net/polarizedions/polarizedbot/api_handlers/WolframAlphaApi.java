@@ -6,6 +6,7 @@ import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.exceptions.ApiException;
 import net.polarizedions.polarizedbot.util.WebHelper;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 
@@ -37,70 +38,95 @@ public class WolframAlphaApi {
             throw new ApiException("timed_out");
         }
 
-        JsonElement podsObject = json.get("pods");
-        if (podsObject == null) {
-            throw new ApiException("no_data");
-        }
 
         WolframAlphaReply data = new WolframAlphaReply();
 
         LinkedList<Pod> pods = new LinkedList<>();
-        for (JsonElement podJsonEl : podsObject.getAsJsonArray()) {
-            JsonObject podJson = podJsonEl.getAsJsonObject();
+        JsonElement podsObject = json.get("pods");
+        if (podsObject == null) {
+            data.error = "no_data";
+        }
+        else {
 
-            if (podJson.get("error").getAsBoolean()) {
-                continue;
-            }
 
-            Pod pod = new Pod();
-            pod.name = podJson.get("title").getAsString();
-            pod.index = podJson.get("position").getAsInt();
+            for (JsonElement podJsonEl : podsObject.getAsJsonArray()) {
+                JsonObject podJson = podJsonEl.getAsJsonObject();
 
-            LinkedList<String> podData = new LinkedList<>();
-            for (JsonElement subpodJsonEl : podJson.getAsJsonArray("subpods")) {
-                JsonObject subpodJson = subpodJsonEl.getAsJsonObject();
-                JsonElement textJson = subpodJson.get("plaintext");
-                JsonElement imageJson = subpodJson.get("imagesource");
-
-                String subpodText = ((textJson == null ? "" : textJson.getAsString()) + "\n" + (imageJson == null ? "" : imageJson.getAsString())).trim();
-                if (subpodText.isEmpty()) {
+                if (podJson.get("error").getAsBoolean()) {
                     continue;
                 }
 
-                podData.add(subpodText);
+                Pod pod = new Pod();
+                pod.name = podJson.get("title").getAsString();
+                pod.index = podJson.get("position").getAsInt();
+
+                LinkedList<String> podData = new LinkedList<>();
+                for (JsonElement subpodJsonEl : podJson.getAsJsonArray("subpods")) {
+                    JsonObject subpodJson = subpodJsonEl.getAsJsonObject();
+                    JsonElement textJson = subpodJson.get("plaintext");
+                    JsonElement imageJson = subpodJson.get("imagesource");
+
+                    String subpodText = ( ( textJson == null ? "" : textJson.getAsString() ) + "\n" + ( imageJson == null ? "" : imageJson.getAsString() ) ).trim();
+                    if (subpodText.isEmpty()) {
+                        continue;
+                    }
+
+                    podData.add(subpodText);
+                }
+
+                if (podData.size() == 0) {
+                    continue;
+                }
+
+                pod.data = podData;
+                pods.add(pod);
             }
 
-            if (podData.size() == 0) {
-                continue;
+            // Needs to be checked after parsing, because some pods's text repr are empty
+            if (pods.size() == 0) {
+                data.error = "no_data";
             }
-
-            pod.data = podData;
-            pods.add(pod);
         }
 
         pods.sort(Comparator.comparingInt(pod -> pod.index));
         data.pods = pods;
 
-        // Needs to be checked after parsing, because some pods's text repr are empty
-        if (pods.size() == 0) {
-            throw new ApiException("no_data");
+        JsonElement didyoumeansJson = json.get("didyoumeans");
+        data.didYouMeans = new LinkedList<>();
+        if (didyoumeansJson != null) {
+            for (JsonElement didyoumeanElement : didyoumeansJson.getAsJsonArray()) {
+                JsonObject didyoumeanObj = didyoumeanElement.getAsJsonObject();
+                DidYouMean dym = new DidYouMean();
+                dym.chance = didyoumeanObj.get("score").getAsDouble() * 100;
+                dym.value = didyoumeanObj.get("val").getAsString();
+                data.didYouMeans.add(dym);
+            }
+
+            data.didYouMeans.sort(Collections.reverseOrder(Comparator.comparingDouble(dym -> dym.chance)));
         }
 
         // Needs to be checked *after* checking for no data, because that error is more specific
-        if (! json.get("success").getAsBoolean()) {
-            throw new ApiException("fail");
+        if (! json.get("success").getAsBoolean() && data.error.isEmpty()) {
+            data.error = "fail";
         }
 
         return data;
     }
 
     public static class WolframAlphaReply {
+        public String error;
         public LinkedList<Pod> pods;
+        public LinkedList<DidYouMean> didYouMeans;
     }
 
     public static class Pod {
         public String name;
         public int index;
         public LinkedList<String> data;
+    }
+
+    public static class DidYouMean {
+        public String value;
+        public double chance;
     }
 }

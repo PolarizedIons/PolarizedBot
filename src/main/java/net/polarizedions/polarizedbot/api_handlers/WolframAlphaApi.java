@@ -37,10 +37,15 @@ public class WolframAlphaApi {
             throw new ApiException("timed_out");
         }
 
+        JsonElement podsObject = json.get("pods");
+        if (podsObject == null) {
+            throw new ApiException("no_data");
+        }
+
         WolframAlphaReply data = new WolframAlphaReply();
 
         LinkedList<Pod> pods = new LinkedList<>();
-        for (JsonElement podJsonEl : json.getAsJsonArray("pods")) {
+        for (JsonElement podJsonEl : podsObject.getAsJsonArray()) {
             JsonObject podJson = podJsonEl.getAsJsonObject();
 
             if (podJson.get("error").getAsBoolean()) {

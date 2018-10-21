@@ -27,8 +27,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class AnnouncerManager {
@@ -36,12 +37,12 @@ public class AnnouncerManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private Map<String, IAnnouncer> announcers;
     private Map<IAnnouncer, List<IChannel>> subData;
-    private List<Timer> timers;
+    private ScheduledExecutorService scheduler;
 
     public AnnouncerManager() {
         this.announcers = new HashMap<>();
         this.subData = new HashMap<>();
-        this.timers = new ArrayList<>();
+        this.scheduler = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors() / 2);
 
         this.registerAnnouncer(new AnnouncerMcNotifier());
         this.registerAnnouncer(new AnnouncerGW2Update());
@@ -54,30 +55,25 @@ public class AnnouncerManager {
     public void initAnnouncers() {
         for (IAnnouncer announcer : this.announcers.values()) {
             AnnouncerManager that = this;
-            TimerTask task = new TimerTask() {
-                @Override
-                public void run() {
-                    List<IChannel> subscriptionData = that.getSubData(announcer);
-                    if (subscriptionData.size() == 0) {
-                        return;
-                    }
+            Runnable task = () -> {
+                List<IChannel> subscriptionData = that.getSubData(announcer);
+                if (subscriptionData.size() == 0) {
+                    return;
+                }
 
-                    try {
-                        boolean result = announcer.check();
-                        logger.debug("Checking announcer '{}': {}", announcer.getID(), result);
-                        if (result) {
-                            announcer.execute(subscriptionData);
-                        }
+                try {
+                    boolean result = announcer.check();
+                    logger.debug("Checking announcer '{}': {}", announcer.getID(), result);
+                    if (result) {
+                        announcer.execute(subscriptionData);
                     }
-                    catch (Exception ex) {
-                        logger.debug("Exception while executing announcer " + announcer.getID(), ex);
-                    }
+                }
+                catch (Exception ex) {
+                    logger.debug("Exception while executing announcer " + announcer.getID(), ex);
                 }
             };
 
-            Timer timer = new Timer();
-            timer.scheduleAtFixedRate(task, 500, announcer.updateFrequency());
-            this.timers.add(timer);
+            this.scheduler.scheduleWithFixedDelay(task, 5, announcer.updateFrequency(), TimeUnit.SECONDS);
         }
     }
 
@@ -191,8 +187,6 @@ public class AnnouncerManager {
     }
 
     public void stop() {
-        for (Timer timer : this.timers) {
-            timer.cancel();
-        }
+        this.scheduler.shutdown();
     }
 }

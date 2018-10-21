@@ -22,7 +22,7 @@ public class AnnouncerMcNotifier implements IAnnouncer {
 
     @Override
     public long updateFrequency() {
-        return TimeUnit.MINUTES.toMillis(2);
+        return TimeUnit.MINUTES.toSeconds(2);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class AnnouncerMcNotifier implements IAnnouncer {
         this.newRelease = !prevVersions.release.equals(newVersions.release);
 
         prevVersions = newVersions;
-        return this.newSnapshot || this.newRelease;
+        return true || this.newSnapshot || this.newRelease;
     }
 
     @Override

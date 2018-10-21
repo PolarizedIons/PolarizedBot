@@ -19,7 +19,7 @@ public class AnnouncerGW2Update implements IAnnouncer {
 
     @Override
     public long updateFrequency() {
-        return TimeUnit.MINUTES.toMillis(10);
+        return TimeUnit.MINUTES.toSeconds(10);
     }
 
     @Override

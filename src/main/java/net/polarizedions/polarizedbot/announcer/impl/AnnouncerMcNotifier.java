@@ -41,7 +41,7 @@ public class AnnouncerMcNotifier implements IAnnouncer {
         this.newRelease = !prevVersions.release.equals(newVersions.release);
 
         prevVersions = newVersions;
-        return true || this.newSnapshot || this.newRelease;
+        return this.newSnapshot || this.newRelease;
     }
 
     @Override

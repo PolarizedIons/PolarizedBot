@@ -54,9 +54,8 @@ public class AnnouncerManager {
 
     public void initAnnouncers() {
         for (IAnnouncer announcer : this.announcers.values()) {
-            AnnouncerManager that = this;
             Runnable task = () -> {
-                List<IChannel> subscriptionData = that.getSubData(announcer);
+                List<IChannel> subscriptionData = this.getSubData(announcer);
                 if (subscriptionData.size() == 0) {
                     return;
                 }

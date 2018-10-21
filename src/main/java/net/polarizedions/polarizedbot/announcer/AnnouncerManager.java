@@ -42,7 +42,7 @@ public class AnnouncerManager {
     public AnnouncerManager() {
         this.announcers = new HashMap<>();
         this.subData = new HashMap<>();
-        this.scheduler = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors() / 2);
+        this.scheduler = Executors.newScheduledThreadPool(Math.max(1, Runtime.getRuntime().availableProcessors() / 2));
 
         this.registerAnnouncer(new AnnouncerMcNotifier());
         this.registerAnnouncer(new AnnouncerGW2Update());

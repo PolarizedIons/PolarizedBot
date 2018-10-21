@@ -40,6 +40,7 @@ public class WolframAlphaApi {
 
 
         WolframAlphaReply data = new WolframAlphaReply();
+        data.error = "";
 
         LinkedList<Pod> pods = new LinkedList<>();
         JsonElement podsObject = json.get("pods");

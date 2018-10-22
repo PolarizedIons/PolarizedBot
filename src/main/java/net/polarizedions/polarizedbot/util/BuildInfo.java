@@ -37,8 +37,13 @@ public class BuildInfo {
 
         Class<BuildInfo> clazz = BuildInfo.class;
         for (Field field : clazz.getFields()) {
+            String value = buildInfo.getProperty(field.getName());
+            if (value == null || value.startsWith("${") && value.endsWith("}")) {
+                continue;
+            }
+
             try {
-                field.set(null, buildInfo.getProperty(field.getName()));
+                field.set(null, value);
             }
             catch (IllegalAccessException ex) {
                 Bot.logger.error("Error setting build info value", ex);

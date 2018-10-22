@@ -8,34 +8,25 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
-public class BuildInfo {
+public class BotInfo {
     public static String version = "Unknown";
     public static String buildtime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX").format(new Date());
-    public static String githubRepo = "";
-
+    public static String githubRepo = "[none]";
 
     static {
         load();
-
-        // TODO: BAD
-        if (BuildInfo.githubRepo.startsWith("git@github.com:")) {
-            BuildInfo.githubRepo = BuildInfo.githubRepo.replace("git@github.com:", "https://github.com/").replace(".git", "");
-        }
-        else if (BuildInfo.githubRepo.startsWith("${")) {
-            BuildInfo.githubRepo = "?";
-        }
     }
 
     static void load() {
         Properties buildInfo = new Properties();
         try {
-            buildInfo.load(Bot.class.getResourceAsStream("/buildinfo.txt"));
+            buildInfo.load(Bot.class.getResourceAsStream("/botinfo.txt"));
         }
         catch (IOException ex) {
             Bot.logger.error("Error loading build information", ex);
         }
 
-        Class<BuildInfo> clazz = BuildInfo.class;
+        Class<BotInfo> clazz = BotInfo.class;
         for (Field field : clazz.getFields()) {
             String value = buildInfo.getProperty(field.getName());
             if (value == null || value.startsWith("${") && value.endsWith("}")) {
@@ -51,5 +42,5 @@ public class BuildInfo {
         }
     }
 
-    private BuildInfo() {}
+    private BotInfo() {}
 }

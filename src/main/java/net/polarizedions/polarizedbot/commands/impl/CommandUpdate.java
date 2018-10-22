@@ -8,7 +8,7 @@ import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.commands.builder.ParsedArguments;
 import net.polarizedions.polarizedbot.exceptions.ApiException;
 import net.polarizedions.polarizedbot.util.Args;
-import net.polarizedions.polarizedbot.util.BuildInfo;
+import net.polarizedions.polarizedbot.util.BotInfo;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
 import org.apache.logging.log4j.LogManager;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 public class CommandUpdate implements ICommand {
     private static final Logger logger = LogManager.getLogger("CommandUpdate");
-    private static final String REPO = BuildInfo.githubRepo.replaceAll("https?://github.com/", "");
+    private static final String REPO = BotInfo.githubRepo.replaceAll("https?://github.com/", "");
     private static boolean inProgress = false;
 
     @Override
@@ -73,7 +73,7 @@ public class CommandUpdate implements ICommand {
             return;
         }
 
-        if (release.tag.equals(BuildInfo.version)) {
+        if (release.tag.equals(BotInfo.version)) {
             MessageUtil.reply(message, "command.update.error.up_to_date", release.tag);
             inProgress = false;
             return;

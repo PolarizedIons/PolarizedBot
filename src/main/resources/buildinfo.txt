@@ -1,3 +1,0 @@
-version=${project.version}
-buildtime=${timestamp}
-githubRepo=${git.remote.origin.url}

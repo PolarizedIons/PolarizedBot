@@ -5,7 +5,7 @@ import net.polarizedions.polarizedbot.autoresponders.ResponderManager;
 import net.polarizedions.polarizedbot.commands.CommandManager;
 import net.polarizedions.polarizedbot.config.GlobalConfig;
 import net.polarizedions.polarizedbot.util.Args;
-import net.polarizedions.polarizedbot.util.BuildInfo;
+import net.polarizedions.polarizedbot.util.BotInfo;
 import net.polarizedions.polarizedbot.util.ConfigManager;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
@@ -42,7 +42,7 @@ public class Bot {
     private PresenceUtil presenceUtil;
 
     private Bot() {
-        logger.info("Starting bot v{} ({})...", BuildInfo.version, BuildInfo.buildtime);
+        logger.info("Starting bot v{} ({})...", BotInfo.version, BotInfo.buildtime);
         instance = this;
 
         try {

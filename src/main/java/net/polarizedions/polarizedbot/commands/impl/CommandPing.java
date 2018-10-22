@@ -6,6 +6,7 @@ import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.commands.builder.ParsedArguments;
 import net.polarizedions.polarizedbot.util.Localizer;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.util.RequestBuffer;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -41,11 +42,16 @@ public class CommandPing implements ICommand {
         Instant ping = Instant.now();
         String initialText = loc.localize(replyKey + ".1", message.getAuthor().mention());
 
-        IMessage msg = message.getChannel().sendMessage(initialText);
+        RequestBuffer.request(() -> {
+            IMessage msg = message.getChannel().sendMessage(initialText);
 
-        Instant pong = Instant.now();
-        Duration duration = Duration.between(ping, pong);
-        String latencyText = loc.localize(replyKey + ".2", message.getAuthor().mention(), duration.toMillis());
-        msg.edit(latencyText);
+            Instant pong = Instant.now();
+            Duration duration = Duration.between(ping, pong);
+            String latencyText = loc.localize(replyKey + ".2", message.getAuthor().mention(), duration.toMillis());
+
+            RequestBuffer.request(() -> {
+                msg.edit(latencyText);
+            });
+        });
     }
 }

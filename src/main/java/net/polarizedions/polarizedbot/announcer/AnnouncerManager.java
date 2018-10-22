@@ -27,8 +27,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -37,12 +35,10 @@ public class AnnouncerManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private Map<String, IAnnouncer> announcers;
     private Map<IAnnouncer, List<IChannel>> subData;
-    private ScheduledExecutorService scheduler;
 
     public AnnouncerManager() {
         this.announcers = new HashMap<>();
         this.subData = new HashMap<>();
-        this.scheduler = Executors.newScheduledThreadPool(Math.max(1, Runtime.getRuntime().availableProcessors() / 2));
 
         this.registerAnnouncer(new AnnouncerMcNotifier());
         this.registerAnnouncer(new AnnouncerGW2Update());
@@ -72,7 +68,7 @@ public class AnnouncerManager {
                 }
             };
 
-            this.scheduler.scheduleWithFixedDelay(task, 5, announcer.updateFrequency(), TimeUnit.SECONDS);
+            Bot.instance.threadPool.scheduleWithFixedDelay(task, 5, announcer.updateFrequency(), TimeUnit.SECONDS);
         }
     }
 
@@ -186,6 +182,6 @@ public class AnnouncerManager {
     }
 
     public void stop() {
-        this.scheduler.shutdown();
+
     }
 }

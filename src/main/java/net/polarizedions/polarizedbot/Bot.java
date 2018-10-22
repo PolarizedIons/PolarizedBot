@@ -25,10 +25,13 @@ import sx.blah.discord.util.DiscordException;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class Bot {
     public static final Logger logger = LogManager.getLogger("PolarizedBot");
     public static Bot instance;
+    public final ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
     private static Instant startInstant;
     private Instant connectedInstant;
 
@@ -86,7 +89,7 @@ public class Bot {
             }
         });
 
-        this.client.getDispatcher().registerListener((IListener<MessageReceivedEvent>)messageEvent -> {
+        this.client.getDispatcher().registerListener((IListener<MessageReceivedEvent>) messageEvent -> {
             IMessage message = messageEvent.getMessage();
             logger.info("[UserID: {}, GuildID: {}, MessageID: {}, User: {}]: {}",
                     message.getAuthor().getStringID(),
@@ -96,8 +99,8 @@ public class Bot {
                     message.getContent()
             );
 
-            this.commandManager.messageHandler(message);
-            this.responderManager.messageHandler(message);
+            this.threadPool.execute(() -> this.commandManager.messageHandler(message));
+            this.threadPool.execute(() -> this.responderManager.messageHandler(message));
         });
     }
 
@@ -136,6 +139,7 @@ public class Bot {
     }
 
     public void shutdown() {
+        this.threadPool.shutdownNow();
         this.announcerManager.stop();
         this.presenceUtil.stop();
         this.client.logout();

@@ -33,7 +33,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 public class CommandManager {
     private Logger logger = LogManager.getLogger("CommandManager");
@@ -99,21 +98,19 @@ public class CommandManager {
             return;
         }
 
-        if (guildConfig.disabledCommands.contains(command)) {
-            MessageUtil.reply(message, "error.command_disabled", commandTree.getName());
-            return;
+    if (guildConfig.disabledCommands.contains(command)) {
+        MessageUtil.reply(message, "error.command_disabled", commandTree.getName());
+        return;
+    }
+
+        logger.debug("Running command {}, alias {}, fragments: {}", commandTree.getName(), command, commandFragments);
+
+        try {
+            commandTree.execute(commandFragments, message);
         }
-
-        CompletableFuture.runAsync(() -> {
-            logger.debug("Running command {}, alias {}, fragments: {}", commandTree.getName(), command, commandFragments);
-
-            try {
-                commandTree.execute(commandFragments, message);
-            }
-            catch (Exception ex) {
-                this.handleCommandException(message, ex, commandTree);
-            }
-        });
+        catch (Exception ex) {
+            this.handleCommandException(message, ex, commandTree);
+        }
     }
 
     private void handleCommandException(IMessage message, Exception ex, CommandTree commandTree) {

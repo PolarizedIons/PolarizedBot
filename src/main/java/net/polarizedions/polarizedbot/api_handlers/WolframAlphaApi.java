@@ -48,8 +48,6 @@ public class WolframAlphaApi {
             data.error = "no_data";
         }
         else {
-
-
             for (JsonElement podJsonEl : podsObject.getAsJsonArray()) {
                 JsonObject podJson = podJsonEl.getAsJsonObject();
 
@@ -92,11 +90,21 @@ public class WolframAlphaApi {
         pods.sort(Comparator.comparingInt(pod -> pod.index));
         data.pods = pods;
 
+        // Wolfram... WHY can this be two types?!
         JsonElement didyoumeansJson = json.get("didyoumeans");
         data.didYouMeans = new LinkedList<>();
         if (didyoumeansJson != null) {
-            for (JsonElement didyoumeanElement : didyoumeansJson.getAsJsonArray()) {
-                JsonObject didyoumeanObj = didyoumeanElement.getAsJsonObject();
+            if (didyoumeansJson.isJsonArray()) {
+                for (JsonElement didyoumeanElement : didyoumeansJson.getAsJsonArray()) {
+                    JsonObject didyoumeanObj = didyoumeanElement.getAsJsonObject();
+                    DidYouMean dym = new DidYouMean();
+                    dym.chance = didyoumeanObj.get("score").getAsDouble() * 100;
+                    dym.value = didyoumeanObj.get("val").getAsString();
+                    data.didYouMeans.add(dym);
+                }
+            }
+            else if (didyoumeansJson.isJsonObject()) {
+                JsonObject didyoumeanObj = didyoumeansJson.getAsJsonObject();
                 DidYouMean dym = new DidYouMean();
                 dym.chance = didyoumeanObj.get("score").getAsDouble() * 100;
                 dym.value = didyoumeanObj.get("val").getAsString();

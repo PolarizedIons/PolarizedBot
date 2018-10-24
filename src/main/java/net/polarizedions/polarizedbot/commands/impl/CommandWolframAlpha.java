@@ -56,17 +56,18 @@ public class CommandWolframAlpha implements ICommand {
             return null;
         }
 
-        if (data.didYouMeans.size() > 0) {
-            StringBuilder resp = new StringBuilder("\n");
-            DecimalFormat format = new DecimalFormat("#.##");
-            for (WolframAlphaApi.DidYouMean dym : data.didYouMeans) {
-                resp.append(" - ").append(dym.value).append(" (**").append(format.format(dym.chance)).append("%%**)\n");
+        if (! data.error.isEmpty()) {
+            if (data.error.equals("no_data") && data.didYouMeans.size() > 0) {
+                StringBuilder resp = new StringBuilder("\n");
+                DecimalFormat format = new DecimalFormat("#.##");
+                for (WolframAlphaApi.DidYouMean dym : data.didYouMeans) {
+                    resp.append(" - ").append(dym.value).append(" (**").append(format.format(dym.chance)).append("%%**)\n");
+                }
+
+                MessageUtil.reply(message, "command.wolfram.didyoumean", resp.toString());
+                return null;
             }
 
-            MessageUtil.reply(message, "command.wolfram.didyoumean", resp.toString());
-        }
-
-        if (! data.error.isEmpty()) {
             MessageUtil.reply(message, "command.wolfram.error." + data.error);
             return null;
         }
@@ -124,9 +125,6 @@ public class CommandWolframAlpha implements ICommand {
                     for (int j = 1; j < splitLines.length; j++) {
                         responseBuilder.append("\n").append(prefix).append("  ").append(this.escapeData(splitLines[j]));
                     }
-//                    for (String line : data.split("\n")) {
-//                        responseBuilder.append("\n").append(prefix).append("- ").append(this.escapeData(line));
-//                    }
                 }
             }
 

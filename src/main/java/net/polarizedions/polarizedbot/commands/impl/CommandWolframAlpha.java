@@ -61,7 +61,7 @@ public class CommandWolframAlpha implements ICommand {
                 StringBuilder resp = new StringBuilder("\n");
                 DecimalFormat format = new DecimalFormat("#.##");
                 for (WolframAlphaApi.DidYouMean dym : data.didYouMeans) {
-                    resp.append(" - ").append(dym.value).append(" (**").append(format.format(dym.chance)).append("%%**)\n");
+                    resp.append(" - ").append(dym.value).append(" (**").append(format.format(dym.chance)).append("%**)\n");
                 }
 
                 MessageUtil.reply(message, "command.wolfram.didyoumean", resp.toString());

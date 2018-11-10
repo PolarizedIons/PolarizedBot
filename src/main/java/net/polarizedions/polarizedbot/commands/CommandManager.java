@@ -47,6 +47,7 @@ public class CommandManager {
         this.registerCommand(new CommandInvite());
         this.registerCommand(new CommandUpdate());
         this.registerCommand(new CommandPing());
+//        this.registerCommand(new CommandPoll());
         this.registerCommand(new CommandShutdown());
         this.registerCommand(new CommandSay());
         this.registerCommand(new CommandWolframAlpha());

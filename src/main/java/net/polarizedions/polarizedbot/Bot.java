@@ -10,6 +10,7 @@ import net.polarizedions.polarizedbot.util.ConfigManager;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.PresenceUtil;
+import net.polarizedions.polarizedbot.util.ReactionListener;
 import net.polarizedions.polarizedbot.util.UserRank;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,6 +41,7 @@ public class Bot {
     private CommandManager commandManager;
     private ResponderManager responderManager;
     private PresenceUtil presenceUtil;
+    private ReactionListener reactionListener;
 
     private Bot() {
         logger.info("Starting bot v{} ({})...", BotInfo.version, BotInfo.buildtime);
@@ -67,6 +69,8 @@ public class Bot {
 
     private void run() {
         this.client = createClient();
+
+        this.reactionListener = new ReactionListener(this.client);
 
         this.client.getDispatcher().registerListener((IListener<ReadyEvent>)readyEvent -> {
             this.connectedInstant = Instant.now();
@@ -180,5 +184,9 @@ public class Bot {
 
     public Instant getConnectedInstant() {
         return this.connectedInstant;
+    }
+
+    public ReactionListener getReactionListener() {
+        return this.reactionListener;
     }
 }

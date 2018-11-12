@@ -3,6 +3,7 @@ package net.polarizedions.polarizedbot.commands;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.commands.impl.CommandAbout;
 import net.polarizedions.polarizedbot.commands.impl.CommandAnnoucer;
+import net.polarizedions.polarizedbot.commands.impl.CommandEightBall;
 import net.polarizedions.polarizedbot.commands.impl.CommandGuild;
 import net.polarizedions.polarizedbot.commands.impl.CommandHelp;
 import net.polarizedions.polarizedbot.commands.impl.CommandIgnore;
@@ -41,6 +42,7 @@ public class CommandManager {
     public CommandManager() {
         this.registerCommand(new CommandAbout());
         this.registerCommand(new CommandAnnoucer());
+        this.registerCommand(new CommandEightBall());
         this.registerCommand(new CommandGuild());
         this.registerCommand(new CommandHelp());
         this.registerCommand(new CommandIgnore());

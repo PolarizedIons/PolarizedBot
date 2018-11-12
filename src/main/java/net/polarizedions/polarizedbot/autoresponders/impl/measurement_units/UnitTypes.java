@@ -47,6 +47,7 @@ public class UnitTypes {
             case "foot":
             case "feet":
             case "'":
+            case "’":
                 return Imperial.FOOT;
 
             case "yd":

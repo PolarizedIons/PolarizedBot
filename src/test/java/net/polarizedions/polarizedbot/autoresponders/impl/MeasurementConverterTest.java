@@ -23,6 +23,7 @@ class MeasurementConverterTest {
     static void setup() throws NoSuchFieldException, IllegalAccessException {
         converter = new MeasurementConverter();
         SetupMocks.setupRatelimitMock();
+        SetupMocks.resetLocalization();
         Localizer.init();
     }
 

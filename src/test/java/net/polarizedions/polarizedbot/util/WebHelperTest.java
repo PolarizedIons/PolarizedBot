@@ -42,11 +42,25 @@ class WebHelperTest {
 
 
     @Test
-    void fetchUrl() {
+    void fetchGetUrl() {
         // Don't fail because we are in an no-internet environment
         assumingThat(WebHelperTest::isOnline, () -> {
             assertNotNull(WebHelper.fetchUrl("https://httpbin.org/get"), "Get request failed");
+        });
+    }
+
+    @Test
+    void fetchRedirectUrl() {
+        // Don't fail because we are in an no-internet environment
+        assumingThat(WebHelperTest::isOnline, () -> {
             assertNotNull(WebHelper.fetchUrl("https://httpbin.org/redirect/2"), "Redirect test failed");
+        });
+    }
+
+    @Test
+    void fetch404Url() {
+        // Don't fail because we are in an no-internet environment
+        assumingThat(WebHelperTest::isOnline, () -> {
             assertNull(WebHelper.fetchUrl("https://httpbin.org/status/404"), "404 test didn't return 404???");
         });
     }
@@ -56,8 +70,8 @@ class WebHelperTest {
         // Don't fail because we are in an no-internet environment
         assumingThat(WebHelperTest::isOnline, () -> {
             JsonObject json = WebHelper.fetchJson("https://httpbin.org/get?ping=pong");
-            assertNotNull(json);
 
+            assertNotNull(json);
             assertEquals("pong", json.getAsJsonObject("args").get("ping").getAsString());
         });
     }

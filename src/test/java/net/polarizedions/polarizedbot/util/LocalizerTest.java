@@ -16,12 +16,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LocalizerTest {
     @BeforeAll
-    static void mockLang() throws NoSuchFieldException, IllegalAccessException {
+    static void setup() throws NoSuchFieldException, IllegalAccessException {
         SetupMocks.setupLocalization();
     }
 
     @AfterAll
-    static void resetLang() throws NoSuchFieldException, IllegalAccessException {
+    static void teardown() throws NoSuchFieldException, IllegalAccessException {
         SetupMocks.resetLocalization();
     }
 
@@ -41,6 +41,7 @@ class LocalizerTest {
     @Test
     void supports() {
         assertFalse(Localizer.supports("foobar"));
+
         assertTrue(Localizer.supports("testlang"));
         assertTrue(Localizer.supports("TeStLaNg"));
     }

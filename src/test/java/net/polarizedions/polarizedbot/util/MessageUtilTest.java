@@ -12,21 +12,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MessageUtilTest {
 
-    @BeforeAll
-    static void changeMaxLen() throws NoSuchFieldException, IllegalAccessException {
-        // For the sake of testing, reduce the max length of messages
-        SetupMocks.setupMaxMessageLengthMock();
-    }
-
     @AfterAll
-    static void resetMaxLen() throws NoSuchFieldException, IllegalAccessException {
+    static void tearDown() throws NoSuchFieldException, IllegalAccessException {
         SetupMocks.resetMaxMessageLength();
+        SetupMocks.resetLocalization();
     }
 
     @BeforeAll
-    public static void disableRatelimitHandling() throws NoSuchFieldException, IllegalAccessException {
+    static void setp() throws NoSuchFieldException, IllegalAccessException {
         // Because the ratelimiting handling wont work without the bot running
         SetupMocks.setupRatelimitMock();
+
+        // For the sake of testing, reduce the max length of messages
+        SetupMocks.setupMaxMessageLengthMock();
     }
 
     @Test
@@ -82,7 +80,7 @@ public class MessageUtilTest {
     @Test
     void reply() throws NoSuchFieldException, IllegalAccessException {
         // Because reply localizes, so we need to load our testlanguage
-        LocalizerTest.mockLang();
+        SetupMocks.setupLocalization();
 
         MockMessage message = new MockMessage();
         MessageUtil.reply(message, "test");

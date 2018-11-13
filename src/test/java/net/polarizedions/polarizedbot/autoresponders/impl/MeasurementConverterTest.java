@@ -35,7 +35,7 @@ class MeasurementConverterTest {
         List<String> messageLines = Arrays.stream(mockMsg.channel.getSentContent().get(1).split("\n")).filter(line -> ! line.equals("```")).collect(Collectors.toList());
         System.out.println(messageLines);
         assertEquals(3, messageLines.size());
-        assertTrue(messageLines.contains("31 centimeters = 1.02 foot"));
+        assertTrue(messageLines.contains("31 centimeters = 1.02 feet"));
         assertTrue(messageLines.contains("5 inches = 12.7 centimeters"));
         assertTrue(messageLines.contains("4000 feet = 1219.14 meters"));
 //        assertTrue(messageLines.contains("3 feet = 91,44 centimeters"));

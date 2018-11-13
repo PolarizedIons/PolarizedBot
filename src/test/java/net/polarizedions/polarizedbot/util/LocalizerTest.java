@@ -81,5 +81,10 @@ class LocalizerTest {
 
         assertEquals("bla", loc.localizeNumber("numberformat.bla", 0, "bla"));
         assertEquals("minus six", loc.localizeNumber("numberformat.bla", -6, "zero"));
+
+        assertEquals("1", loc.localizeNumber("numberformat.bla", 1));
+        assertEquals("1", loc.localizeNumber("numberformat.bla", 0.5));
+        assertEquals("two", loc.localizeNumber("numberformat.bla", 1.1));
+        assertEquals("two", loc.localizeNumber("numberformat.bla", 2));
     }
 }

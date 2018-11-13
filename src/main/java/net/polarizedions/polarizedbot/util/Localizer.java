@@ -133,6 +133,10 @@ public class Localizer {
         return this.localize(this.doesKeyExist(key + "." + number) ? key + "." + number : key, values.length == 0 ? new Object[] {number} : values);
     }
 
+    public String localizeNumber(String key, double number, Object... values) {
+        return this.localizeNumber(key, (int) Math.ceil(number), values);
+    }
+
     public boolean doesKeyExist(String key) {
         Map<String, String> langFile = langData.get(this.currentLang);
         return langFile != null && ( langFile.containsKey(key) );

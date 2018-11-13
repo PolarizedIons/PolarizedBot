@@ -66,7 +66,7 @@ public class UnitTypes {
     }
 
     public static String defaultFormatter(@NotNull Localizer localizer, @NotNull IUnit<? extends IUnit> unit, Double value) {
-        return localizer.localizeNumber("autoresponder.measurement." + unit.getSuffix(), (int) (double)value, NUMBER_FORMAT.format(value));
+        return localizer.localizeNumber("autoresponder.measurement." + unit.getSuffix(), value, NUMBER_FORMAT.format(value));
     }
 
     public interface IUnit<Other extends IUnit> {

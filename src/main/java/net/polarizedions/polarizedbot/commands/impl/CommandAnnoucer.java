@@ -81,7 +81,7 @@ public class CommandAnnoucer implements ICommand {
     private void listAnnouncements(IMessage message, ParsedArguments args) {
         AnnouncerManager announcerManager = Bot.instance.getAnnouncerManager();
         Localizer loc = new Localizer(message);
-        String announcers = String.join(", ", Arrays.stream(announcerManager.getIDs()).map(id -> loc.localize("announcer." + id + ".name")).collect(Collectors.toList()));
+        String announcers = String.join(", ", Arrays.stream(announcerManager.getIDs()).map(id -> loc.localize("announcer." + id + ".name") + " (`" + id + "`)").collect(Collectors.toList()));
         MessageUtil.reply(message, "command.announce.list", announcers);
     }
 

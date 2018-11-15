@@ -300,6 +300,9 @@
             },
             "version": "%s has been published to the launcher",
             "name": "Minecraft Update Notifications"
+        },
+        "gw2": {
+            "name": "GuildWars2 Update Threads"
         }
     }
 }

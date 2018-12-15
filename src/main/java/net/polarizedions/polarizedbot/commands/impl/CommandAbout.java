@@ -31,7 +31,10 @@ public class CommandAbout implements ICommand {
                         .setHelp("command.about.help.about")
                 )
                 .command("info", info -> info
-                        .onExecute(this::info)
+                        .pingArg(user -> user
+                            .onExecute((message, args) -> this.info(message, args.getAsUser(1)))
+                        )
+                        .onExecute((message, args) -> this.info(message, message.getAuthor()))
                         .setHelp("command.about.help.info")
                 )
                 .setHelp("command.about.help")
@@ -84,10 +87,9 @@ public class CommandAbout implements ICommand {
         message.getChannel().sendMessage(builder.build());
     }
 
-    private void info(IMessage message, ParsedArguments args) {
+    private void info(IMessage message, IUser user) {
         Localizer loc = new Localizer(message);
         EmbedBuilder builder = new EmbedBuilder();
-        IUser user = message.getAuthor();
         IGuild guild = message.getGuild();
 
         builder.appendField(loc.localize("command.about.header.user"), user.getName() + "#" + user.getDiscriminator(), true);
@@ -95,7 +97,7 @@ public class CommandAbout implements ICommand {
         builder.appendField(loc.localize("command.about.header.rank"), GuildManager.getUserRank(guild, user).name(), true);
 
         builder.withTitle(loc.localize("command.about.user_info", user.getDisplayName(guild)));
-        builder.withThumbnail(message.getAuthor().getAvatarURL());
+        builder.withThumbnail(user.getAvatarURL());
         builder.withFooterText("PolarizedBot v" + BotInfo.version + ", built: " + BotInfo.buildtime);
 
         message.getChannel().sendMessage(builder.build());

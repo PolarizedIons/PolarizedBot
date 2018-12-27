@@ -17,6 +17,8 @@ import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
@@ -68,9 +70,12 @@ public class CommandAbout implements ICommand {
         int announcersNum = bot.getAnnouncerManager().getIDs().length;
         int announcersEnabled = bot.getAnnouncerManager().getAnnouncersForGuild(guild).size();
 
+        String shardCount = String.valueOf(bot.getClient().getShardCount());
+
         builder.appendField(loc.localize("command.about.header.owner"), owner.getName() + "#" + owner.getDiscriminator(), false);
         builder.appendField(loc.localize("command.about.header.running"), TimeUtil.formatDuration(loc, runningTime), false);
         builder.appendField(loc.localize("command.about.header.connected"), TimeUtil.formatDuration(loc, connectedTime), false);
+        builder.appendField(loc.localize("command.about.header.shard_count"), shardCount, false);
         builder.appendField(loc.localize("command.about.header.source_code"), BotInfo.githubRepo, false);
 
         builder.appendField(loc.localize("command.about.header.bot_user"), botUser.getName() + "#" + botUser.getDiscriminator(), false);
@@ -82,7 +87,15 @@ public class CommandAbout implements ICommand {
 
         builder.withTitle(loc.localize("command.about.bot_info", bot.getClient().getOurUser().getDisplayName(guild)));
         builder.withThumbnail(bot.getClient().getApplicationIconURL());
-        builder.withFooterText("PolarizedBot v" + BotInfo.version + ", built: " + BotInfo.buildtime);
+        builder.withFooterText("PolarizedBot v" + BotInfo.version);
+        try {
+            builder.withTimestamp(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX").parse(BotInfo.buildtime).toInstant());
+        }
+        catch (ParseException e) {
+            e.printStackTrace();
+            builder.withFooterText("PolarizedBot v" + BotInfo.version + " built: " + BotInfo.buildtime);
+        }
+        builder.withColor(57, 78, 160);
 
         message.getChannel().sendMessage(builder.build());
     }
@@ -98,7 +111,15 @@ public class CommandAbout implements ICommand {
 
         builder.withTitle(loc.localize("command.about.user_info", user.getDisplayName(guild)));
         builder.withThumbnail(user.getAvatarURL());
-        builder.withFooterText("PolarizedBot v" + BotInfo.version + ", built: " + BotInfo.buildtime);
+        builder.withFooterText("PolarizedBot v" + BotInfo.version);
+        try {
+            builder.withTimestamp(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX").parse(BotInfo.buildtime).toInstant());
+        }
+        catch (ParseException e) {
+            e.printStackTrace();
+            builder.withFooterText("PolarizedBot v" + BotInfo.version + " built: " + BotInfo.buildtime);
+        }
+        builder.withColor(57, 78, 160);
 
         message.getChannel().sendMessage(builder.build());
     }

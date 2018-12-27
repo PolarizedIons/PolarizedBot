@@ -11,17 +11,10 @@ import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.PresenceUtil;
 import net.polarizedions.polarizedbot.util.ReactionListener;
-import net.polarizedions.polarizedbot.util.UserRank;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.events.IListener;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
-import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.DiscordException;
 
 import java.io.IOException;
@@ -34,14 +27,14 @@ public class Bot {
     public static Bot instance;
     public final ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
     private static Instant startInstant;
-    private Instant connectedInstant;
+    Instant connectedInstant;
 
     private IDiscordClient client;
-    private AnnouncerManager announcerManager;
-    private CommandManager commandManager;
-    private ResponderManager responderManager;
-    private PresenceUtil presenceUtil;
-    private ReactionListener reactionListener;
+    AnnouncerManager announcerManager;
+    CommandManager commandManager;
+    ResponderManager responderManager;
+    PresenceUtil presenceUtil;
+    ReactionListener reactionListener;
 
     private Bot() {
         logger.info("Starting bot v{} ({})...", BotInfo.version, BotInfo.buildtime);
@@ -72,40 +65,7 @@ public class Bot {
 
         this.reactionListener = new ReactionListener(this.client);
 
-        this.client.getDispatcher().registerListener((IListener<ReadyEvent>)readyEvent -> {
-            this.connectedInstant = Instant.now();
-            logger.info("Ready to go!");
-
-            if (this.announcerManager != null) {
-                this.announcerManager.stop();
-            }
-            this.announcerManager = new AnnouncerManager();
-            this.announcerManager.load();
-            this.announcerManager.initAnnouncers();
-            this.presenceUtil.init();
-        });
-
-        this.client.getDispatcher().registerListener((IListener<GuildCreateEvent>) guildCreatedEvent -> {
-            IGuild guild = guildCreatedEvent.getGuild();
-            if (! GuildManager.userHasRank(guild, guild.getOwner(), UserRank.GUILD_ADMIN)) {
-                logger.debug("Set " + guild.getOwner() + " as guild owner for " + guild);
-                GuildManager.setRank(guild, guild.getOwner(), UserRank.GUILD_ADMIN);
-            }
-        });
-
-        this.client.getDispatcher().registerListener((IListener<MessageReceivedEvent>) messageEvent -> {
-            IMessage message = messageEvent.getMessage();
-            logger.info("[UserID: {}, GuildID: {}, MessageID: {}, User: {}]: {}",
-                    message.getAuthor().getStringID(),
-                    message.getGuild() == null ? "PM" : message.getGuild().getStringID(),
-                    message.getStringID(),
-                    message.getAuthor().getName() + "#" + message.getAuthor().getDiscriminator(),
-                    message.getContent()
-            );
-
-            this.threadPool.execute(() -> this.commandManager.messageHandler(message));
-            this.threadPool.execute(() -> this.responderManager.messageHandler(message));
-        });
+        this.client.getDispatcher().registerListener(new EventListener());
     }
 
     public IDiscordClient createClient() {

@@ -57,7 +57,8 @@
                 "bot_id": "Bot ID:",
                 "user": "User:",
                 "user_id": "User ID:",
-                "rank": "Rank:"
+                "rank": "Rank:",
+                "shard_count": "Bot shards:"
             },
             "info": {
                 "commands": "%s available (%s disabled in this guild)",

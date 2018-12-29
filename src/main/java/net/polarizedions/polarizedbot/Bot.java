@@ -10,7 +10,6 @@ import net.polarizedions.polarizedbot.util.ConfigManager;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.PresenceUtil;
-import net.polarizedions.polarizedbot.util.ReactionListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sx.blah.discord.api.ClientBuilder;
@@ -34,7 +33,7 @@ public class Bot {
     CommandManager commandManager;
     ResponderManager responderManager;
     PresenceUtil presenceUtil;
-    ReactionListener reactionListener;
+//    ReactionListener reactionListener;
 
     private Bot() {
         logger.info("Starting bot v{} ({})...", BotInfo.version, BotInfo.buildtime);
@@ -63,7 +62,7 @@ public class Bot {
     private void run() {
         this.client = createClient();
 
-        this.reactionListener = new ReactionListener(this.client);
+//        this.reactionListener = new ReactionListener(this.client);
 
         this.client.getDispatcher().registerListener(new EventListener());
     }
@@ -146,7 +145,7 @@ public class Bot {
         return this.connectedInstant;
     }
 
-    public ReactionListener getReactionListener() {
-        return this.reactionListener;
-    }
+//    public ReactionListener getReactionListener() {
+//        return this.reactionListener;
+//    }
 }

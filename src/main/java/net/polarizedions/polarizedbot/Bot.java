@@ -25,7 +25,7 @@ import java.util.concurrent.ScheduledExecutorService;
 public class Bot {
     public static final Logger logger = LogManager.getLogger("PolarizedBot");
     public static Bot instance;
-    public final ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
+    public final ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(Math.min(Runtime.getRuntime().availableProcessors(), 8));
     private static Instant startInstant;
     Instant connectedInstant;
 

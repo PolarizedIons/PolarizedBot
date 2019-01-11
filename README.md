@@ -49,12 +49,12 @@ Slashes (`/`) indicate an or.
 
 
 - **Guild**  
-    Usage: `!guild set <prefix/lang> <value>`, `!guild set rank <@user> <value>`, `!guild <enable/disable> <responder/announcer> <value>`  
+    Usage: `!guild set <prefix/lang> <value>`, `!guild mod <@user>`, `!guild <enable/disable> <responder/announcer> <value>`  
     Requires: Guild Admin Rank  
     Description: Manages different parts of the guild's settings
     - `set prefix` changes the prefix for bot commands. Can be any character & length.
     - `set lang` changes the guild's language. Currently only `en` (English) is supported, but in the future, hopefully, more will be available.
-    - `set rank` changes the rank of the person in the guild
+    - `mod/unmod <@user>` adds/removes the user as a guild moderator
     - `enable/disable responder` enables/disables the autoresponder for the guild
     - `enable/disable announcer` enables/disables a responder globally for the guild
 

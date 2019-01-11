@@ -1,43 +1,14 @@
 package net.polarizedions.polarizedbot.util;
 
-import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public enum UserRank {
 
-    BOT_OWNER(100, ""),
-    GUILD_ADMIN(50, "admin"),
-    DEFAULT(10, "none");
+    GLOBAL_ADMIN(100),
+    LOCAL_ADMIN(50),
+    DEFAULT(10);
 
     public int rank;
-    public String rankName;
 
-    UserRank(int rank, String rankName) {
+    UserRank(int rank) {
         this.rank = rank;
-        this.rankName = rankName;
-    }
-
-    @Nullable
-    public static UserRank getByName(String rankName) {
-        for (UserRank rank : UserRank.values()) {
-            if (rank.rankName.equals(rankName)) {
-                return rank;
-            }
-        }
-
-        return null;
-    }
-
-    public static List<String> getNames() {
-        List<String> names = new ArrayList<>();
-        for (UserRank rank : UserRank.values()) {
-            if (!rank.rankName.isEmpty()) {
-                names.add(rank.rankName);
-            }
-        }
-
-        return names;
     }
 }

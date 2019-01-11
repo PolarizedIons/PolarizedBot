@@ -41,8 +41,8 @@ public class GuildManager {
     }
 
     public static UserRank getUserRank(IGuild guild, IUser user) {
-        if (Bot.instance.getGlobalConfig().owner.equals(user.getStringID())) {
-            return UserRank.BOT_OWNER;
+        if (Bot.instance.getGlobalConfig().globalAdmins.contains(user.getLongID())) {
+            return UserRank.GLOBAL_ADMIN;
         }
 
         return getConfig(guild).rank.getOrDefault(user.getLongID(), UserRank.DEFAULT);
@@ -64,7 +64,7 @@ public class GuildManager {
 
     public static boolean userHasRank(IGuild guild, IUser user, UserRank requiredRank) {
         if (guild == null) {
-            return requiredRank == UserRank.DEFAULT || ( requiredRank == UserRank.BOT_OWNER && Bot.instance.getGlobalConfig().owner.equals(user.getStringID()) );
+            return requiredRank == UserRank.DEFAULT || ( requiredRank == UserRank.GLOBAL_ADMIN && Bot.instance.getGlobalConfig().globalAdmins.contains(user.getLongID()) );
         }
 
         return getUserRank(guild, user).rank >= requiredRank.rank;

@@ -19,13 +19,13 @@ import sx.blah.discord.handle.obj.IUser;
 import java.util.List;
 
 public class CommandGuild implements ICommand {
-    private static String[] subcommands = new String[] { "set", "enable", "disable" };
+    private static String[] subCommands = new String[] { "set", "enable", "disable", "mod", "unmod" };
     private static String[] setCommands = new String[] { "prefix", "lang", "rank" };
 
     @Override
     public CommandTree getCommand() {
         return CommandBuilder.create("Guild")
-                .setRank(UserRank.GUILD_ADMIN)
+                .setRank(UserRank.LOCAL_ADMIN)
                 .command("guild", guild -> guild
                         .stringArg("set", set -> set
                                 .stringArg("prefix", prefix -> prefix
@@ -36,13 +36,13 @@ public class CommandGuild implements ICommand {
                                         .captureArg(str -> str.onExecute(this::setLang))
                                         .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "lang_missing"))
                                 )
-                                .stringArg("rank", rank -> rank
-                                        .captureArg(rankStr -> rankStr
-                                                .pingArg(user -> user.onExecute(this::setRank))
-                                                .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "rank_user_missing"))
-                                        )
-                                        .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "rank_missing"))
-                                )
+//                                .stringArg("rank", rank -> rank
+//                                        .captureArg(rankStr -> rankStr
+//                                                .pingArg(user -> user.onExecute(this::setRank))
+//                                                .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "rank_user_missing"))
+//                                        )
+//                                        .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "rank_missing"))
+//                                )
                                 .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "unknown_set_command", (Object[])setCommands))
                         )
                         .stringArg("enable", enable -> enable
@@ -67,6 +67,18 @@ public class CommandGuild implements ICommand {
                                 )
                                 .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "disable_arg_missing", "command, responder"))
                         )
+                        .stringArg("mod", mod -> mod
+                            .pingArg(user -> user
+                                .onExecute(this::addModerator)
+                            )
+                            .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "mod_no_user"))
+                        )
+                        .stringArg("unmod", unmod -> unmod
+                            .pingArg(user -> user
+                                .onExecute(this::removeModerator)
+                            )
+                            .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "unmod_no_user"))
+                        )
                         .onFail(this::subcommandFail)
                         .setHelp("command.guild.help.usage")
                 )
@@ -76,10 +88,10 @@ public class CommandGuild implements ICommand {
 
     private void subcommandFail(IMessage message, ParsedArguments parsedArgs, @NotNull List<String> unparsedArgs) {
         if (unparsedArgs.size() == 0) {
-            MessageUtil.reply(message, "command.guild.error.no_subcommand", String.join(", ", subcommands));
+            MessageUtil.reply(message, "command.guild.error.no_subcommand", String.join(", ", subCommands));
         }
         else {
-            MessageUtil.reply(message, "command.guild.error.unknown_subcommand", unparsedArgs.get(0), String.join(", ", subcommands));
+            MessageUtil.reply(message, "command.guild.error.unknown_subcommand", unparsedArgs.get(0), String.join(", ", subCommands));
         }
     }
 
@@ -100,18 +112,42 @@ public class CommandGuild implements ICommand {
         MessageUtil.reply(message, "command.guild.success.setlang", newLang);
     }
 
-    private void setRank(IMessage message, @NotNull ParsedArguments args) {
-        String rankName = args.getAsString(3);
-        IUser user = args.getAsUser(4);
+//    private void setRank(IMessage message, @NotNull ParsedArguments args) {
+//        String rankName = args.getAsString(3);
+//        IUser user = args.getAsUser(4);
+//
+//        UserRank rank = UserRank.getByName(rankName);
+//        if (rank == null) {
+//            MessageUtil.reply(message, "command.guild.error.no_such_rank", rankName, String.join(", ", UserRank.getNames()));
+//            return;
+//        }
+//
+//        GuildManager.setRank(message.getGuild(), user, rank);
+//        MessageUtil.reply(message, "command.guild.success.set_rank", user.toString(), rank.toString());
+//    }
 
-        UserRank rank = UserRank.getByName(rankName);
-        if (rank == null) {
-            MessageUtil.reply(message, "command.guild.error.no_such_rank", rankName, String.join(", ", UserRank.getNames()));
+    private void addModerator(IMessage message, @NotNull ParsedArguments args) {
+        IUser user = args.getAsUser(2);
+
+        if (GuildManager.getUserRank(message.getGuild(), user) == UserRank.LOCAL_ADMIN) {
+            MessageUtil.reply(message, "command.guild.error.already_local_admin", user.mention());
             return;
         }
 
-        GuildManager.setRank(message.getGuild(), user, rank);
-        MessageUtil.reply(message, "command.guild.success.set_rank", user.toString(), rank.toString());
+        GuildManager.setRank(message.getGuild(), user, UserRank.LOCAL_ADMIN);
+        MessageUtil.reply(message, "command.guild.success.added_local_admin", user.mention());
+    }
+
+    private void removeModerator(IMessage message, @NotNull ParsedArguments args) {
+        IUser user = args.getAsUser(2);
+
+        if (GuildManager.getUserRank(message.getGuild(), user) != UserRank.LOCAL_ADMIN) {
+            MessageUtil.reply(message, "command.guild.error.not_local_admin", user.mention());
+            return;
+        }
+
+        GuildManager.setRank(message.getGuild(), user, UserRank.DEFAULT);
+        MessageUtil.reply(message, "command.guild.success.removed_local_admin", user.mention());
     }
 
     private void disableCommand(@NotNull IMessage message, @NotNull ParsedArguments args) {

@@ -73,15 +73,15 @@ public class Bot {
 
     public IDiscordClient createClient(boolean login) {
         GlobalConfig config = this.getGlobalConfig();
-        if (config.owner.isEmpty()) {
-            logger.error("The `botowner` value in bot.json MUST NOT be empty!");
+        if (config.globalAdmins.isEmpty()) {
+            logger.error("The `globalAdmins` value in bot.json MUST NOT be empty!");
         }
 
         if (config.botToken.isEmpty()) {
             logger.error("The `botToken` value in bot.json MUST NOT be empty!");
         }
 
-        if (config.owner.isEmpty() || config.botToken.isEmpty()) {
+        if (config.globalAdmins.isEmpty() || config.botToken.isEmpty()) {
             logger.error("Please enter the required value(s) in the config!");
             System.exit(1);
         }

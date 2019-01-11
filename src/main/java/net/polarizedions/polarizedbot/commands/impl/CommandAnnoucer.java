@@ -26,7 +26,7 @@ public class CommandAnnoucer implements ICommand {
     @Override
     public CommandTree getCommand() {
         return CommandBuilder.create("Announcer")
-                .setRank(UserRank.GUILD_ADMIN)
+                .setRank(UserRank.LOCAL_ADMIN)
                 .setHelp("announces things")
                 .command("announce", announce -> announce
                         .optionArg(new String[] { "subscribe", "sub" }, sub -> sub

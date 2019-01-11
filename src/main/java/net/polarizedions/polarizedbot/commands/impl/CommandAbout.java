@@ -54,7 +54,7 @@ public class CommandAbout implements ICommand {
 
         EmbedBuilder builder = new EmbedBuilder();
 
-        IUser owner = bot.getClient().getUserByID(Long.parseLong(globalConfig.owner));
+        IUser botOwner = bot.getClient().getApplicationOwner();
         IUser botUser = bot.getClient().getOurUser();
 
         Instant now = Instant.now();
@@ -72,7 +72,13 @@ public class CommandAbout implements ICommand {
 
         String shardCount = String.valueOf(bot.getClient().getShardCount());
 
-        builder.appendField(loc.localize("command.about.header.owner"), owner.getName() + "#" + owner.getDiscriminator(), false);
+        String globalAdmins = globalConfig.globalAdmins.parallelStream().map(uId -> {
+            IUser user = bot.getClient().getUserByID(uId);
+            return user.getName() + "#" + user.getDiscriminator();
+        }).collect(Collectors.joining(", "));
+
+        builder.appendField(loc.localize("command.about.header.bot_owner"), botOwner.getName() + "#" + botOwner.getDiscriminator(), false);
+        builder.appendField(loc.localize("command.about.header.global_admins"), globalAdmins, false);
         builder.appendField(loc.localize("command.about.header.running"), TimeUtil.formatDuration(loc, runningTime), false);
         builder.appendField(loc.localize("command.about.header.connected"), TimeUtil.formatDuration(loc, connectedTime), false);
         builder.appendField(loc.localize("command.about.header.shard_count"), shardCount, false);
@@ -107,7 +113,7 @@ public class CommandAbout implements ICommand {
 
         builder.appendField(loc.localize("command.about.header.user"), user.getName() + "#" + user.getDiscriminator(), true);
         builder.appendField(loc.localize("command.about.header.user_id"), user.getStringID(), true);
-        builder.appendField(loc.localize("command.about.header.rank"), GuildManager.getUserRank(guild, user).name(), true);
+        builder.appendField(loc.localize("command.about.header.rank"), loc.localize("ranks." + GuildManager.getUserRank(guild, user).name().toLowerCase()), true);
 
         builder.withTitle(loc.localize("command.about.user_info", user.getDisplayName(guild)));
         builder.withThumbnail(user.getAvatarURL());

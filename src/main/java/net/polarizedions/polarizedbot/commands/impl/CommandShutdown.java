@@ -21,7 +21,7 @@ public class CommandShutdown implements ICommand {
     @Override
     public CommandTree getCommand() {
         return CommandBuilder.create("Shutdown")
-                .setRank(UserRank.GUILD_ADMIN)
+                .setRank(UserRank.GLOBAL_ADMIN)
                 .command("shutdown", "exit", shutdown -> shutdown.onExecute(this::shutdown))
                 .command("restart", restart -> restart
                         .stringArg("soft", soft -> soft
@@ -63,7 +63,7 @@ public class CommandShutdown implements ICommand {
             File currentJar = new File(Bot.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 
             if (!currentJar.getName().endsWith(".jar")) {
-                MessageUtil.reply(message, "command.restart.error.not_jar");
+                MessageUtil.reply(message, "command.shutdown.error.not_jar");
                 return;
             }
 

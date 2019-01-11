@@ -46,7 +46,8 @@
             "bot_info": "About %s",
             "user_info": "Info about: %s",
             "header": {
-                "owner": "Bot owner:",
+                "bot_owner": "Bot owner:",
+                "global_admins": "Bot admins:",
                 "running": "Running for:",
                 "connected": "Connected for:",
                 "source_code": "Source code repo:",
@@ -86,20 +87,17 @@
         "guild": {
             "help": {
                 "*": "Manage this guild",
-                "usage": "[set] [prefix/lang] <new value> OR [set] [rank] <user> <new rank> OR [enable/disable] [command/responder] <name>"
+                "usage": "[set] [prefix/lang] <new value> OR [enable/disable] [command/responder] <name> OR [mod/unmod] <user>"
             },
             "error": {
                 "no_subcommand": "You need to provide an action. Valid actions: %s",
                 "unknown_subcommand": "Unknown action %s. Valid actions: %s",
                 "prefix_missing": "You need to provide a prefix!",
                 "lang_missing": "You need to provide a language!",
-                "rank_user_missing": "You need to provide a valid user! (Ping them)",
-                "rank_missing": "You need to provide a valid rank",
                 "unknown_set_command": "Unknown set variable. Valid options: %s ",
                 "enable_command_missing": "You must provide a command to enable!",
                 "disable_command_missing": "You must provide a command to disable!",
                 "unknown_lang": "Unknown language %s. Supported languages: %s",
-                "no_such_rank": "Unknown rank %s. Valid ranks: %s",
                 "no_command_found": "Unknown command '%s'",
                 "cannot_disable_self": "Cannot disable the guild command!",
                 "already_disabled": "The %s command is already disabled.",
@@ -110,11 +108,13 @@
                 "disable_responder_missing": "You must specify what to disable! %s",
                 "no_responder_found": "Unknown responder '%s'. Valid: %s",
                 "responder_already_disabled": "The %s responder is already disabled.",
-                "responder_not_disabled": "The %s responder is not disabled."
+                "responder_not_disabled": "The %s responder is not disabled.",
+                "mod_no_user": "You need to provide a valid user! (Ping them)",
+                "already_local_admin": "%s is already a moderator",
+                "not_local_admin": "%s is not a moderator"
             },
             "success": {
                 "setlang": "Changed the server's language to %s!",
-                "set_rank": "Set rank of user %s to %s",
                 "disable": {
                     "command": "Disabled %s",
                     "responder": "Disabled %s"
@@ -123,7 +123,9 @@
                     "command": "Enabled %s",
                     "responder": "Enabled %s"
                 },
-                "set_prefix": "Set the server's prefix to '%s'"
+                "set_prefix": "Set the server's prefix to '%s'",
+                "added_local_admin": "Added %s as a moderator",
+                "removed_local_admin": "Removed %s as a moderator"
             }
         },
         "help": {
@@ -144,7 +146,7 @@
                 "unignore": "[unignore] <user>"
             },
             "error": {
-                "bot_owner": "Cannot ignore the bot owner",
+                "global_admin": "Cannot ignore a bot admin",
                 "no_user": "You must specify a user."
             },
             "success": {
@@ -305,5 +307,10 @@
         "gw2": {
             "name": "GuildWars2 Update Threads"
         }
+    },
+    "ranks": {
+        "default": "No rank",
+        "local_admin": "Moderator",
+        "global_admin": "Admin"
     }
 }

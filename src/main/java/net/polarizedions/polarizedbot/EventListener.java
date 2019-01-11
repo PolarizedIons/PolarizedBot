@@ -46,9 +46,9 @@ public class EventListener {
     @EventSubscriber
     public void onGuildCreated(GuildCreateEvent event) {
         IGuild guild = event.getGuild();
-        if (! GuildManager.userHasRank(guild, guild.getOwner(), UserRank.GUILD_ADMIN)) {
-            Bot.logger.debug("Set " + guild.getOwner() + " as guild owner for " + guild);
-            GuildManager.setRank(guild, guild.getOwner(), UserRank.GUILD_ADMIN);
+        if (! GuildManager.userHasRank(guild, guild.getOwner(), UserRank.LOCAL_ADMIN)) {
+            Bot.logger.debug("Set " + guild.getOwner() + " as local admin for guild: " + guild);
+            GuildManager.setRank(guild, guild.getOwner(), UserRank.LOCAL_ADMIN);
         }
     }
 

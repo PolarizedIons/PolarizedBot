@@ -35,7 +35,7 @@ class CommandBuilderTest {
 
     @Test
     void setRank() {
-        UserRank rank = UserRank.GUILD_ADMIN;
+        UserRank rank = UserRank.LOCAL_ADMIN;
         CommandTree tree = CommandBuilder.create("test").setRank(rank).command;
         assertEquals(tree.getRank(), rank);
     }

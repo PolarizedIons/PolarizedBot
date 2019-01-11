@@ -44,12 +44,12 @@ class NodeTest {
     @Test
     void basic() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         CommandBuilder builder = CommandBuilder.create("test")
-                .setRank(UserRank.GUILD_ADMIN);
+                .setRank(UserRank.LOCAL_ADMIN);
 
         Node node = new Node(builder, null);
 
         // Test that rank is inherited
-        assertEquals(UserRank.GUILD_ADMIN, getField("rank", node));
+        assertEquals(UserRank.LOCAL_ADMIN, getField("rank", node));
 
         // Test executable behaviour
         assertFalse(node.isExecutable());

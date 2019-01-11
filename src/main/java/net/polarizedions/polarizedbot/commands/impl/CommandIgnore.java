@@ -23,7 +23,7 @@ public class CommandIgnore implements ICommand {
         return CommandBuilder.create("Ignore")
                 .command("ignore", ignore ->
                         ignore.pingArg(pingNode -> pingNode
-                                .rank(UserRank.GUILD_ADMIN)
+                                .rank(UserRank.LOCAL_ADMIN)
                                 .onExecute(this::ignore)
                         )
                                 .onFail(this::fail)
@@ -32,7 +32,7 @@ public class CommandIgnore implements ICommand {
                 )
                 .command("unignore", unignore ->
                         unignore.pingArg(pingNode -> pingNode
-                                .rank(UserRank.GUILD_ADMIN)
+                                .rank(UserRank.LOCAL_ADMIN)
                                 .onExecute(this::unignore)
                         )
                                 .onFail(this::fail)
@@ -46,8 +46,8 @@ public class CommandIgnore implements ICommand {
     private void ignore(@NotNull IMessage message, @NotNull ParsedArguments args) {
         IUser toIgnore = args.size() == 1 ? message.getAuthor() : args.getAsUser(1);
 
-        if (GuildManager.getUserRank(message.getGuild(), toIgnore) == UserRank.BOT_OWNER) {
-            MessageUtil.reply(message, "command.ignore.error.bot_owner");
+        if (GuildManager.getUserRank(message.getGuild(), toIgnore) == UserRank.GLOBAL_ADMIN) {
+            MessageUtil.reply(message, "command.ignore.error.global_admin");
             return;
         }
 

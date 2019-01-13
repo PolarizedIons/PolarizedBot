@@ -1,5 +1,6 @@
 package net.polarizedions.polarizedbot.autoresponders.impl;
 
+import com.vdurmont.emoji.EmojiManager;
 import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.autoresponders.IResponder;
 import net.polarizedions.polarizedbot.util.MessageUtil;
@@ -42,7 +43,7 @@ public class GoodBot implements IResponder {
                 ( content.startsWith("good " + ourUser.mention()) ) ||
                 ( content.startsWith(ourUser.mention() + " good bot") )
         ) {
-            MessageUtil.replyUnlocalized(message.getChannel(), ":heart:️");
+            MessageUtil.replyUnlocalized(message.getChannel(), EmojiManager.getForAlias("heart").getUnicode());
         }
     }
 }

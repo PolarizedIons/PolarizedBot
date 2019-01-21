@@ -48,7 +48,7 @@ public class AnnouncerMcNotifier implements IAnnouncer {
     public void execute(List<IChannel> channels) {
         String releaseType = this.newSnapshot ? "snapshot" : "full";
         String version = this.newSnapshot ? this.prevVersions.snapshot : this.prevVersions.release;
-        String imageUrl = this.newSnapshot ? "https://i.imgur.com/fobDCnm.png" : "https://i.imgur.com/gO5ar1C.png";
+        String imageUrl = this.newSnapshot ? "https://i.imgur.com/Km2ugwt.png" : "https://i.imgur.com/gO5ar1C.png";
         Color color = this.newSnapshot ? new Color(168/255f, 23/255f, 62/255f) : new Color(41/255f, 188/255f, 51/255f) ;
 
         for (IChannel channel : channels) {

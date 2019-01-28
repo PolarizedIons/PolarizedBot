@@ -164,14 +164,16 @@
                 "*": "Ping Pong! Test that the bot it working.",
                 "pingpong": "Run to see latency"
             },
-            "reply": {
-                "1": "%s PONG!",
-                "2": "%s PONG! (%s ms)"
+            "title": {
+                "1": "Ping",
+                "2": "Pong"
             },
-            "reply_alt": {
-                "1": "%s ping?",
-                "2": "%s ping? (%s ms)"
-            }
+            "content": {
+                "tbd": "Determining...",
+                "1": "Pong",
+                "2": "Ping?"
+            },
+            "reply": "%s ms"
         },
         "say": {
             "help": {

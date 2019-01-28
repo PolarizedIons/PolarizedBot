@@ -6,8 +6,10 @@ import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.commands.builder.ParsedArguments;
 import net.polarizedions.polarizedbot.util.Localizer;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.RequestBuffer;
 
+import java.awt.Color;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -29,28 +31,39 @@ public class CommandPing implements ICommand {
     }
 
     void ping(IMessage message, ParsedArguments args) {
-        this.run(message, "command.ping.reply");
+        this.run(message, "1");
     }
 
     void pong(IMessage message, ParsedArguments args) {
-        this.run(message, "command.ping.reply_alt");
+        this.run(message, "2");
     }
 
     void run(IMessage message, String replyKey) {
         Localizer loc = new Localizer(message);
 
+        EmbedBuilder initialEmbedBuilder = new EmbedBuilder();
+        initialEmbedBuilder.withColor(new Color(188, 198, 51));
+        initialEmbedBuilder.withTitle(loc.localize("command.ping.title." + replyKey));
+        initialEmbedBuilder.appendField(loc.localize("command.ping.content." + replyKey), loc.localize("command.ping.content.tbd"), true);
+
+        EmbedBuilder finalEmbedBuilder = new EmbedBuilder();
+        finalEmbedBuilder.withColor(new Color(31, 192, 62));
+        finalEmbedBuilder.withTitle(loc.localize("command.ping.title." + replyKey));
+
+
+
         Instant ping = Instant.now();
-        String initialText = loc.localize(replyKey + ".1", message.getAuthor().mention());
 
         RequestBuffer.request(() -> {
-            IMessage msg = message.getChannel().sendMessage(initialText);
+            IMessage msg = message.getChannel().sendMessage(initialEmbedBuilder.build());
 
             Instant pong = Instant.now();
             Duration duration = Duration.between(ping, pong);
-            String latencyText = loc.localize(replyKey + ".2", message.getAuthor().mention(), duration.toMillis());
+
+            finalEmbedBuilder.appendField(loc.localize("command.ping.content." + replyKey), loc.localize("command.ping.reply", duration.toMillis()), true);
 
             RequestBuffer.request(() -> {
-                msg.edit(latencyText);
+                msg.edit(finalEmbedBuilder.build());
             });
         });
     }

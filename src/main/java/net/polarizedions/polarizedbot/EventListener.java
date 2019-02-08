@@ -13,6 +13,7 @@ import sx.blah.discord.handle.impl.events.shard.LoginEvent;
 import sx.blah.discord.handle.impl.events.shard.ReconnectSuccessEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
 
 import java.time.Instant;
 
@@ -22,7 +23,8 @@ public class EventListener {
 
     @EventSubscriber
     public void onReady(ReadyEvent event) {
-        Bot.logger.info("Ready to go!");
+        IUser us = event.getClient().getOurUser();
+        Bot.logger.info("Ready to go as {} ({})!", us.getName() + "#" + us.getDiscriminator(), us.getStringID());
 
         if (Bot.instance.announcerManager != null) {
             Bot.instance.announcerManager.stop();

@@ -20,13 +20,14 @@ See the command explanation below for more details.
 
 ## Bot permissions
 
-There are essentially three ranks that the bot assigns a discord user. `Bot Owner`, `Guild Admin`, and `Default` in that order.
+There are essentially three ranks that the bot assigns a discord user. `Global Admin`, `Guild Admin`, and `Default` in that order.
 Only some commands are available to `Default` rank users, while most commands, including the `!guild` command, can be performed
-by the `Guild Admin` rank.
+by the `Guild Admin` rank. The `Guild Admin` is labeled publicly as `Moderator`.
 
 The bot will automatically assign `Guild Admin` to the server owner when the bot joins. They can then assign ranks to other
-members via the `!guild set rank ...` command. NOTE that the `Bot Owner` rank CANNOT be assigned via the command. It is a bot
-config setting, and there may only be one `Bot Owner`.
+members via the `!guild mod/unmod...` command. NOTE that the `Global Admin` rank CANNOT be assigned via the command. It is a bot config setting. 
+
+`Global Admin`s have their ranks applied, as the name suggests, globally, meaning they'll have that rank in any guild the bot is in, whereas the `Guild Admin` rank is set per guild.
 
 
 ## Commands

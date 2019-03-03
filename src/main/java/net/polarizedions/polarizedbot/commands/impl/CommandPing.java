@@ -57,7 +57,7 @@ public class CommandPing implements ICommand {
                    embedSpec.setTitle(loc.localize("command.ping.title." + replyKey));
                    embedSpec.addField(loc.localize("command.ping.content." + replyKey), loc.localize("command.ping.reply", duration.toMillis()), true);
                });
-            }));
+            }).block());
         });
     }
 }

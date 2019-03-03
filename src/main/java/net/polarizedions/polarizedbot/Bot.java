@@ -7,6 +7,7 @@ import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.lifecycle.ReconnectEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import net.polarizedions.polarizedbot.announcer.AnnouncerManager;
 import net.polarizedions.polarizedbot.autoresponders.ResponderManager;
 import net.polarizedions.polarizedbot.commands.CommandManager;
@@ -74,6 +75,13 @@ public class Bot {
         events.on(ReconnectEvent.class).subscribe(listener::onReconnected);
         events.on(GuildCreateEvent.class).subscribe(listener::onGuildCreated);
         events.on(MessageCreateEvent.class).subscribe(listener::onMessageReceived);
+
+        this.client.getEventDispatcher().on(MessageEvent.class).subscribe(event -> System.out.println("nesssage"));
+        System.out.println("events subscibed");
+
+
+        System.out.println("loggging in client");
+        client.login().block();
     }
 
     public DiscordClient createClient() {
@@ -94,10 +102,12 @@ public class Bot {
             logger.error("Please enter the required value(s) in the config!");
             System.exit(1);
         }
+        System.out.println("creating client");
         try {
             client = new DiscordClientBuilder(config.botToken).build();
             if (login) {
-                client.login().block();
+//                System.out.println("lgoged in");
+//                client.login().block();
             }
             return client;
         }

@@ -1,5 +1,6 @@
 package net.polarizedions.polarizedbot.commands.impl;
 
+import discord4j.core.object.entity.Message;
 import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
@@ -7,7 +8,6 @@ import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.commands.builder.ParsedArguments;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class CommandShutdown implements ICommand {
                 .buildCommand();
     }
 
-    private void shutdown(IMessage message, ParsedArguments args) {
+    private void shutdown(Message message, ParsedArguments args) {
         Bot.logger.info("Shutting down bot...");
         MessageUtil.reply(message, "command.shutdown.success");
         Bot.instance.shutdown();
@@ -51,11 +51,11 @@ public class CommandShutdown implements ICommand {
         System.exit(0);
     }
 
-    private void fail(IMessage message, ParsedArguments parsed, List<String> unparsed) {
+    private void fail(Message message, ParsedArguments parsed, List<String> unparsed) {
         MessageUtil.reply(message, "command.shutdown.error.restart_subcommand", "hard, soft");
     }
 
-    private void hardRestart(IMessage message, ParsedArguments args) {
+    private void hardRestart(Message message, ParsedArguments args) {
         MessageUtil.reply(message, "command.shutdown.success.restart_hard");
 
         try {
@@ -75,7 +75,6 @@ public class CommandShutdown implements ICommand {
             ProcessBuilder builder = new ProcessBuilder(command);
             builder.inheritIO();
             builder.start();
-            message.getChannel().setTypingStatus(false);
             Bot.logger.info("Hard restarting bot...");
             Bot.instance.shutdown();
             try {
@@ -94,9 +93,8 @@ public class CommandShutdown implements ICommand {
         }
     }
 
-    private void softRestart(IMessage message, ParsedArguments args) {
+    private void softRestart(Message message, ParsedArguments args) {
         MessageUtil.reply(message, "command.shutdown.success.restart_soft");
-        message.getChannel().setTypingStatus(false);
         Bot.logger.info("Soft restarting bot...");
         Bot.instance.softRestart();
     }

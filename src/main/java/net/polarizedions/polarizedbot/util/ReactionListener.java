@@ -1,11 +1,10 @@
 package net.polarizedions.polarizedbot.util;
 
+import discord4j.core.DiscordClient;
+import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.event.domain.message.ReactionRemoveEvent;
+import discord4j.core.object.entity.Message;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionRemoveEvent;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,45 +14,46 @@ public class ReactionListener {
     private Map<Long, Function<ReactionAddEvent, Boolean>> addListeners;
     private Map<Long, Function<ReactionRemoveEvent, Boolean>> removeListeners;
 
-    public ReactionListener(@NotNull IDiscordClient client) {
-        client.getDispatcher().registerListener(this);
+    public ReactionListener(@NotNull DiscordClient client) {
+
+
+        client.getEventDispatcher().on(ReactionAddEvent.class).subscribe(this::onReactionAdded);
+        client.getEventDispatcher().on(ReactionRemoveEvent.class).subscribe(this::onReactionRemoved);
 
         this.addListeners = new HashMap<>();
         this.removeListeners = new HashMap<>();
     }
 
-    public void reactionAddedListener(IMessage message, Function<ReactionAddEvent, Boolean> callback) {
-        this.addListeners.put(message.getLongID(), callback);
+    private void reactionAddedListener(Message message, Function<ReactionAddEvent, Boolean> callback) {
+        this.addListeners.put(message.getId().asLong(), callback);
     }
 
-    public void reactionRemovedListener(IMessage message, Function<ReactionRemoveEvent, Boolean> callback) {
-        this.removeListeners.put(message.getLongID(), callback);
+    public void reactionRemovedListener(Message message, Function<ReactionRemoveEvent, Boolean> callback) {
+        this.removeListeners.put(message.getId().asLong(), callback);
     }
 
-    public void stopAddListener(IMessage message) {
-        this.addListeners.remove(message.getLongID());
+    public void stopAddListener(Message message) {
+        this.addListeners.remove(message.getId().asLong());
     }
 
-    public void stopRemoveListener(IMessage message) {
-        this.removeListeners.remove(message.getLongID());
+    public void stopRemoveListener(Message message) {
+        this.removeListeners.remove(message.getId().asLong());
     }
 
-    @EventSubscriber
-    public void onReactionAdded(@NotNull ReactionAddEvent event) {
-        Function<ReactionAddEvent, Boolean> callback = this.addListeners.get(event.getMessageID());
+    private void onReactionAdded(@NotNull ReactionAddEvent event) {
+        Function<ReactionAddEvent, Boolean> callback = this.addListeners.get(event.getMessageId().asLong());
         if (callback != null) {
             if (callback.apply(event)) {
-                this.stopAddListener(event.getMessage());
+                this.stopAddListener(event.getMessage().block());
             }
         }
     }
 
-    @EventSubscriber
-    public void onReactionRemoved(@NotNull ReactionRemoveEvent event) {
-        Function<ReactionRemoveEvent, Boolean> callback = this.removeListeners.get(event.getMessageID());
+    private void onReactionRemoved(@NotNull ReactionRemoveEvent event) {
+        Function<ReactionRemoveEvent, Boolean> callback = this.removeListeners.get(event.getMessageId().asLong());
         if (callback != null) {
             if (callback.apply(event)) {
-                this.stopRemoveListener(event.getMessage());
+                this.stopRemoveListener(event.getMessage().block());
             }
         }
     }

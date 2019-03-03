@@ -1,10 +1,10 @@
 package net.polarizedions.polarizedbot.commands.impl;
 
+import discord4j.core.object.entity.TextChannel;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.util.MessageUtil;
-import sx.blah.discord.handle.obj.IChannel;
 
 public class CommandSay implements ICommand {
     @Override
@@ -14,20 +14,21 @@ public class CommandSay implements ICommand {
                         .channelArg(channelNode -> channelNode
                                 .swallow(false)
                                 .onExecute((message, args) -> {
-                                    IChannel channel = args.getAsChannel(1);
-                                    channel.sendMessage(args.getAsString(2));
+                                    TextChannel channel = args.getAsChannel(1);
+                                    channel.createMessage(args.getAsString(2));
                                 })
                         )
                         .swallow(false)
-                        .onExecute((message, args) -> MessageUtil.replyUnlocalized(message.getChannel(), args.getAsString(1)))
+                        .onExecute((message, args) -> message.getChannel().block().createMessage(args.getAsString(1)))
                         .setHelp("command.say.help.say")
                 )
                 .command("tell", tell -> tell
                         .pingArg(pingNode -> pingNode
                                 .swallow(false)
                                 .onExecute((message, args) -> {
-                                    IChannel channel = args.getAsUser(1).getOrCreatePMChannel();
-                                    MessageUtil.reply(channel, "command.say.success", message.getAuthor().mention(), args.getAsString(2));
+                                    args.getAsUser(1).getPrivateChannel().subscribe(channel ->
+                                            MessageUtil.reply(channel, "command.say.success", message.getAuthor().get().getMention(), args.getAsString(2))
+                                    );
                                 })
                         )
                         .setHelp("command.say.help.tell")

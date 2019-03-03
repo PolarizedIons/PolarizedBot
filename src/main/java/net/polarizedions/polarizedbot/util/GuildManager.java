@@ -1,11 +1,11 @@
 package net.polarizedions.polarizedbot.util;
 
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
 import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.config.GuildConfig;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,8 +18,8 @@ public class GuildManager {
         configs = new HashMap<>();
     }
 
-    public static GuildConfig getConfig(@NotNull IGuild guild) {
-        configs.computeIfAbsent(guild.getLongID(), id -> {
+    public static GuildConfig getConfig(@NotNull Guild guild) {
+        configs.computeIfAbsent(guild.getId().asLong(), id -> {
             try {
                 return ConfigManager.loadGuildConfig(id);
             }
@@ -28,10 +28,10 @@ public class GuildManager {
             }
         });
 
-        return configs.get(guild.getLongID());
+        return configs.get(guild.getId().asLong());
     }
 
-    public static void saveConfig(IGuild guild) {
+    public static void saveConfig(Guild guild) {
         try {
             ConfigManager.saveGuildConfig(guild, getConfig(guild));
         }
@@ -40,31 +40,34 @@ public class GuildManager {
         }
     }
 
-    public static UserRank getUserRank(IGuild guild, IUser user) {
-        if (Bot.instance.getGlobalConfig().globalAdmins.contains(user.getLongID())) {
+    public static UserRank getUserRank(Guild guild, User user) {
+        if (Bot.instance.getGlobalConfig().globalAdmins.contains(user.getId().asLong())) {
             return UserRank.GLOBAL_ADMIN;
         }
 
-        return getConfig(guild).rank.getOrDefault(user.getLongID(), UserRank.DEFAULT);
+        return getConfig(guild).rank.getOrDefault(user.getId().asLong(), UserRank.DEFAULT);
     }
 
-    public static void setRank(IGuild guild, IUser user, UserRank rank) {
+    public static void setRank(Guild guild, User user, UserRank rank) {
         if (rank == UserRank.DEFAULT) {
-            getConfig(guild).rank.remove(user.getLongID());
+            getConfig(guild).rank.remove(user.getId().asLong());
         }
         else {
-            getConfig(guild).rank.put(user.getLongID(), rank);
+            getConfig(guild).rank.put(user.getId().asLong(), rank);
         }
         saveConfig(guild);
     }
 
-    public static boolean userHasRank(IMessage message, UserRank requiredRank) {
-        return userHasRank(message.getGuild(), message.getAuthor(), requiredRank);
+    public static boolean userHasRank(Message message, UserRank requiredRank) {
+        return message.getAuthor().isPresent() && userHasRank(message.getGuild().block(), message.getAuthor().get(), requiredRank);
     }
 
-    public static boolean userHasRank(IGuild guild, IUser user, UserRank requiredRank) {
+    public static boolean userHasRank(Guild guild, User user, UserRank requiredRank) {
         if (guild == null) {
-            return requiredRank == UserRank.DEFAULT || ( requiredRank == UserRank.GLOBAL_ADMIN && Bot.instance.getGlobalConfig().globalAdmins.contains(user.getLongID()) );
+            return requiredRank == UserRank.DEFAULT ||
+                    ( requiredRank == UserRank.GLOBAL_ADMIN &&
+                            Bot.instance.getGlobalConfig().globalAdmins.contains(user.getId().asLong())
+                    );
         }
 
         return getUserRank(guild, user).rank >= requiredRank.rank;

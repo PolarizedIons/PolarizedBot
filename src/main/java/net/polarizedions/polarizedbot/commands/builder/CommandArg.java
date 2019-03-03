@@ -1,5 +1,6 @@
 package net.polarizedions.polarizedbot.commands.builder;
 
+import discord4j.core.object.util.Snowflake;
 import net.polarizedions.polarizedbot.Bot;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +37,7 @@ public class CommandArg {
         return new CommandArg((in) -> {
             Matcher m = USER_PING_PATTERN.matcher(in);
             if (m.matches()) {
-                return Bot.instance.getClient().getUserByID(Long.parseLong(m.group(1)));
+                return Bot.instance.getClient().getUserById(Snowflake.of(Long.parseLong(m.group(1))));
             }
 
             return null;
@@ -49,7 +50,7 @@ public class CommandArg {
         return new CommandArg((in) -> {
             Matcher m = CHANNEL_PATTERN.matcher(in);
             if (m.matches()) {
-                return Bot.instance.getClient().getChannelByID(Long.parseLong(m.group(1)));
+                return Bot.instance.getClient().getChannelById(Snowflake.of(Long.parseLong(m.group(1))));
             }
 
             return null;

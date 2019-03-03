@@ -1,12 +1,12 @@
 package net.polarizedions.polarizedbot.commands.builder;
 
+import discord4j.core.object.entity.Message;
 import net.polarizedions.polarizedbot.exceptions.CommandExceptions;
 import net.polarizedions.polarizedbot.exceptions.NeedPermission;
 import net.polarizedions.polarizedbot.exceptions.UnknownFail;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.UserRank;
 import org.apache.logging.log4j.util.TriConsumer;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -16,8 +16,8 @@ import java.util.function.Consumer;
 
 public class Node {
     private Map<CommandArg, Node> options = new LinkedHashMap<>();
-    private BiConsumer<IMessage, ParsedArguments> successConsumer;
-    private TriConsumer<IMessage, ParsedArguments, List<String>> failConsumer;
+    private BiConsumer<Message, ParsedArguments> successConsumer;
+    private TriConsumer<Message, ParsedArguments, List<String>> failConsumer;
 
     private CommandBuilder builder;
     private boolean swallows;
@@ -58,12 +58,12 @@ public class Node {
         return this;
     }
 
-    public Node onExecute(BiConsumer<IMessage, ParsedArguments> consumer) {
+    public Node onExecute(BiConsumer<Message, ParsedArguments> consumer) {
         this.successConsumer = consumer;
         return this;
     }
 
-    public Node onFail(TriConsumer<IMessage, ParsedArguments, List<String>> failConsumer) {
+    public Node onFail(TriConsumer<Message, ParsedArguments, List<String>> failConsumer) {
         this.failConsumer = failConsumer;
         return this;
     }
@@ -83,7 +83,7 @@ public class Node {
         return this;
     }
 
-    void executeTree(List<String> treeOptions, IMessage command, ParsedArguments parsedArgs) throws CommandExceptions {
+    void executeTree(List<String> treeOptions, Message command, ParsedArguments parsedArgs) throws CommandExceptions {
         if (!GuildManager.userHasRank(command, this.rank)) {
             throw new NeedPermission(this.rank);
         }
@@ -143,13 +143,13 @@ public class Node {
         return this;
     }
 
-    private void run(IMessage command, ParsedArguments parsedArgs) {
+    private void run(Message command, ParsedArguments parsedArgs) {
         if (this.successConsumer != null) {
             this.successConsumer.accept(command, parsedArgs);
         }
     }
 
-    private void fail(IMessage command, ParsedArguments parsedArgs, List<String> unparsedArgs) throws UnknownFail {
+    private void fail(Message command, ParsedArguments parsedArgs, List<String> unparsedArgs) throws UnknownFail {
         if (this.failConsumer != null) {
             this.failConsumer.accept(command, parsedArgs, unparsedArgs);
         }

@@ -1,6 +1,8 @@
 package net.polarizedions.polarizedbot.commands.impl;
 
 
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.TextChannel;
 import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
@@ -9,7 +11,6 @@ import net.polarizedions.polarizedbot.commands.builder.ParsedArguments;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.Set;
 
@@ -28,7 +29,7 @@ public class CommandHelp implements ICommand {
                 .buildCommand();
     }
 
-    private void list(IMessage message, ParsedArguments args) {
+    private void list(Message message, ParsedArguments args) {
         Set<CommandTree> commandSet = Bot.instance.getCommandManager().getCommands();
         int commandLen = commandSet.parallelStream().map(tree -> tree.getName().length()).max(Integer::compareTo).orElse(10);
 
@@ -38,10 +39,10 @@ public class CommandHelp implements ICommand {
             resp.append("  * ").append(String.format("%-" + commandLen + "s", cmd.getName())).append("   - ").append(String.join(" | ", cmd.getCommands())).append("\n");
         }
 
-        MessageUtil.sendAutosplit(message.getChannel(), resp.append("```").toString());
+        MessageUtil.sendAutosplit((TextChannel)message.getChannel().block(), resp.append("```").toString());
     }
 
-    private void cmd(IMessage message, @NotNull ParsedArguments args) {
+    private void cmd(Message message, @NotNull ParsedArguments args) {
         String helpCommand = args.getAsString(1);
         CommandTree command = null;
         outer:
@@ -59,7 +60,7 @@ public class CommandHelp implements ICommand {
             return;
         }
 
-        Localizer loc = new Localizer(message);
+        Localizer loc = new Localizer(message.getGuild().block());
         StringBuilder resp = new StringBuilder("```\n")
                 .append(command.getName())
                 .append("\n  - ");
@@ -80,7 +81,7 @@ public class CommandHelp implements ICommand {
                     .append("\n");
         }
 
-        MessageUtil.sendAutosplit(message.getChannel(), resp.append("```").toString());
+        MessageUtil.sendAutosplit(message, resp.append("```").toString());
     }
 }
 

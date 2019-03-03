@@ -1,11 +1,9 @@
 package net.polarizedions.polarizedbot.util;
 
+import discord4j.core.DiscordClient;
+import discord4j.core.object.presence.Activity;
+import discord4j.core.object.presence.Presence;
 import net.polarizedions.polarizedbot.Bot;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.handle.obj.ActivityType;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.StatusType;
-import sx.blah.discord.util.DiscordException;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -33,28 +31,23 @@ public class PresenceUtil {
     }
 
     public void init() {
-        IDiscordClient client = Bot.instance.getClient();
-        IUser botUser = client.getOurUser();
-        IUser ownerUser = client.getApplicationOwner();
+        DiscordClient client = Bot.instance.getClient();
+        client.getSelf().subscribe(botUser ->
+                client.getApplicationInfo().subscribe(appInfo -> appInfo.getOwner().subscribe(ownerUser -> {
+                    this.formatter.addArg("bot-name", botUser.getUsername())
+                            .addArg("bot-name-full", botUser.getUsername() + "#" + botUser.getDiscriminator())
+                            .addArg("owner-name", ownerUser.getUsername())
+                            .addArg("owner-name-full", ownerUser.getUsername() + "#" + ownerUser.getDiscriminator())
+                    ;
 
-        this.formatter.addArg("bot-name", botUser.getName())
-                      .addArg("bot-name-full", botUser.getName() + "#" + botUser.getDiscriminator())
-                      .addArg("owner-name", ownerUser.getName())
-                      .addArg("owner-name-full", ownerUser.getName() + "#" + ownerUser.getDiscriminator())
-                      .addArg("guilds-num", () -> String.valueOf(Bot.instance.getClient().getGuilds().size()))
-        ;
-
-        this.timer.scheduleAtFixedRate(this.task, 1000, delayMs);
+                    this.timer.scheduleAtFixedRate(this.task, 1000, delayMs);
+                }))
+        );
     }
 
     private void updatePresence() {
         this.index = ++this.index % this.presences.length;
-        try {
-            Bot.instance.getClient().changePresence(StatusType.ONLINE, ActivityType.PLAYING, this.formatter.format(this.presences[this.index]));
-        }
-        catch (DiscordException ex) {
-            Bot.logger.error("Error updating presence..", ex);
-        }
+        Bot.instance.getClient().updatePresence(Presence.online(Activity.playing(this.formatter.format(this.presences[this.index]))));
     }
 
     public void stop() {

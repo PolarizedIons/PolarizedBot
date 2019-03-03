@@ -1,5 +1,9 @@
 package net.polarizedions.polarizedbot.commands;
 
+import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.commands.impl.CommandAbout;
 import net.polarizedions.polarizedbot.commands.impl.CommandAnnoucer;
@@ -16,16 +20,10 @@ import net.polarizedions.polarizedbot.commands.impl.CommandWolframAlpha;
 import net.polarizedions.polarizedbot.config.GuildConfig;
 import net.polarizedions.polarizedbot.exceptions.CommandExceptions;
 import net.polarizedions.polarizedbot.util.GuildManager;
-import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.MissingPermissionsException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,11 +60,7 @@ public class CommandManager {
         }
     }
 
-    public void messageHandler(IMessage message) {
-        IUser user = message.getAuthor();
-        IGuild guild = message.getGuild();
-
-
+    public void messageHandler(Guild guild, User user, Channel channel, Message message) {
         if (guild == null) {
             MessageUtil.reply(message, "error.pm_not_supported");
             return;
@@ -77,18 +71,19 @@ public class CommandManager {
         }
 
         GuildConfig guildConfig = GuildManager.getConfig(guild);
-        if (guildConfig.ignoredUsers.contains(user.getLongID())) {
+        if (guildConfig.ignoredUsers.contains(user.getId().asLong())) {
             logger.debug("From ignored user");
             return;
         }
 
-        if (!message.getContent().startsWith(guildConfig.commandPrefix)) {
+        String messageConent = message.getContent().isPresent() ? message.getContent().get() : "";
+        if (!messageConent.startsWith(guildConfig.commandPrefix)) {
             return;
         }
 
 
         List<String> commandFragments = new ArrayList<>();
-        Collections.addAll(commandFragments, message.getContent().split(" "));
+        Collections.addAll(commandFragments, messageConent.split(" "));
         String command = commandFragments.get(0).substring(guildConfig.commandPrefix.length());
         commandFragments.set(0, command);
 
@@ -116,39 +111,39 @@ public class CommandManager {
         }
     }
 
-    private void handleCommandException(IMessage message, Exception ex, CommandTree commandTree) {
+    private void handleCommandException(Message message, Exception ex, CommandTree commandTree) {
         if (ex instanceof CommandExceptions) {
             logger.warn("Failed to handle command: threw {}", ex.getClass().getSimpleName());
             MessageUtil.reply(message, ( (CommandExceptions)ex ).getError(), ( (CommandExceptions)ex ).getErrorContext());
         }
-        else if (ex instanceof MissingPermissionsException) {
-            String neededPerms = ( (MissingPermissionsException)ex ).getMissingPermissions().toString();
-            logger.error("No permission", neededPerms);
-
-            String localized = new Localizer(message).localize("error.no_permission", neededPerms);
-            try {
-                message.getChannel().sendMessage(localized);
-            }
-            catch (Exception e) {
-                try {
-                    message.getAuthor().getOrCreatePMChannel().sendMessage(localized);
-                }
-                catch (Exception exc) { /* NOOP */ }
-            }
-        }
-        else if (ex instanceof DiscordException) {
-            logger.error("Discord exception!", ex);
-            try {
-                MessageUtil.reply(message, "error.discord_error", ( (DiscordException)ex ).getErrorMessage());
-            }
-            catch (Exception e) { /* NOOP */ }
-        }
+//        else if (ex instanceof MissingPermissionsException) {
+//            String neededPerms = ( (MissingPermissionsException)ex ).getMissingPermissions().toString();
+//            logger.error("No permission", neededPerms);
+//
+//            String localized = new Localizer(message).localize("error.no_permission", neededPerms);
+//            try {
+//                message.getChannel().sendMessage(localized);
+//            }
+//            catch (Exception e) {
+//                try {
+//                    message.getAuthor().getOrCreatePMChannel().sendMessage(localized);
+//                }
+//                catch (Exception exc) { /* NOOP */ }
+//            }
+//        }
+//        else if (ex instanceof DiscordException) {
+//            logger.error("Discord exception!", ex);
+//            try {
+//                MessageUtil.reply(message, "error.discord_error", ( (DiscordException)ex ).getErrorMessage());
+//            }
+//            catch (Exception e) { /* NOOP */ }
+//        }
         else {
             logger.error("I f'ed up", ex);
             try {
                 StringBuilder errorMsg = new StringBuilder("java\n")
-                        .append("In reply to: [").append(message.getStringID()).append("] ")
-                        .append(message.getAuthor().getName()).append("#").append(message.getAuthor().getDiscriminator())
+                        .append("In reply to: [").append(message.getId()).append("] ")
+                        .append(message.getAuthor().get())
                         .append(": \"").append(message.getContent()).append("\"\n")
                         .append("Command: ").append(commandTree.getName()).append("\n")
                         .append("Exception:\n\n")

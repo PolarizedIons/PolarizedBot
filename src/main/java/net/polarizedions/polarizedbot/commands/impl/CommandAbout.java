@@ -1,5 +1,10 @@
 package net.polarizedions.polarizedbot.commands.impl;
 
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Image;
+import discord4j.core.object.util.Snowflake;
 import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.commands.CommandManager;
 import net.polarizedions.polarizedbot.commands.ICommand;
@@ -12,11 +17,9 @@ import net.polarizedions.polarizedbot.util.BotInfo;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.TimeUtil;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.EmbedBuilder;
+import org.jetbrains.annotations.NotNull;
 
+import java.awt.Color;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -36,26 +39,23 @@ public class CommandAbout implements ICommand {
                         .pingArg(user -> user
                             .onExecute((message, args) -> this.info(message, args.getAsUser(1)))
                         )
-                        .onExecute((message, args) -> this.info(message, message.getAuthor()))
+                        .onExecute((message, args) -> this.info(message, message.getAuthor().get()))
                         .setHelp("command.about.help.info")
                 )
                 .setHelp("command.about.help")
                 .buildCommand();
     }
 
-    private void about(IMessage message, ParsedArguments args) {
-        Localizer loc = new Localizer(message);
+    private void about(Message message, ParsedArguments args) {
+        Guild guild = message.getGuild().block();
+        Localizer loc = new Localizer(guild);
 
         Bot bot = Bot.instance;
         CommandManager commandManager = bot.getCommandManager();
-        IGuild guild = message.getGuild();
         GlobalConfig globalConfig = bot.getGlobalConfig();
         GuildConfig guildConfig = GuildManager.getConfig(guild);
-
-        EmbedBuilder builder = new EmbedBuilder();
-
-        IUser botOwner = bot.getClient().getApplicationOwner();
-        IUser botUser = bot.getClient().getOurUser();
+        User botOwner = bot.getClient().getApplicationInfo().block().getOwner().block();
+        User botUser = bot.getClient().getSelf().block();
 
         Instant now = Instant.now();
         Duration runningTime = Duration.between(bot.getStartInstant(), now);
@@ -70,63 +70,71 @@ public class CommandAbout implements ICommand {
         int announcersNum = bot.getAnnouncerManager().getIDs().length;
         int announcersEnabled = bot.getAnnouncerManager().getAnnouncersForGuild(guild).size();
 
-        String shardCount = String.valueOf(bot.getClient().getShardCount());
-
         String globalAdmins = globalConfig.globalAdmins.parallelStream().map(uId -> {
-            IUser user = bot.getClient().getUserByID(uId);
-            return user.getName() + "#" + user.getDiscriminator();
+            User user = bot.getClient().getUserById(Snowflake.of(uId)).block();
+            return user.getUsername() + "#" + user.getDiscriminator();
         }).collect(Collectors.joining(", "));
 
-        builder.appendField(loc.localize("command.about.header.bot_owner"), botOwner.getName() + "#" + botOwner.getDiscriminator(), false);
-        builder.appendField(loc.localize("command.about.header.global_admins"), globalAdmins, false);
-        builder.appendField(loc.localize("command.about.header.running"), TimeUtil.formatDuration(loc, runningTime), false);
-        builder.appendField(loc.localize("command.about.header.connected"), TimeUtil.formatDuration(loc, connectedTime), false);
-        builder.appendField(loc.localize("command.about.header.shard_count"), shardCount, false);
-        builder.appendField(loc.localize("command.about.header.source_code"), BotInfo.githubRepo, false);
+        message.getChannel().subscribe(channel ->
+            channel.createMessage(msgSpec -> {
+                msgSpec.setEmbed(embedSpec -> {
+                    embedSpec.addField(loc.localize("command.about.header.bot_owner"), botOwner.getUsername() + "#" + botOwner.getDiscriminator(), false);
+                    embedSpec.addField(loc.localize("command.about.header.global_admins"), globalAdmins, false);
+                    embedSpec.addField(loc.localize("command.about.header.running"), TimeUtil.formatDuration(loc, runningTime), false);
+                    embedSpec.addField(loc.localize("command.about.header.connected"), TimeUtil.formatDuration(loc, connectedTime), false);
+                    embedSpec.addField(loc.localize("command.about.header.source_code"), BotInfo.githubRepo, false);
 
-        builder.appendField(loc.localize("command.about.header.bot_user"), botUser.getName() + "#" + botUser.getDiscriminator(), false);
-        builder.appendField(loc.localize("command.about.header.bot_id"), botUser.getStringID(), false);
+                    embedSpec.addField(loc.localize("command.about.header.bot_user"), botUser.getUsername() + "#" + botUser.getDiscriminator(), false);
+                    embedSpec.addField(loc.localize("command.about.header.bot_id"), botUser.getId().asString(), false);
 
-        builder.appendField(loc.localize("command.about.header.commands"), loc.localize("command.about.info.commands", commandsNum, commandsDisabled), false);
-        builder.appendField(loc.localize("command.about.header.autoresponders"), loc.localize("command.about.info.autoresponders", respondersNum, respondersDisabled), false);
-        builder.appendField(loc.localize("command.about.header.announcers"), loc.localize("command.about.info.announcers", announcersNum, announcersEnabled), false);
+                    embedSpec.addField(loc.localize("command.about.header.commands"), loc.localize("command.about.info.commands", commandsNum, commandsDisabled), false);
+                    embedSpec.addField(loc.localize("command.about.header.autoresponders"), loc.localize("command.about.info.autoresponders", respondersNum, respondersDisabled), false);
+                    embedSpec.addField(loc.localize("command.about.header.announcers"), loc.localize("command.about.info.announcers", announcersNum, announcersEnabled), false);
 
-        builder.withTitle(loc.localize("command.about.bot_info", bot.getClient().getOurUser().getDisplayName(guild)));
-        builder.withThumbnail(bot.getClient().getApplicationIconURL());
-        builder.withFooterText("PolarizedBot v" + BotInfo.version);
-        try {
-            builder.withTimestamp(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX").parse(BotInfo.buildtime).toInstant());
-        }
-        catch (ParseException e) {
-            e.printStackTrace();
-            builder.withFooterText("PolarizedBot v" + BotInfo.version + " built: " + BotInfo.buildtime);
-        }
-        builder.withColor(57, 78, 160);
+                    embedSpec.setTitle(loc.localize("command.about.bot_info", botUser.asMember(guild.getId()).block().getDisplayName()));
+                    embedSpec.setThumbnail(bot.getClient().getApplicationInfo().block().getIcon(Image.Format.PNG).get());
+                    embedSpec.setFooter("PolarizedBot v" + BotInfo.version, null);
 
-        message.getChannel().sendMessage(builder.build());
+                    try {
+                        embedSpec.setTimestamp(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX").parse(BotInfo.buildtime).toInstant());
+                    }
+                    catch (ParseException e) {
+                        /* NOOP */
+                    }
+
+                    embedSpec.setColor(new Color(57, 78, 160));
+
+                });
+            })
+        );
     }
 
-    private void info(IMessage message, IUser user) {
-        Localizer loc = new Localizer(message);
-        EmbedBuilder builder = new EmbedBuilder();
-        IGuild guild = message.getGuild();
+    private void info(@NotNull Message message, @NotNull User user) {
+        Guild guild = message.getGuild().block();
+        Localizer loc = new Localizer(guild);
 
-        builder.appendField(loc.localize("command.about.header.user"), user.getName() + "#" + user.getDiscriminator(), true);
-        builder.appendField(loc.localize("command.about.header.user_id"), user.getStringID(), true);
-        builder.appendField(loc.localize("command.about.header.rank"), loc.localize("ranks." + GuildManager.getUserRank(guild, user).name().toLowerCase()), true);
+        message.getChannel().subscribe(channel -> {
+            channel.createMessage(msgSpec -> {
+                msgSpec.setEmbed(embedSpec -> {
+                    embedSpec.addField(loc.localize("command.about.header.user"), user.getUsername() + "#" + user.getDiscriminator(), true);
+                    embedSpec.addField(loc.localize("command.about.header.user_id"), user.getId().asString(), true);
+                    embedSpec.addField(loc.localize("command.about.header.rank"), loc.localize("ranks." + GuildManager.getUserRank(guild, user).name().toLowerCase()), true);
 
-        builder.withTitle(loc.localize("command.about.user_info", user.getDisplayName(guild)));
-        builder.withThumbnail(user.getAvatarURL());
-        builder.withFooterText("PolarizedBot v" + BotInfo.version);
-        try {
-            builder.withTimestamp(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX").parse(BotInfo.buildtime).toInstant());
-        }
-        catch (ParseException e) {
-            e.printStackTrace();
-            builder.withFooterText("PolarizedBot v" + BotInfo.version + " built: " + BotInfo.buildtime);
-        }
-        builder.withColor(57, 78, 160);
+                    embedSpec.setTitle(loc.localize("command.about.user_info", user.asMember(guild.getId()).block().getDisplayName()));
+                    embedSpec.setThumbnail(user.getAvatarUrl());
+                    embedSpec.setFooter("PolarizedBot v" + BotInfo.version, null);
+                    try {
+                        embedSpec.setTimestamp(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX").parse(BotInfo.buildtime).toInstant());
+                    }
+                    catch (ParseException e) {
+                        /* NOOP */
+                    }
 
-        message.getChannel().sendMessage(builder.build());
+                    embedSpec.setColor(new Color(57, 78, 160));
+
+                });
+            });
+        });
+
     }
 }

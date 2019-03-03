@@ -1,5 +1,6 @@
 package net.polarizedions.polarizedbot.commands.impl;
 
+import discord4j.core.object.entity.Message;
 import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.api_handlers.GithubApi;
 import net.polarizedions.polarizedbot.commands.ICommand;
@@ -13,7 +14,6 @@ import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,7 +38,7 @@ public class CommandUpdate implements ICommand {
                 .buildCommand();
     }
 
-    private void update(IMessage message, ParsedArguments args) {
+    private void update(Message message, ParsedArguments args) {
         if (inProgress) {
             MessageUtil.reply(message, "command.update.error.in_progress");
             return;

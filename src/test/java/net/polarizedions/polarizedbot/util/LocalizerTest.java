@@ -1,6 +1,5 @@
 package net.polarizedions.polarizedbot.util;
 
-import mocks.SetupMocks;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,12 +16,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class LocalizerTest {
     @BeforeAll
     static void setup() throws NoSuchFieldException, IllegalAccessException {
-        SetupMocks.setupLocalization();
+//        SetupMocks.setupLocalization();
+        // TODO
     }
 
     @AfterAll
     static void teardown() throws NoSuchFieldException, IllegalAccessException {
-        SetupMocks.resetLocalization();
+//        SetupMocks.resetLocalization();
+        // TODO
     }
 
     @Test

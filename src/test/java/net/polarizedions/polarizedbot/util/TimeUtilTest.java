@@ -1,6 +1,5 @@
 package net.polarizedions.polarizedbot.util;
 
-import mocks.SetupMocks;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +11,8 @@ class TimeUtilTest {
 
     @BeforeAll
     static void setup() throws NoSuchFieldException, IllegalAccessException {
-        SetupMocks.resetLocalization();
+//        SetupMocks.resetLocalization();
+        // TODO
     }
 
     @Test

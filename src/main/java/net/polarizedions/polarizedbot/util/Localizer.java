@@ -3,13 +3,11 @@ package net.polarizedions.polarizedbot.util;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import discord4j.core.object.entity.Guild;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -28,11 +26,11 @@ public class Localizer {
 
     private String currentLang;
 
-    public Localizer(@NotNull IMessage message) {
-        this(message.getGuild());
+    public Localizer() {
+        this(AVAILABLE_LANGUAGES[0]);
     }
 
-    public Localizer(IGuild guild) {
+    public Localizer(Guild guild) {
         this(guild == null ? AVAILABLE_LANGUAGES[0] : GuildManager.getConfig(guild).lang);
     }
 
@@ -71,7 +69,7 @@ public class Localizer {
             langData.put(langCode, new HashMap<>());
             parseLangData(langCode, "", object);
         }
-        catch (JSONException | JsonSyntaxException ex) {
+        catch (JsonSyntaxException ex) {
             logger.error("Failed to parse language file for '{}'", ex);
             return;
         }

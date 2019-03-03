@@ -1,9 +1,9 @@
 package net.polarizedions.polarizedbot.autoresponders.impl;
 
+import discord4j.core.object.entity.Message;
 import net.polarizedions.polarizedbot.autoresponders.IResponder;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.MessageUtil;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.text.DecimalFormat;
 import java.util.Collections;
@@ -32,9 +32,9 @@ public class TempConverter implements IResponder {
     }
 
     @Override
-    public void run(IMessage message) {
-        Localizer loc = new Localizer(message);
-        Matcher m = TEMPERATURE_REGEX.matcher(message.getContent());
+    public void run(Message message) {
+        Localizer loc = new Localizer(message.getGuild().block());
+        Matcher m = TEMPERATURE_REGEX.matcher(message.getContent().orElse(""));
         boolean match = false;
         StringBuilder builder = new StringBuilder("```\n");
 
@@ -58,7 +58,7 @@ public class TempConverter implements IResponder {
         }
 
         if (match) {
-            MessageUtil.sendAutosplit(message.getChannel(), builder.append("```").toString(), "```", "```");
+            MessageUtil.sendAutosplit(message, builder.append("```").toString(), "```", "```");
         }
     }
 }

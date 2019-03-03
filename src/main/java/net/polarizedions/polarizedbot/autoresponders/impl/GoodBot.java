@@ -1,13 +1,13 @@
 package net.polarizedions.polarizedbot.autoresponders.impl;
 
 import com.vdurmont.emoji.EmojiManager;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
 import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.autoresponders.IResponder;
-import net.polarizedions.polarizedbot.util.MessageUtil;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.MessageHistory;
+
+import java.util.List;
 
 public class GoodBot implements IResponder {
     @Override
@@ -15,35 +15,42 @@ public class GoodBot implements IResponder {
         return "goodbot";
     }
 
-    private boolean inReplyToUs(@NotNull IMessage message) {
-        IUser ourUser = Bot.instance.getClient().getOurUser();
-        MessageHistory channelMessages = message.getChannel().getMessageHistory(10);
+    private boolean inReplyToUs(@NotNull Message message) {
+        User ourUser = Bot.instance.getClient().getSelf().block();
+        List<Message> channelMessages = message.getChannel().block().getMessagesBefore(message.getId()).collectList().block();
         boolean found = false;
+        int i = 0;
 
-        for (IMessage msg : channelMessages) {
+        for (Message msg : channelMessages) {
+            if (i > 20) {
+                return false;
+            }
+
             if (found) {
-                return msg.getAuthor().getLongID() == ourUser.getLongID();
+                return msg.getAuthor().get().getId().asLong() == ourUser.getId().asLong();
             }
 
             if (msg.equals(message)) {
                 found = true;
             }
+
+            i++;
         }
 
         return false;
     }
 
     @Override
-    public void run(IMessage message) {
-        String content = message.getContent().toLowerCase();
-        IUser ourUser = Bot.instance.getClient().getOurUser();
+    public void run(Message message) {
+        String content = message.getContent().orElse("").toLowerCase();
+        User ourUser = Bot.instance.getClient().getSelf().block();
         boolean isInReplyToUs = this.inReplyToUs(message);
 
         if (( isInReplyToUs && content.startsWith("good bot") ) ||
-                ( content.startsWith("good " + ourUser.mention()) ) ||
-                ( content.startsWith(ourUser.mention() + " good bot") )
+                ( content.startsWith("good " + ourUser.getMention() )) ||
+                ( content.startsWith(ourUser.getMention() + " good bot") )
         ) {
-            MessageUtil.replyUnlocalized(message.getChannel(), EmojiManager.getForAlias("heart").getUnicode());
+            message.getChannel().subscribe(channel -> channel.createMessage(EmojiManager.getForAlias("heart").getUnicode()));
         }
     }
 }

@@ -2,6 +2,7 @@ package net.polarizedions.polarizedbot.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import discord4j.core.object.entity.Guild;
 import net.polarizedions.polarizedbot.config.GlobalConfig;
 import net.polarizedions.polarizedbot.config.GuildConfig;
 import net.polarizedions.polarizedbot.config.defaults.DefaultGlobalConfig;
@@ -9,7 +10,6 @@ import net.polarizedions.polarizedbot.config.defaults.DefaultGuildConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
-import sx.blah.discord.handle.obj.IGuild;
 
 import java.io.File;
 import java.io.FileReader;
@@ -77,14 +77,14 @@ public class ConfigManager {
         return guildConfig;
     }
 
-    public static void saveGuildConfig(IGuild guild, GuildConfig config) throws IOException {
+    public static void saveGuildConfig(Guild guild, GuildConfig config) throws IOException {
         File guildsFolder = Paths.get(configDir.getAbsolutePath(), "guilds").toFile();
         if (!guildsFolder.exists()) {
             logger.debug("Creating guilds config folder");
             guildsFolder.mkdir();
         }
 
-        File guildFile = Paths.get(guildsFolder.toString(), guild.getLongID() + ".json").toFile();
+        File guildFile = Paths.get(guildsFolder.toString(), guild.getId().asString() + ".json").toFile();
 
         if (config == null) {
             logger.error("Tried to save unknown guild config!?");

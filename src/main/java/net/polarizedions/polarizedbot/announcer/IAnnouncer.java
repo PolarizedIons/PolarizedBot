@@ -1,6 +1,6 @@
 package net.polarizedions.polarizedbot.announcer;
 
-import sx.blah.discord.handle.obj.IChannel;
+import discord4j.core.object.entity.TextChannel;
 
 import java.util.List;
 
@@ -11,5 +11,5 @@ public interface IAnnouncer {
 
     boolean check();
 
-    void execute(List<IChannel> channels);
+    void execute(List<TextChannel> channels);
 }

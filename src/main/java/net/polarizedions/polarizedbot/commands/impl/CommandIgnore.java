@@ -1,5 +1,7 @@
 package net.polarizedions.polarizedbot.commands.impl;
 
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
@@ -10,8 +12,6 @@ import net.polarizedions.polarizedbot.util.UserRank;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
 
 import java.util.List;
 
@@ -43,30 +43,30 @@ public class CommandIgnore implements ICommand {
     }
 
 
-    private void ignore(@NotNull IMessage message, @NotNull ParsedArguments args) {
-        IUser toIgnore = args.size() == 1 ? message.getAuthor() : args.getAsUser(1);
+    private void ignore(@NotNull Message message, @NotNull ParsedArguments args) {
+        User toIgnore = args.size() == 1 ? message.getAuthor().get() : args.getAsUser(1);
 
-        if (GuildManager.getUserRank(message.getGuild(), toIgnore) == UserRank.GLOBAL_ADMIN) {
+        if (GuildManager.getUserRank(message.getGuild().block(), toIgnore) == UserRank.GLOBAL_ADMIN) {
             MessageUtil.reply(message, "command.ignore.error.global_admin");
             return;
         }
 
         logger.debug("Ignoring {}", toIgnore);
-        GuildManager.getConfig(message.getGuild()).ignoredUsers.add(toIgnore.getLongID());
-        GuildManager.saveConfig(message.getGuild());
-        MessageUtil.reply(message, "command.ignore.success.ignore", toIgnore.getName() + "#" + toIgnore.getDiscriminator());
+        GuildManager.getConfig(message.getGuild().block()).ignoredUsers.add(toIgnore.getId().asLong());
+        GuildManager.saveConfig(message.getGuild().block());
+        MessageUtil.reply(message, "command.ignore.success.ignore", toIgnore.getUsername() + "#" + toIgnore.getDiscriminator());
     }
 
-    private void unignore(@NotNull IMessage message, @NotNull ParsedArguments args) {
-        IUser toUnignore = args.getAsUser(1);
+    private void unignore(@NotNull Message message, @NotNull ParsedArguments args) {
+        User toUnignore = args.getAsUser(1);
 
         logger.debug("Unignoring {}", toUnignore);
-        GuildManager.getConfig(message.getGuild()).ignoredUsers.remove(toUnignore.getLongID());
-        GuildManager.saveConfig(message.getGuild());
+        GuildManager.getConfig(message.getGuild().block()).ignoredUsers.remove(toUnignore.getId().asLong());
+        GuildManager.saveConfig(message.getGuild().block());
         MessageUtil.reply(message, "command.ignore.success.unignore", toUnignore.toString());
     }
 
-    private void fail(IMessage message, ParsedArguments parsedArgs, List<String> unparsedArgs) {
+    private void fail(Message message, ParsedArguments parsedArgs, List<String> unparsedArgs) {
         MessageUtil.reply(message, "command.ignore.error.no_user");
     }
 }

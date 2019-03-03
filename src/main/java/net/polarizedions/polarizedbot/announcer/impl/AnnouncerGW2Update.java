@@ -1,8 +1,8 @@
 package net.polarizedions.polarizedbot.announcer.impl;
 
+import discord4j.core.object.entity.TextChannel;
 import net.polarizedions.polarizedbot.announcer.IAnnouncer;
 import net.polarizedions.polarizedbot.api_handlers.GW2ForumApi;
-import sx.blah.discord.handle.obj.IChannel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,11 +52,11 @@ public class AnnouncerGW2Update implements IAnnouncer {
     }
 
     @Override
-    public void execute(List<IChannel> channels) {
-        for (IChannel channel : channels) {
+    public void execute(List<TextChannel> channels) {
+        for (TextChannel channel : channels) {
             for (GW2ForumApi.GW2UpdateLising listing : this.toAnnounce) {
                 // TODO: localize
-                channel.sendMessage("GW2 update found: " + listing.title);
+                channel.createMessage("GW2 update found: " + listing.title);
             }
         }
 

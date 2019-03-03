@@ -1,8 +1,8 @@
 package net.polarizedions.polarizedbot.commands.builder;
 
+import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.entity.User;
 import org.jetbrains.annotations.Contract;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IUser;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,12 +35,12 @@ public class ParsedArguments extends LinkedList<Object> {
     }
 
     @SuppressWarnings("deprecation")
-    public IChannel getAsChannel(int i) {
-        return (IChannel) this.get(i);
+    public TextChannel getAsChannel(int i) {
+        return (TextChannel) this.get(i);
     }
 
     @SuppressWarnings("deprecation")
-    public IUser getAsUser(int i) {
-        return (IUser) this.get(i);
+    public User getAsUser(int i) {
+        return (User) this.get(i);
     }
 }

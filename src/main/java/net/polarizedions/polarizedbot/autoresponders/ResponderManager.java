@@ -1,13 +1,14 @@
 package net.polarizedions.polarizedbot.autoresponders;
 
+import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
 import net.polarizedions.polarizedbot.autoresponders.impl.GoodBot;
 import net.polarizedions.polarizedbot.autoresponders.impl.MeasurementConverter;
 import net.polarizedions.polarizedbot.autoresponders.impl.TempConverter;
 import net.polarizedions.polarizedbot.config.GuildConfig;
 import net.polarizedions.polarizedbot.util.GuildManager;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +25,7 @@ public class ResponderManager {
         this.responders.add(new GoodBot());
     }
 
-    public void messageHandler(IMessage message) {
-        IUser user = message.getAuthor();
-        IGuild guild = message.getGuild();
-
+    public void messageHandler(Guild guild, User user, Channel channel, Message message) {
         if (guild == null) {
             return;
         }
@@ -38,11 +36,11 @@ public class ResponderManager {
 
         GuildConfig guildConfig = GuildManager.getConfig(guild);
 
-        if (guildConfig.ignoredUsers.contains(user.getLongID())) {
+        if (guildConfig.ignoredUsers.contains(user.getId().asLong())) {
             return;
         }
 
-        String content = message.getContent();
+        String content = message.getContent().orElse("");
         boolean commandPrefix = content.startsWith(guildConfig.commandPrefix);
 
         for (IResponder responder : this.responders) {

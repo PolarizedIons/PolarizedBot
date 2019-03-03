@@ -1,5 +1,12 @@
 package net.polarizedions.polarizedbot;
 
+import discord4j.core.DiscordClient;
+import discord4j.core.DiscordClientBuilder;
+import discord4j.core.event.EventDispatcher;
+import discord4j.core.event.domain.guild.GuildCreateEvent;
+import discord4j.core.event.domain.lifecycle.ReadyEvent;
+import discord4j.core.event.domain.lifecycle.ReconnectEvent;
+import discord4j.core.event.domain.message.MessageCreateEvent;
 import net.polarizedions.polarizedbot.announcer.AnnouncerManager;
 import net.polarizedions.polarizedbot.autoresponders.ResponderManager;
 import net.polarizedions.polarizedbot.commands.CommandManager;
@@ -12,9 +19,6 @@ import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.PresenceUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sx.blah.discord.api.ClientBuilder;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.util.DiscordException;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -28,7 +32,7 @@ public class Bot {
     private static Instant startInstant;
     Instant connectedInstant;
 
-    private IDiscordClient client;
+    private DiscordClient client;
     AnnouncerManager announcerManager;
     CommandManager commandManager;
     ResponderManager responderManager;
@@ -63,15 +67,20 @@ public class Bot {
         this.client = createClient();
 
 //        this.reactionListener = new ReactionListener(this.client);
+        EventListener listener = new EventListener(client);
+        EventDispatcher events = this.client.getEventDispatcher();
 
-        this.client.getDispatcher().registerListener(new EventListener());
+        events.on(ReadyEvent.class).subscribe(listener::onReady);
+        events.on(ReconnectEvent.class).subscribe(listener::onReconnected);
+        events.on(GuildCreateEvent.class).subscribe(listener::onGuildCreated);
+        events.on(MessageCreateEvent.class).subscribe(listener::onMessageReceived);
     }
 
-    public IDiscordClient createClient() {
+    public DiscordClient createClient() {
         return createClient(true);
     }
 
-    public IDiscordClient createClient(boolean login) {
+    public DiscordClient createClient(boolean login) {
         GlobalConfig config = this.getGlobalConfig();
         if (config.globalAdmins.isEmpty()) {
             logger.error("The `globalAdmins` value in bot.json MUST NOT be empty!");
@@ -85,18 +94,14 @@ public class Bot {
             logger.error("Please enter the required value(s) in the config!");
             System.exit(1);
         }
-
-        ClientBuilder clientBuilder = new ClientBuilder();
-        clientBuilder.withToken(config.botToken);
         try {
+            client = new DiscordClientBuilder(config.botToken).build();
             if (login) {
-                return clientBuilder.login();
+                client.login().block();
             }
-            else {
-                return clientBuilder.build();
-            }
+            return client;
         }
-        catch (DiscordException ex) {
+        catch (Exception ex) {
             throw new RuntimeException("Error creating/logging in client", ex);
         }
     }
@@ -121,7 +126,7 @@ public class Bot {
         return ConfigManager.getGlobalConfig();
     }
 
-    public IDiscordClient getClient() {
+    public DiscordClient getClient() {
         return client;
     }
 

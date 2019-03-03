@@ -1,5 +1,8 @@
 package net.polarizedions.polarizedbot.commands.impl;
 
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
 import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.autoresponders.ResponderManager;
 import net.polarizedions.polarizedbot.commands.ICommand;
@@ -12,9 +15,6 @@ import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
 
 import java.util.List;
 
@@ -36,13 +36,6 @@ public class CommandGuild implements ICommand {
                                         .captureArg(str -> str.onExecute(this::setLang))
                                         .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "lang_missing"))
                                 )
-//                                .stringArg("rank", rank -> rank
-//                                        .captureArg(rankStr -> rankStr
-//                                                .pingArg(user -> user.onExecute(this::setRank))
-//                                                .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "rank_user_missing"))
-//                                        )
-//                                        .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "rank_missing"))
-//                                )
                                 .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "unknown_set_command", (Object[])setCommands))
                         )
                         .stringArg("enable", enable -> enable
@@ -52,7 +45,7 @@ public class CommandGuild implements ICommand {
                                 )
                                 .stringArg("responder", responder -> responder
                                         .captureArg(rsp -> rsp.onExecute(this::enableResponder))
-                                        .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "enable_responder_missing", String.join(", ", GuildManager.getConfig(m.getGuild()).disabledResponders)))
+                                        .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "enable_responder_missing", String.join(", ", GuildManager.getConfig(m.getGuild().block()).disabledResponders)))
                                 )
                                 .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "enable_arg_missing", "command, responder"))
                         )
@@ -86,7 +79,7 @@ public class CommandGuild implements ICommand {
                 .buildCommand();
     }
 
-    private void subcommandFail(IMessage message, ParsedArguments parsedArgs, @NotNull List<String> unparsedArgs) {
+    private void subcommandFail(Message message, ParsedArguments parsedArgs, @NotNull List<String> unparsedArgs) {
         if (unparsedArgs.size() == 0) {
             MessageUtil.reply(message, "command.guild.error.no_subcommand", String.join(", ", subCommands));
         }
@@ -95,11 +88,11 @@ public class CommandGuild implements ICommand {
         }
     }
 
-    private void notEnoughArgs(IMessage message, ParsedArguments parsedArgs, List<String> unparsedArgs, String suffix, Object... context) {
+    private void notEnoughArgs(Message message, ParsedArguments parsedArgs, List<String> unparsedArgs, String suffix, Object... context) {
         MessageUtil.reply(message, "command.guild.error." + suffix, context);
     }
 
-    private void setLang(IMessage message, @NotNull ParsedArguments args) {
+    private void setLang(Message message, @NotNull ParsedArguments args) {
         String newLang = args.getAsString(2);
 
         if (!Localizer.supports(newLang)) {
@@ -107,51 +100,37 @@ public class CommandGuild implements ICommand {
             return;
         }
 
-        GuildManager.getConfig(message.getGuild()).lang = newLang.toLowerCase();
-        GuildManager.saveConfig(message.getGuild());
+        GuildManager.getConfig(message.getGuild().block()).lang = newLang.toLowerCase();
+        GuildManager.saveConfig(message.getGuild().block());
         MessageUtil.reply(message, "command.guild.success.setlang", newLang);
     }
 
-//    private void setRank(IMessage message, @NotNull ParsedArguments args) {
-//        String rankName = args.getAsString(3);
-//        IUser user = args.getAsUser(4);
-//
-//        UserRank rank = UserRank.getByName(rankName);
-//        if (rank == null) {
-//            MessageUtil.reply(message, "command.guild.error.no_such_rank", rankName, String.join(", ", UserRank.getNames()));
-//            return;
-//        }
-//
-//        GuildManager.setRank(message.getGuild(), user, rank);
-//        MessageUtil.reply(message, "command.guild.success.set_rank", user.toString(), rank.toString());
-//    }
+    private void addModerator(Message message, @NotNull ParsedArguments args) {
+        User user = args.getAsUser(2);
 
-    private void addModerator(IMessage message, @NotNull ParsedArguments args) {
-        IUser user = args.getAsUser(2);
-
-        if (GuildManager.getUserRank(message.getGuild(), user) == UserRank.LOCAL_ADMIN) {
-            MessageUtil.reply(message, "command.guild.error.already_local_admin", user.mention());
+        if (GuildManager.getUserRank(message.getGuild().block(), user) == UserRank.LOCAL_ADMIN) {
+            MessageUtil.reply(message, "command.guild.error.already_local_admin", user.getMention());
             return;
         }
 
-        GuildManager.setRank(message.getGuild(), user, UserRank.LOCAL_ADMIN);
-        MessageUtil.reply(message, "command.guild.success.added_local_admin", user.mention());
+        GuildManager.setRank(message.getGuild().block(), user, UserRank.LOCAL_ADMIN);
+        MessageUtil.reply(message, "command.guild.success.added_local_admin", user.getMention());
     }
 
-    private void removeModerator(IMessage message, @NotNull ParsedArguments args) {
-        IUser user = args.getAsUser(2);
+    private void removeModerator(Message message, @NotNull ParsedArguments args) {
+        User user = args.getAsUser(2);
 
-        if (GuildManager.getUserRank(message.getGuild(), user) != UserRank.LOCAL_ADMIN) {
-            MessageUtil.reply(message, "command.guild.error.not_local_admin", user.mention());
+        if (GuildManager.getUserRank(message.getGuild().block(), user) != UserRank.LOCAL_ADMIN) {
+            MessageUtil.reply(message, "command.guild.error.not_local_admin", user.getMention());
             return;
         }
 
-        GuildManager.setRank(message.getGuild(), user, UserRank.DEFAULT);
-        MessageUtil.reply(message, "command.guild.success.removed_local_admin", user.mention());
+        GuildManager.setRank(message.getGuild().block(), user, UserRank.DEFAULT);
+        MessageUtil.reply(message, "command.guild.success.removed_local_admin", user.getMention());
     }
 
-    private void disableCommand(@NotNull IMessage message, @NotNull ParsedArguments args) {
-        GuildConfig config = GuildManager.getConfig(message.getGuild());
+    private void disableCommand(@NotNull Message message, @NotNull ParsedArguments args) {
+        GuildConfig config = GuildManager.getConfig(message.getGuild().block());
         String commandName = args.getAsString(3);
         CommandTree command = Bot.instance.getCommandManager().get(commandName);
 
@@ -166,13 +145,13 @@ public class CommandGuild implements ICommand {
         }
         else {
             config.disabledCommands.addAll(command.getCommands());
-            GuildManager.saveConfig(message.getGuild());
+            GuildManager.saveConfig(message.getGuild().block());
             MessageUtil.reply(message, "command.guild.success.disable.command", command.getName());
         }
     }
 
-    private void enableCommand(@NotNull IMessage message, @NotNull ParsedArguments args) {
-        GuildConfig guildConfig = GuildManager.getConfig(message.getGuild());
+    private void enableCommand(@NotNull Message message, @NotNull ParsedArguments args) {
+        GuildConfig guildConfig = GuildManager.getConfig(message.getGuild().block());
         String commandName = args.getAsString(3);
         CommandTree command = Bot.instance.getCommandManager().get(commandName);
 
@@ -187,14 +166,14 @@ public class CommandGuild implements ICommand {
         }
 
         guildConfig.disabledCommands.removeAll(command.getCommands());
-        GuildManager.saveConfig(message.getGuild());
+        GuildManager.saveConfig(message.getGuild().block());
         MessageUtil.reply(message, "command.guild.success.enable.command", command.getName());
     }
 
-    private void disableResponder(@NotNull IMessage message, @NotNull ParsedArguments args) {
+    private void disableResponder(@NotNull Message message, @NotNull ParsedArguments args) {
         ResponderManager manager = Bot.instance.getResponderManager();
         String toDisable = args.getAsString(3).toLowerCase();
-        IGuild guild = message.getGuild();
+        Guild guild = message.getGuild().block();
 
         if (!manager.getIDs().contains(toDisable)) {
             MessageUtil.reply(message, "command.guild.error.no_responder_found", toDisable, String.join(", ", manager.getIDs()));
@@ -210,10 +189,10 @@ public class CommandGuild implements ICommand {
         MessageUtil.reply(message, "command.guild.success.disable.responder", toDisable);
     }
 
-    private void enableResponder(@NotNull IMessage message, @NotNull ParsedArguments args) {
+    private void enableResponder(@NotNull Message message, @NotNull ParsedArguments args) {
         ResponderManager manager = Bot.instance.getResponderManager();
         String toDisable = args.getAsString(3).toLowerCase();
-        IGuild guild = message.getGuild();
+        Guild guild = message.getGuild().block();
 
         if (!GuildManager.getConfig(guild).disabledResponders.contains(toDisable)) {
             MessageUtil.reply(message, "command.guild.error.responder_not_disabled", toDisable);
@@ -229,9 +208,9 @@ public class CommandGuild implements ICommand {
         MessageUtil.reply(message, "command.guild.success.enable.responder", toDisable);
     }
 
-    private void setPrefix(@NotNull IMessage message, @NotNull ParsedArguments args) {
-        GuildManager.getConfig(message.getGuild()).commandPrefix = args.getAsString(3);
-        GuildManager.saveConfig(message.getGuild());
+    private void setPrefix(@NotNull Message message, @NotNull ParsedArguments args) {
+        GuildManager.getConfig(message.getGuild().block()).commandPrefix = args.getAsString(3);
+        GuildManager.saveConfig(message.getGuild().block());
         MessageUtil.reply(message, "command.guild.success.set_prefix", args.getAsString(3));
     }
 }

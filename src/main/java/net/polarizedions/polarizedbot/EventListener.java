@@ -1,30 +1,32 @@
 package net.polarizedions.polarizedbot;
 
+import discord4j.core.DiscordClient;
+import discord4j.core.event.domain.guild.GuildCreateEvent;
+import discord4j.core.event.domain.lifecycle.ReadyEvent;
+import discord4j.core.event.domain.lifecycle.ReconnectEvent;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
 import net.polarizedions.polarizedbot.announcer.AnnouncerManager;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.UserRank;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
-import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.shard.LoginEvent;
-import sx.blah.discord.handle.impl.events.shard.ReconnectSuccessEvent;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
 
 import java.time.Instant;
 
 public class EventListener {
     private static Logger messageReceivedLogger = LogManager.getLogger("MessageReceiver");
 
+    private DiscordClient client;
+    public EventListener(DiscordClient client) {
+        this.client = client;
+    }
 
-    @EventSubscriber
     public void onReady(ReadyEvent event) {
-        IUser us = event.getClient().getOurUser();
-        Bot.logger.info("Ready to go as {} ({})!", us.getName() + "#" + us.getDiscriminator(), us.getStringID());
+        User us = event.getClient().getSelf().block();
+        Bot.logger.info("Ready to go as {} ({})!", us.getUsername() + "#" + us.getDiscriminator(), us.getId().asString());
 
         if (Bot.instance.announcerManager != null) {
             Bot.instance.announcerManager.stop();
@@ -33,40 +35,43 @@ public class EventListener {
         Bot.instance.announcerManager.load();
         Bot.instance.announcerManager.initAnnouncers();
         Bot.instance.presenceUtil.init();
-    }
 
-    @EventSubscriber
-    public void onLogin(LoginEvent event) {
         Bot.instance.connectedInstant = Instant.now();
     }
 
-    @EventSubscriber
-    public void onReconnected(ReconnectSuccessEvent event) {
+    public void onReconnected(ReconnectEvent event) {
         Bot.instance.connectedInstant = Instant.now();
     }
 
-    @EventSubscriber
     public void onGuildCreated(GuildCreateEvent event) {
-        IGuild guild = event.getGuild();
-        if (! GuildManager.userHasRank(guild, guild.getOwner(), UserRank.LOCAL_ADMIN)) {
+        Guild guild = event.getGuild();
+        User guildOwner = guild.getOwner().block();
+        if (! GuildManager.userHasRank(guild, guildOwner, UserRank.LOCAL_ADMIN)) {
             Bot.logger.debug("Set " + guild.getOwner() + " as local admin for guild: " + guild);
-            GuildManager.setRank(guild, guild.getOwner(), UserRank.LOCAL_ADMIN);
+            GuildManager.setRank(guild, guildOwner, UserRank.LOCAL_ADMIN);
         }
     }
 
-    @EventSubscriber
-    public void onMessageReceived(MessageReceivedEvent event) {
-        IMessage message = event.getMessage();
-        messageReceivedLogger.info("[UserID: {}, GuildID: {}, ChannelID: {}, MessageID: {}] {}: {}",
-                message.getAuthor().getStringID(),
-                message.getGuild() == null ? "PM" : message.getGuild().getStringID(),
-                message.getChannel().getStringID(),
-                message.getStringID(),
-                message.getAuthor().getName() + "#" + message.getAuthor().getDiscriminator(),
-                message.getContent()
-        );
+    public void onMessageReceived(MessageCreateEvent event) {
+        Message message = event.getMessage();
+        User user = message.getAuthor().isPresent() ? message.getAuthor().get() : null;
+        event.getGuild().subscribe(guild ->
+                event.getMessage().getChannel().subscribe(channel -> {
 
-        Bot.instance.threadPool.execute(() -> Bot.instance.commandManager.messageHandler(message));
-        Bot.instance.threadPool.execute(() -> Bot.instance.responderManager.messageHandler(message));
+                    User author = message.getAuthor().get();
+                    messageReceivedLogger.info("[UserID: {}, GuildID: {}, ChannelID: {}, MessageID: {}] {}: {}",
+                            author.getId().asLong(),
+                            guild == null ? "PM" : guild.getId().asString(),
+                            channel.getId().asString(),
+                            message.getId().asString(),
+                            author.getUsername() + "#" + author.getDiscriminator(),
+                            message.getContent()
+                    );
+
+                    Bot.instance.commandManager.messageHandler(guild, user, channel, message);
+                    Bot.instance.responderManager.messageHandler(guild, user, channel, message);
+
+                })
+        );
     }
 }

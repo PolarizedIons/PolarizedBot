@@ -1,5 +1,6 @@
 package net.polarizedions.polarizedbot.autoresponders.impl;
 
+import discord4j.core.object.entity.Message;
 import net.polarizedions.polarizedbot.autoresponders.IResponder;
 import net.polarizedions.polarizedbot.autoresponders.impl.measurement_units.UnitTypes;
 import net.polarizedions.polarizedbot.util.Localizer;
@@ -7,7 +8,6 @@ import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.Pair;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,10 +20,10 @@ public class MeasurementConverter implements IResponder {
     }
 
     @Override
-    public void run(IMessage message) {
+    public void run(Message message) {
         Set<Pair<Double, UnitTypes.IUnit<? extends UnitTypes.IUnit>>> foundUnits = new HashSet<>();
 
-        String contents = message.getContent();
+        String contents = message.getContent().orElse("");
         int cursor = 0;
         while (cursor < contents.length()) {
             Pair<Double, Integer> value = this.readDouble(contents, cursor);
@@ -57,7 +57,7 @@ public class MeasurementConverter implements IResponder {
             cursor++;
         }
 
-        Localizer localizer = new Localizer(message);
+        Localizer localizer = new Localizer(message.getGuild().block());
         StringBuilder response = new StringBuilder("```\n");
         for (Pair<Double, UnitTypes.IUnit<? extends UnitTypes.IUnit>> unit : foundUnits) {
             Double from = unit.one;
@@ -71,7 +71,7 @@ public class MeasurementConverter implements IResponder {
         }
 
         if (response.length() > 4) {
-            MessageUtil.sendAutosplit(message.getChannel(), response.append("```").toString(), "```", "```");
+            MessageUtil.sendAutosplit(message, response.append("```").toString(), "```", "```");
         }
     }
 

@@ -1,12 +1,12 @@
 package net.polarizedions.polarizedbot.commands.impl;
 
+import discord4j.core.object.entity.Message;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.commands.builder.ParsedArguments;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.List;
 import java.util.Random;
@@ -25,7 +25,7 @@ public class CommandEightBall implements ICommand {
                 .buildCommand();
     }
 
-    private void run(IMessage message, @NotNull ParsedArguments args) {
+    private void run(Message message, @NotNull ParsedArguments args) {
         System.out.println(args);
         if (!args.getAsString(1).endsWith("?")) {
             MessageUtil.reply(message, "command.8ball.error.no_question");
@@ -35,7 +35,7 @@ public class CommandEightBall implements ICommand {
         MessageUtil.reply(message, "command.8ball.answer." + (rand.nextInt(20) + 1));
     }
 
-    private void fail(IMessage message, ParsedArguments parsedArgs, List<String> unparsedArgs) {
+    private void fail(Message message, ParsedArguments parsedArgs, List<String> unparsedArgs) {
         MessageUtil.reply(message, "command.8ball.error.no_question");
     }
 }

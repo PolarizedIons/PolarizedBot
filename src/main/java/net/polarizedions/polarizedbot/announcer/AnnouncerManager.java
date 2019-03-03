@@ -5,15 +5,16 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import discord4j.core.DiscordClient;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.util.Snowflake;
 import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.announcer.impl.AnnouncerGW2Update;
 import net.polarizedions.polarizedbot.announcer.impl.AnnouncerMcNotifier;
 import net.polarizedions.polarizedbot.util.ConfigManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,7 +35,7 @@ public class AnnouncerManager {
     private static final Logger logger = LogManager.getLogger("AnnouncerManager");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private Map<String, IAnnouncer> announcers;
-    private Map<IAnnouncer, List<IChannel>> subData;
+    private Map<IAnnouncer, List<TextChannel>> subData;
 
     public AnnouncerManager() {
         this.announcers = new HashMap<>();
@@ -51,7 +52,7 @@ public class AnnouncerManager {
     public void initAnnouncers() {
         for (IAnnouncer announcer : this.announcers.values()) {
             Runnable task = () -> {
-                List<IChannel> subscriptionData = this.getSubData(announcer);
+                List<TextChannel> subscriptionData = this.getSubData(announcer);
                 if (subscriptionData.size() == 0) {
                     return;
                 }
@@ -80,11 +81,13 @@ public class AnnouncerManager {
         return this.announcers.keySet().toArray(new String[0]);
     }
 
-    public Map<IAnnouncer, List<IChannel>> getAnnouncersForGuild(IGuild guild) {
-        Map<IAnnouncer, List<IChannel>> announcers = new HashMap<>();
+    public Map<IAnnouncer, List<TextChannel>> getAnnouncersForGuild(Guild guild) {
+        Map<IAnnouncer, List<TextChannel>> announcers = new HashMap<>();
 
-        for (Map.Entry<IAnnouncer, List<IChannel>> entry : this.subData.entrySet()) {
-            List<IChannel> channels = entry.getValue().parallelStream().filter(c -> c.getGuild().getLongID() == guild.getLongID()).collect(Collectors.toList());
+        long guildId = guild.getId().asLong();
+
+        for (Map.Entry<IAnnouncer, List<TextChannel>> entry : this.subData.entrySet()) {
+            List<TextChannel> channels = entry.getValue().parallelStream().filter(c -> c.getGuild().block().getId().asLong() == guildId).collect(Collectors.toList());
 
             if (channels.size() > 0) {
                 announcers.put(entry.getKey(), channels);
@@ -94,14 +97,14 @@ public class AnnouncerManager {
         return announcers;
     }
 
-    public void addSub(IAnnouncer announcer, IChannel channel) {
+    public void addSub(IAnnouncer announcer, TextChannel channel) {
         this.subData.computeIfAbsent(announcer, a -> new ArrayList<>());
         this.subData.get(announcer).add(channel);
 
         this.save();
     }
 
-    public void forgetSub(IAnnouncer announcer, IChannel channel) {
+    public void forgetSub(IAnnouncer announcer, TextChannel channel) {
         this.subData.get(announcer).remove(channel);
         if (this.subData.get(announcer).size() == 0) {
             this.subData.remove(announcer);
@@ -110,7 +113,7 @@ public class AnnouncerManager {
         this.save();
     }
 
-    public List<IChannel> getSubData(IAnnouncer announcer) {
+    public List<TextChannel> getSubData(IAnnouncer announcer) {
         return subData.getOrDefault(announcer, Collections.emptyList());
     }
 
@@ -132,7 +135,7 @@ public class AnnouncerManager {
             return;
         }
 
-        IDiscordClient client = Bot.instance.getClient();
+        DiscordClient client = Bot.instance.getClient();
 
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
             IAnnouncer announcer = getAnnouncer(entry.getKey());
@@ -142,10 +145,10 @@ public class AnnouncerManager {
                 continue;
             }
 
-            List<IChannel> channels = new ArrayList<>();
+            List<TextChannel> channels = new ArrayList<>();
             for (JsonElement jsonLong : entry.getValue().getAsJsonArray()) {
                 long channelID = jsonLong.getAsLong();
-                IChannel channel = client.getChannelByID(channelID);
+                TextChannel channel = (TextChannel) client.getChannelById(Snowflake.of(channelID)).block();
                 if (channel == null) {
                     logger.error("Unable to get channel from id ({}) while loading announcement data for {}, dropping.", channelID, announcer.getID());
                     dirty = true;
@@ -167,8 +170,8 @@ public class AnnouncerManager {
         logger.info("Saving announcements sub data to: {}", saveFile);
 
         Map<String, List<Long>> data = new HashMap<>();
-        for (Map.Entry<IAnnouncer, List<IChannel>> entry : subData.entrySet()) {
-            data.put(entry.getKey().getID(), entry.getValue().parallelStream().map(channel -> channel.getLongID()).collect(Collectors.toList()));
+        for (Map.Entry<IAnnouncer, List<TextChannel>> entry : subData.entrySet()) {
+            data.put(entry.getKey().getID(), entry.getValue().parallelStream().map(channel -> channel.getId().asLong()).collect(Collectors.toList()));
         }
 
         try {

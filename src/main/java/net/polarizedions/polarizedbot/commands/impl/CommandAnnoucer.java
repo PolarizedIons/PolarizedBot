@@ -1,5 +1,7 @@
 package net.polarizedions.polarizedbot.commands.impl;
 
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.TextChannel;
 import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.announcer.AnnouncerManager;
 import net.polarizedions.polarizedbot.announcer.IAnnouncer;
@@ -11,8 +13,6 @@ import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +35,7 @@ public class CommandAnnoucer implements ICommand {
                                                 .onExecute((msg, args) -> this.manageSubscription(msg, true, args.getAsString(2), args.getAsChannel(3)))
                                                 .onFail(this::failChannel)
                                         )
-                                        .onExecute((msg, args) -> this.manageSubscription(msg, true, args.getAsString(2), msg.getChannel()))
+                                        .onExecute((msg, args) -> this.manageSubscription(msg, true, args.getAsString(2), (TextChannel)msg.getChannel().block()))
                                         .onFail(this::fail)
                                 )
                         )
@@ -45,7 +45,7 @@ public class CommandAnnoucer implements ICommand {
                                                 .onExecute((msg, args) -> this.manageSubscription(msg, false, args.getAsString(2), args.getAsChannel(3)))
                                                 .onFail(this::failChannel)
                                         )
-                                        .onExecute((msg, args) -> this.manageSubscription(msg, false, args.getAsString(2), msg.getChannel()))
+                                        .onExecute((msg, args) -> this.manageSubscription(msg, false, args.getAsString(2), (TextChannel)msg.getChannel().block()))
                                         .onFail(this::fail)
                                 )
                         )
@@ -62,7 +62,7 @@ public class CommandAnnoucer implements ICommand {
                 .buildCommand();
     }
 
-    private void manageSubscription(IMessage message, boolean isSub, String announcerID, IChannel channel) {
+    private void manageSubscription(Message message, boolean isSub, String announcerID, TextChannel channel) {
         AnnouncerManager announcerManager = Bot.instance.getAnnouncerManager();
 
         IAnnouncer announcer = announcerManager.getAnnouncer(announcerID);
@@ -71,21 +71,21 @@ public class CommandAnnoucer implements ICommand {
             return;
         }
 
-        BiConsumer<IAnnouncer, IChannel> method = isSub ? announcerManager::addSub : announcerManager::forgetSub;
+        BiConsumer<IAnnouncer, TextChannel> method = isSub ? announcerManager::addSub : announcerManager::forgetSub;
         method.accept(announcer, channel);
-        Localizer loc = new Localizer(message);
+        Localizer loc = new Localizer(message.getGuild().block());
         String name = loc.localize("announcer." + announcer.getID() + ".name");
         MessageUtil.reply(message, "command.announce.success." + ( isSub ? "sub" : "unsub" ), name, channel.toString());
     }
 
-    private void listAnnouncements(IMessage message, ParsedArguments args) {
+    private void listAnnouncements(Message message, ParsedArguments args) {
         AnnouncerManager announcerManager = Bot.instance.getAnnouncerManager();
-        Localizer loc = new Localizer(message);
+        Localizer loc = new Localizer(message.getGuild().block());
         String announcers = String.join(", ", Arrays.stream(announcerManager.getIDs()).map(id -> loc.localize("announcer." + id + ".name") + " (`" + id + "`)").collect(Collectors.toList()));
         MessageUtil.reply(message, "command.announce.list", announcers);
     }
 
-    private void fail(IMessage message, @NotNull ParsedArguments parsedArgs, List<String> unparsedArgs) {
+    private void fail(Message message, @NotNull ParsedArguments parsedArgs, List<String> unparsedArgs) {
         if (parsedArgs.size() == 1) {
             MessageUtil.reply(message, "command.announce.error.no_subcommand", String.join(", ", subcommands));
         }
@@ -97,12 +97,12 @@ public class CommandAnnoucer implements ICommand {
         }
     }
 
-    private void failChannel(IMessage message, ParsedArguments parsedArgs, List<String> unparsedArgs) {
+    private void failChannel(Message message, ParsedArguments parsedArgs, List<String> unparsedArgs) {
         MessageUtil.reply(message, "command.announce.error.no_channel");
     }
 
-    private void listGuild(@NotNull IMessage message, ParsedArguments args) {
-        Map<IAnnouncer, List<IChannel>> announcers = Bot.instance.getAnnouncerManager().getAnnouncersForGuild(message.getGuild());
+    private void listGuild(@NotNull Message message, ParsedArguments args) {
+        Map<IAnnouncer, List<TextChannel>> announcers = Bot.instance.getAnnouncerManager().getAnnouncersForGuild(message.getGuild().block());
 
         if (announcers.size() == 0) {
             MessageUtil.reply(message, "command.announce.error.no_announcements");
@@ -110,8 +110,8 @@ public class CommandAnnoucer implements ICommand {
         }
 
         StringBuilder response = new StringBuilder("```\n");
-        for (Map.Entry<IAnnouncer, List<IChannel>> entry : announcers.entrySet()) {
-            List<IChannel> channels = entry.getValue();
+        for (Map.Entry<IAnnouncer, List<TextChannel>> entry : announcers.entrySet()) {
+            List<TextChannel> channels = entry.getValue();
             response.append(" * ").append(entry.getKey().getID()).append(": ").append("#").append(channels.get(0).getName()).append("\n");
             int len = 3 + entry.getKey().getID().length() + 2;
             for (int i = 1; i < channels.size(); i++) {
@@ -122,6 +122,6 @@ public class CommandAnnoucer implements ICommand {
             }
         }
 
-        MessageUtil.sendAutosplit(message.getChannel(), response.append("```").toString(), "```", "```");
+        MessageUtil.sendAutosplit(message, response.append("```").toString(), "```", "```");
     }
 }

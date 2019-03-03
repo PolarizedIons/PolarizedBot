@@ -1,5 +1,6 @@
 package net.polarizedions.polarizedbot.commands.impl;
 
+import discord4j.core.object.entity.Message;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
@@ -9,7 +10,6 @@ import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +27,13 @@ public class CommandPoll implements ICommand {
                 .buildCommand();
     }
 
-    private void fail(IMessage message, @NotNull ParsedArguments args, List<String> nonParsedArgs) {
+    private void fail(Message message, @NotNull ParsedArguments args, List<String> nonParsedArgs) {
         if (args.size() == 1) {
             MessageUtil.reply(message, "command.poll.error.no_question");
         }
     }
 
-    private void run(IMessage message, @NotNull ParsedArguments args) {
+    private void run(Message message, @NotNull ParsedArguments args) {
         System.out.println("RUNNING POLL " + args);
         Pair<String, List<String>> parsedPoll = this.parsePollQuestion(message, args.getAsString(1));
 
@@ -45,8 +45,8 @@ public class CommandPoll implements ICommand {
     }
 
     @Nullable
-    private Pair<String, List<String>> parsePollQuestion(@NotNull IMessage message, @NotNull String input) {
-        Localizer loc = new Localizer(message);
+    private Pair<String, List<String>> parsePollQuestion(@NotNull Message message, @NotNull String input) {
+        Localizer loc = new Localizer(message.getGuild().block());
         int questionMarkIndex = input.indexOf("?");
 
         if (questionMarkIndex == -1) {

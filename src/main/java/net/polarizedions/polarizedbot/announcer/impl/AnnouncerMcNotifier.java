@@ -1,11 +1,9 @@
 package net.polarizedions.polarizedbot.announcer.impl;
 
+import discord4j.core.object.entity.TextChannel;
 import net.polarizedions.polarizedbot.announcer.IAnnouncer;
 import net.polarizedions.polarizedbot.api_handlers.MojangApi;
 import net.polarizedions.polarizedbot.util.Localizer;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.util.EmbedBuilder;
-import sx.blah.discord.util.RequestBuffer;
 
 import java.awt.Color;
 import java.util.List;
@@ -45,24 +43,26 @@ public class AnnouncerMcNotifier implements IAnnouncer {
     }
 
     @Override
-    public void execute(List<IChannel> channels) {
+    public void execute(List<TextChannel> channels) {
         String releaseType = this.newSnapshot ? "snapshot" : "full";
         String version = this.newSnapshot ? this.prevVersions.snapshot : this.prevVersions.release;
         String imageUrl = this.newSnapshot ? "https://i.imgur.com/Km2ugwt.png" : "https://i.imgur.com/gO5ar1C.png";
         Color color = this.newSnapshot ? new Color(168/255f, 23/255f, 62/255f) : new Color(41/255f, 188/255f, 51/255f) ;
 
-        for (IChannel channel : channels) {
-            EmbedBuilder builder = new EmbedBuilder();
-            builder.withThumbnail(imageUrl);
-            builder.withColor(color);
+        for (TextChannel channel : channels) {
+            channel.getGuild().subscribe(guild ->
+                channel.createMessage(spec ->
+                    spec.setEmbed(embedSpec -> {
+                        embedSpec.setThumbnail(imageUrl);
+                        embedSpec.setColor(color);
 
-            Localizer loc = new Localizer(channel.getGuild());
-            builder.withTitle(loc.localize("announcer.minecraft.header.title"));
-            builder.appendField(loc.localize("announcer.minecraft.header." + releaseType), loc.localize("announcer.minecraft.version", version), false);
+                        Localizer loc = new Localizer(guild);
+                        embedSpec.setTitle(loc.localize("announcer.minecraft.header.title"));
+                        embedSpec.addField(loc.localize("announcer.minecraft.header." + releaseType), loc.localize("announcer.minecraft.version", version), false);
 
-            RequestBuffer.request(() -> {
-                channel.sendMessage(builder.build());
-            });
+                    })
+                )
+            );
         }
     }
 }

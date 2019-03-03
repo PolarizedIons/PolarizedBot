@@ -1,29 +1,32 @@
 package net.polarizedions.polarizedbot.util;
 
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.PrivateChannel;
+import discord4j.core.object.entity.TextChannel;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IPrivateChannel;
-import sx.blah.discord.util.RequestBuffer;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class MessageUtil {
     // Only used for unit testing. don't change these >.>
     @SuppressWarnings("FieldCanBeLocal")
-    private static boolean ENABLE_RATELMIT_HANDLING = true;
-    @SuppressWarnings("FieldCanBeLocal")
-    private static int MAX_MESSAGE_LENGTH = IMessage.MAX_MESSAGE_LENGTH;
+    private static int MAX_MESSAGE_LENGTH = Message.MAX_CONTENT_LENGTH;
 
-    public static void sendAutosplit(IChannel channel, String message) {
+    public static void sendAutosplit(@NotNull Message msg, String message) {
+        msg.getChannel().subscribe(channel -> sendAutosplit((TextChannel)channel, message));
+    }
+
+    public static void sendAutosplit(@NotNull Message msg, String message, String splitPrefix, String splitSuffix) {
+        msg.getChannel().subscribe(channel -> sendAutosplit(channel, message, splitPrefix, splitSuffix));
+    }
+
+    public static void sendAutosplit(MessageChannel channel, String message) {
         sendAutosplit(channel, message, "", "");
     }
 
-    public static void sendAutosplit(IChannel channel, @NotNull String message, String splitPrefix, String splitSuffix) {
+    public static void sendAutosplit(MessageChannel channel, @NotNull String message, String splitPrefix, String splitSuffix) {
         List<String> messages = new LinkedList<>();
         String[] splitMessage = message.split("\n");
 
@@ -43,37 +46,22 @@ public class MessageUtil {
             messages.add(currentMsg.toString());
         }
 
-        handleRateLimit(channel, messages);
-    }
-
-    public static void reply(@NotNull IMessage message, String localizationKey, Object... context) {
-        reply(message.getChannel(), localizationKey, context);
-    }
-
-    public static void reply(@NotNull IChannel channel, String localizationKey, Object... context) {
-        IGuild guild = channel instanceof IPrivateChannel ? null : channel.getGuild();
-        String localized = new Localizer(guild).localize(localizationKey, context);
-
-        handleRateLimit(channel, Collections.singletonList(localized));
-    }
-
-    public static void replyUnlocalized(IChannel channel, String reply) {
-        handleRateLimit(channel, Collections.singletonList(reply));
-    }
-
-    public static void handleRateLimit(IChannel channel, List<String> messages) {
-        if (ENABLE_RATELMIT_HANDLING) {
-            AtomicInteger i = new AtomicInteger();
-            RequestBuffer.request(() -> {
-                while (i.get() < messages.size() && channel.sendMessage(messages.get(i.get())) != null) {
-                    i.getAndIncrement();
-                }
-            });
+        for (String msg : messages) {
+            channel.createMessage(msg);
         }
-        else {
-            for (String m : messages) {
-                channel.sendMessage(m);
-            }
-        }
+    }
+
+    public static void reply(@NotNull Message message, String localizationKey, Object... context) {
+        message.getChannel().subscribe(channel -> reply((TextChannel)channel, localizationKey, context));
+    }
+
+    public static void reply(@NotNull TextChannel channel, String localizationKey, Object... context) {
+            channel.getGuild().subscribe(guild ->
+                channel.createMessage(new Localizer(guild).localize(localizationKey, context))
+            );
+    }
+
+    public static void reply(@NotNull PrivateChannel channel, String localizationKey, Object... context) {
+        channel.createMessage(new Localizer().localize(localizationKey, context));
     }
 }

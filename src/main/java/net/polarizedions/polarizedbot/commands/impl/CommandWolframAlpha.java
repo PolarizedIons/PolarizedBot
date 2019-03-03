@@ -1,5 +1,6 @@
 package net.polarizedions.polarizedbot.commands.impl;
 
+import discord4j.core.object.entity.Message;
 import net.polarizedions.polarizedbot.api_handlers.WolframAlphaApi;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
@@ -10,7 +11,6 @@ import net.polarizedions.polarizedbot.util.MessageUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -36,7 +36,7 @@ public class CommandWolframAlpha implements ICommand {
                 .buildCommand();
     }
 
-    private void fail(IMessage message, @NotNull ParsedArguments parsedArgs, List<String> unparsedArgs) {
+    private void fail(Message message, @NotNull ParsedArguments parsedArgs, List<String> unparsedArgs) {
         if (parsedArgs.size() == 1) {
             MessageUtil.reply(message, "command.wolfram.error.no_arg");
         }
@@ -46,7 +46,7 @@ public class CommandWolframAlpha implements ICommand {
     }
 
     @Nullable
-    private WolframAlphaApi.WolframAlphaReply get(IMessage message, @NotNull ParsedArguments args) {
+    private WolframAlphaApi.WolframAlphaReply get(Message message, @NotNull ParsedArguments args) {
         WolframAlphaApi.WolframAlphaReply data;
         try {
             data = WolframAlphaApi.fetch(args.getAsString(1));
@@ -75,7 +75,7 @@ public class CommandWolframAlpha implements ICommand {
         return data;
     }
 
-    private void replyFull(IMessage message, ParsedArguments args) {
+    private void replyFull(Message message, ParsedArguments args) {
         WolframAlphaApi.@Nullable WolframAlphaReply reply = this.get(message, args);
         if (reply == null) {
             return;
@@ -91,7 +91,7 @@ public class CommandWolframAlpha implements ICommand {
     }
 
 
-    private void replyShort(IMessage message, ParsedArguments args) {
+    private void replyShort(Message message, ParsedArguments args) {
         WolframAlphaApi.@Nullable WolframAlphaReply reply = this.get(message, args);
         if (reply == null) {
             return;
@@ -106,7 +106,7 @@ public class CommandWolframAlpha implements ICommand {
         this.reply(message, reply, 2);
     }
 
-    private void reply(IMessage message, WolframAlphaApi.WolframAlphaReply wolfData, int count) {
+    private void reply(Message message, WolframAlphaApi.WolframAlphaReply wolfData, int count) {
         StringBuilder responseBuilder = new StringBuilder();
         for (int i = 0; i < count; i++) {
             WolframAlphaApi.Pod pod = wolfData.pods.get(i);
@@ -131,7 +131,7 @@ public class CommandWolframAlpha implements ICommand {
             responseBuilder.append("\n");
         }
 
-        MessageUtil.sendAutosplit(message.getChannel(), responseBuilder.toString());
+        MessageUtil.sendAutosplit(message, responseBuilder.toString());
     }
 
     @NotNull

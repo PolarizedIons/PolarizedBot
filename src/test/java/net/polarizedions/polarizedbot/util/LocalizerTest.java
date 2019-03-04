@@ -14,16 +14,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LocalizerTest {
+
     @BeforeAll
-    static void setup() throws NoSuchFieldException, IllegalAccessException {
-//        SetupMocks.setupLocalization();
-        // TODO
+    static void setup() {
+        Localizer.AVAILABLE_LANGUAGES.add("testlang");
+        Localizer.init();
     }
 
     @AfterAll
-    static void teardown() throws NoSuchFieldException, IllegalAccessException {
-//        SetupMocks.resetLocalization();
-        // TODO
+    static void teardown() {
+        Localizer.AVAILABLE_LANGUAGES.remove("testlang");
+        Localizer.init();
     }
 
     @Test
@@ -35,7 +36,6 @@ class LocalizerTest {
 
         assertNotNull(langData);
 
-        assertNotNull(langData.get("en"));
         assertNotNull(langData.get("testlang"));
     }
 
@@ -49,13 +49,13 @@ class LocalizerTest {
 
     @Test
     void changeLang() {
-        Localizer loc = new Localizer("en");
-        assertEquals("en", loc.getCurrentLang());
+        Localizer loc = new Localizer();
 
         // Doesn't set unknown lang
         loc.setCurrentLang("foobar");
-        assertEquals("en", loc.getCurrentLang());
+        assertEquals(Localizer.DEFAULT_LANGUAGE, loc.getCurrentLang());
 
+        // Lowercases languages
         loc.setCurrentLang("TeStLaNg");
         assertEquals("testlang", loc.getCurrentLang());
     }

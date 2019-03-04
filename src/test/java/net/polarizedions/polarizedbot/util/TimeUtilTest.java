@@ -1,5 +1,6 @@
 package net.polarizedions.polarizedbot.util;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -10,9 +11,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class TimeUtilTest {
 
     @BeforeAll
-    static void setup() throws NoSuchFieldException, IllegalAccessException {
-//        SetupMocks.resetLocalization();
-        // TODO
+    static void setup() {
+        Localizer.AVAILABLE_LANGUAGES.add("testlang");
+        Localizer.init();
+    }
+
+    @AfterAll
+    static void teardown() {
+        Localizer.AVAILABLE_LANGUAGES.remove("testlang");
+        Localizer.init();
     }
 
     @Test
@@ -31,7 +38,7 @@ class TimeUtilTest {
                 .plusHours(18)
                 .plusDays(13);
 
-        Localizer loc = new Localizer("en");
+        Localizer loc = new Localizer("testlang");
 
         assertEquals("1 second", TimeUtil.formatDuration(loc, oneSec));
         assertEquals("5 seconds", TimeUtil.formatDuration(loc, fiveSec));

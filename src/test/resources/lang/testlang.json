@@ -14,5 +14,27 @@
             "-6" : "minus six",
             "*": "%s"
         }
+    },
+    "format": {
+        "week": {
+            "*": "%s weeks",
+            "1": "%s week"
+        },
+        "day": {
+            "*": "%s days",
+            "1": "%s day"
+        },
+        "hour": {
+            "*": "%s hours",
+            "1": "%s hour"
+        },
+        "minute": {
+            "*": "%s minutes",
+            "1": "%s minute"
+        },
+        "second": {
+            "*": "%s seconds",
+            "1": "%s second"
+        }
     }
 }

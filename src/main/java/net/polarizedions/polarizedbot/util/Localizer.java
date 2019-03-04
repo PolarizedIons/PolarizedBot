@@ -11,14 +11,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Localizer {
-    public static final String[] AVAILABLE_LANGUAGES = new String[] {
-            "en",
-    };
+    public static final ArrayList<String> AVAILABLE_LANGUAGES = new ArrayList<>();
+    public static final String DEFAULT_LANGUAGE;
+
+    static {
+        DEFAULT_LANGUAGE = "en";
+        AVAILABLE_LANGUAGES.add("en");
+    }
+
     private static final Logger logger = LogManager.getLogger("Localizer");
     private static final JsonParser parser = new JsonParser();
     private static Map<String, Map<String, String>> langData;
@@ -27,24 +33,22 @@ public class Localizer {
     private String currentLang;
 
     public Localizer() {
-        this(AVAILABLE_LANGUAGES[0]);
+        this(DEFAULT_LANGUAGE);
     }
 
     public Localizer(Guild guild) {
-        this(guild == null ? AVAILABLE_LANGUAGES[0] : GuildManager.getConfig(guild).lang);
+        this(guild == null ? DEFAULT_LANGUAGE : GuildManager.getConfig(guild).lang);
     }
 
     public Localizer(String lang) {
-        for (String l : AVAILABLE_LANGUAGES) {
-            if (l.equalsIgnoreCase(lang)) {
-                this.currentLang = l;
-                break;
-            }
-        }
+        lang = lang.toLowerCase();
 
-        if (this.currentLang == null) {
-            logger.debug("Failed to create localizer for language {}, defauling to {}", lang, AVAILABLE_LANGUAGES[0]);
-            this.currentLang = AVAILABLE_LANGUAGES[0];
+        if (AVAILABLE_LANGUAGES.contains(lang)) {
+            this.currentLang = lang;
+        }
+        else {
+            logger.debug("Failed to create localizer for language {}, defaulting to {}", lang, DEFAULT_LANGUAGE);
+            this.currentLang = DEFAULT_LANGUAGE;
         }
     }
 
@@ -94,13 +98,8 @@ public class Localizer {
     }
 
     @Contract(pure = true)
-    public static boolean supports(String langCode) {
-        for (String lc : AVAILABLE_LANGUAGES) {
-            if (lc.equalsIgnoreCase(langCode)) {
-                return true;
-            }
-        }
-        return false;
+    public static boolean supports(@NotNull String langCode) {
+        return AVAILABLE_LANGUAGES.contains(langCode.toLowerCase());
     }
 
     public String getCurrentLang() {
@@ -108,11 +107,14 @@ public class Localizer {
     }
 
     public void setCurrentLang(String newLang) {
-        for (String lang : AVAILABLE_LANGUAGES) {
-            if (lang.equalsIgnoreCase(newLang)) {
-                this.currentLang = lang;
-                return;
-            }
+        newLang = newLang.toLowerCase();
+
+        if (AVAILABLE_LANGUAGES.contains(newLang)) {
+            this.currentLang = newLang;
+        }
+        else {
+            logger.debug("Failed to set localizer to {}, defaulting to {}", newLang, DEFAULT_LANGUAGE);
+            this.currentLang = DEFAULT_LANGUAGE;
         }
     }
 

@@ -14,7 +14,17 @@ public class DefaultGlobalConfig implements InstanceCreator<GlobalConfig> {
         defaultConfig.wolframAlphaApi = "";
         defaultConfig.botToken = "";
         defaultConfig.presenceDelay = 300;
-        defaultConfig.presenceStrings = new String[] {"Playing with {owner-name}'s chemicals", "Napping...", "Spying on you", "Taking over the world", "Rewriting my code"};
+        defaultConfig.presenceStrings = new String[] {
+                "Playing with {owner-name}'s chemicals",
+                "Spying on {guild-count} servers...",
+                "Taking a cat nap. Zzz",
+                "Spying on {random-member} O.O",
+                "Taking over the world",
+                "Rewriting my code",
+                "Awakening Chell",
+                "Awakening GlaDOS",
+                "Downloading your search history",
+        };
         return defaultConfig;
     }
 }

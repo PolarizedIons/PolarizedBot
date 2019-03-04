@@ -85,10 +85,6 @@ public class Bot {
     }
 
     public DiscordClient createClient() {
-        return createClient(true);
-    }
-
-    public DiscordClient createClient(boolean login) {
         GlobalConfig config = this.getGlobalConfig();
         if (config.globalAdmins.isEmpty()) {
             logger.error("The `globalAdmins` value in bot.json MUST NOT be empty!");
@@ -103,17 +99,8 @@ public class Bot {
             System.exit(1);
         }
         System.out.println("creating client");
-        try {
-            client = new DiscordClientBuilder(config.botToken).build();
-            if (login) {
-//                System.out.println("lgoged in");
-//                client.login().block();
-            }
-            return client;
-        }
-        catch (Exception ex) {
-            throw new RuntimeException("Error creating/logging in client", ex);
-        }
+        this.client = new DiscordClientBuilder(config.botToken).build();
+        return this.client;
     }
 
     public void shutdown() {

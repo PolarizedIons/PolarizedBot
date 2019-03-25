@@ -16,6 +16,7 @@ import java.util.TimerTask;
 public class PresenceUtil {
     private static final Random random = new Random();
 
+    private Bot bot;
     private int index;
     private String[] presences;
     private Formatter formatter;
@@ -23,7 +24,7 @@ public class PresenceUtil {
     private TimerTask task;
     private long delayMs;
 
-    public PresenceUtil(String[] presences, long delayMs) {
+    public PresenceUtil(Bot bot, String[] presences, long delayMs) {
         this.index = -1;
         this.presences = presences;
         this.formatter = new Formatter();
@@ -38,7 +39,7 @@ public class PresenceUtil {
     }
 
     public void init() {
-        DiscordClient client = Bot.instance.getClient();
+        DiscordClient client = this.bot.getClient();
         client.getSelf().subscribe(botUser ->
                 client.getApplicationInfo().subscribe(appInfo -> appInfo.getOwner().subscribe(ownerUser -> {
                     this.formatter.addArg("bot-name", botUser.getUsername())
@@ -56,7 +57,7 @@ public class PresenceUtil {
 
     private void updatePresence() {
         this.index = random.nextInt(this.presences.length);
-        Bot.instance.getClient().updatePresence(Presence.online(Activity.playing(this.formatter.format(this.presences[this.index]))));
+        this.bot.getClient().updatePresence(Presence.online(Activity.playing(this.formatter.format(this.presences[this.index]))));
     }
 
     public void stop() {

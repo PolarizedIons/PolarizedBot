@@ -10,7 +10,6 @@ import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.commands.builder.ParsedArguments;
 import net.polarizedions.polarizedbot.config.GuildConfig;
-import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
@@ -21,6 +20,11 @@ import java.util.List;
 public class CommandGuild implements ICommand {
     private static String[] subCommands = new String[] { "set", "enable", "disable", "mod", "unmod" };
     private static String[] setCommands = new String[] { "prefix", "lang", "rank" };
+    private final Bot bot;
+
+    public CommandGuild(Bot bot) {
+        this.bot = bot;
+    }
 
     @Override
     public CommandTree getCommand() {
@@ -45,7 +49,7 @@ public class CommandGuild implements ICommand {
                                 )
                                 .stringArg("responder", responder -> responder
                                         .captureArg(rsp -> rsp.onExecute(this::enableResponder))
-                                        .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "enable_responder_missing", String.join(", ", GuildManager.getConfig(m.getGuild().block()).disabledResponders)))
+                                        .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "enable_responder_missing", String.join(", ", this.bot.getGuildManager().getConfig(m.getGuild().block()).disabledResponders)))
                                 )
                                 .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "enable_arg_missing", "command, responder"))
                         )
@@ -56,7 +60,7 @@ public class CommandGuild implements ICommand {
                                 )
                                 .stringArg("responder", responder -> responder
                                         .captureArg(rsp -> rsp.onExecute(this::disableResponder))
-                                        .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "disable_responder_missing", String.join(", ", Bot.instance.getResponderManager().getIDs())))
+                                        .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "disable_responder_missing", String.join(", ", this.bot.getResponderManager().getIDs())))
                                 )
                                 .onFail((m, p, u) -> this.notEnoughArgs(m, p, u, "disable_arg_missing", "command, responder"))
                         )
@@ -100,39 +104,39 @@ public class CommandGuild implements ICommand {
             return;
         }
 
-        GuildManager.getConfig(message.getGuild().block()).lang = newLang.toLowerCase();
-        GuildManager.saveConfig(message.getGuild().block());
+        this.bot.getGuildManager().getConfig(message.getGuild().block()).lang = newLang.toLowerCase();
+        this.bot.getGuildManager().saveConfig(message.getGuild().block());
         MessageUtil.reply(message, "command.guild.success.setlang", newLang);
     }
 
     private void addModerator(Message message, @NotNull ParsedArguments args) {
         User user = args.getAsUser(2);
 
-        if (GuildManager.getUserRank(message.getGuild().block(), user) == UserRank.LOCAL_ADMIN) {
+        if (this.bot.getGuildManager().getUserRank(message.getGuild().block(), user) == UserRank.LOCAL_ADMIN) {
             MessageUtil.reply(message, "command.guild.error.already_local_admin", user.getMention());
             return;
         }
 
-        GuildManager.setRank(message.getGuild().block(), user, UserRank.LOCAL_ADMIN);
+        this.bot.getGuildManager().setRank(message.getGuild().block(), user, UserRank.LOCAL_ADMIN);
         MessageUtil.reply(message, "command.guild.success.added_local_admin", user.getMention());
     }
 
     private void removeModerator(Message message, @NotNull ParsedArguments args) {
         User user = args.getAsUser(2);
 
-        if (GuildManager.getUserRank(message.getGuild().block(), user) != UserRank.LOCAL_ADMIN) {
+        if (this.bot.getGuildManager().getUserRank(message.getGuild().block(), user) != UserRank.LOCAL_ADMIN) {
             MessageUtil.reply(message, "command.guild.error.not_local_admin", user.getMention());
             return;
         }
 
-        GuildManager.setRank(message.getGuild().block(), user, UserRank.DEFAULT);
+        this.bot.getGuildManager().setRank(message.getGuild().block(), user, UserRank.DEFAULT);
         MessageUtil.reply(message, "command.guild.success.removed_local_admin", user.getMention());
     }
 
     private void disableCommand(@NotNull Message message, @NotNull ParsedArguments args) {
-        GuildConfig config = GuildManager.getConfig(message.getGuild().block());
+        GuildConfig config = this.bot.getGuildManager().getConfig(message.getGuild().block());
         String commandName = args.getAsString(3);
-        CommandTree command = Bot.instance.getCommandManager().get(commandName);
+        CommandTree command = this.bot.getCommandManager().get(commandName);
 
         if (command == null) {
             MessageUtil.reply(message, "command.guild.error.no_command_found", commandName);
@@ -145,15 +149,15 @@ public class CommandGuild implements ICommand {
         }
         else {
             config.disabledCommands.addAll(command.getCommands());
-            GuildManager.saveConfig(message.getGuild().block());
+            this.bot.getGuildManager().saveConfig(message.getGuild().block());
             MessageUtil.reply(message, "command.guild.success.disable.command", command.getName());
         }
     }
 
     private void enableCommand(@NotNull Message message, @NotNull ParsedArguments args) {
-        GuildConfig guildConfig = GuildManager.getConfig(message.getGuild().block());
+        GuildConfig guildConfig = this.bot.getGuildManager().getConfig(message.getGuild().block());
         String commandName = args.getAsString(3);
-        CommandTree command = Bot.instance.getCommandManager().get(commandName);
+        CommandTree command = this.bot.getCommandManager().get(commandName);
 
         if (command == null) {
             MessageUtil.reply(message, "command.guild.error.no_command_found", commandName);
@@ -166,12 +170,12 @@ public class CommandGuild implements ICommand {
         }
 
         guildConfig.disabledCommands.removeAll(command.getCommands());
-        GuildManager.saveConfig(message.getGuild().block());
+        this.bot.getGuildManager().saveConfig(message.getGuild().block());
         MessageUtil.reply(message, "command.guild.success.enable.command", command.getName());
     }
 
     private void disableResponder(@NotNull Message message, @NotNull ParsedArguments args) {
-        ResponderManager manager = Bot.instance.getResponderManager();
+        ResponderManager manager = this.bot.getResponderManager();
         String toDisable = args.getAsString(3).toLowerCase();
         Guild guild = message.getGuild().block();
 
@@ -179,22 +183,22 @@ public class CommandGuild implements ICommand {
             MessageUtil.reply(message, "command.guild.error.no_responder_found", toDisable, String.join(", ", manager.getIDs()));
             return;
         }
-        else if (GuildManager.getConfig(guild).disabledResponders.contains(toDisable)) {
+        else if (this.bot.getGuildManager().getConfig(guild).disabledResponders.contains(toDisable)) {
             MessageUtil.reply(message, "command.guild.error.responder_already_disabled", toDisable);
             return;
         }
 
-        GuildManager.getConfig(guild).disabledResponders.add(toDisable);
-        GuildManager.saveConfig(guild);
+        this.bot.getGuildManager().getConfig(guild).disabledResponders.add(toDisable);
+        this.bot.getGuildManager().saveConfig(guild);
         MessageUtil.reply(message, "command.guild.success.disable.responder", toDisable);
     }
 
     private void enableResponder(@NotNull Message message, @NotNull ParsedArguments args) {
-        ResponderManager manager = Bot.instance.getResponderManager();
+        ResponderManager manager = this.bot.getResponderManager();
         String toDisable = args.getAsString(3).toLowerCase();
         Guild guild = message.getGuild().block();
 
-        if (!GuildManager.getConfig(guild).disabledResponders.contains(toDisable)) {
+        if (!this.bot.getGuildManager().getConfig(guild).disabledResponders.contains(toDisable)) {
             MessageUtil.reply(message, "command.guild.error.responder_not_disabled", toDisable);
             return;
         }
@@ -203,14 +207,14 @@ public class CommandGuild implements ICommand {
             return;
         }
 
-        GuildManager.getConfig(guild).disabledResponders.remove(toDisable);
-        GuildManager.saveConfig(guild);
+        this.bot.getGuildManager().getConfig(guild).disabledResponders.remove(toDisable);
+        this.bot.getGuildManager().saveConfig(guild);
         MessageUtil.reply(message, "command.guild.success.enable.responder", toDisable);
     }
 
     private void setPrefix(@NotNull Message message, @NotNull ParsedArguments args) {
-        GuildManager.getConfig(message.getGuild().block()).commandPrefix = args.getAsString(3);
-        GuildManager.saveConfig(message.getGuild().block());
+        this.bot.getGuildManager().getConfig(message.getGuild().block()).commandPrefix = args.getAsString(3);
+        this.bot.getGuildManager().saveConfig(message.getGuild().block());
         MessageUtil.reply(message, "command.guild.success.set_prefix", args.getAsString(3));
     }
 }

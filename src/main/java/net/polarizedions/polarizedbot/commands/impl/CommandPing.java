@@ -1,6 +1,7 @@
 package net.polarizedions.polarizedbot.commands.impl;
 
 import discord4j.core.object.entity.Message;
+import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
@@ -12,6 +13,11 @@ import java.time.Duration;
 import java.time.Instant;
 
 public class CommandPing implements ICommand {
+    private final Bot bot;
+
+    public CommandPing(Bot bot) {
+        this.bot = bot;
+    }
 
     @Override
     public CommandTree getCommand() {

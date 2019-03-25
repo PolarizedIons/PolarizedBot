@@ -1,6 +1,7 @@
 package net.polarizedions.polarizedbot.autoresponders.impl;
 
 import discord4j.core.object.entity.Message;
+import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.autoresponders.IResponder;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.MessageUtil;
@@ -20,6 +21,12 @@ public class TempConverter implements IResponder {
     private static final double MIN_F = -459.67;
     private static final Function<Double, Double> C_TO_F = c -> c * 1.8  + 32;
     private static final Function<Double, Double> F_TO_C = f -> ( f - 32 ) / 1.8;
+
+    private Bot bot;
+
+    public TempConverter(Bot bot) {
+        this.bot = bot;
+    }
 
     @Override
     public String getID() {

@@ -10,6 +10,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class CommandInvite implements ICommand {
     private static final String INVITE_URL = "https://discordapp.com/oauth2/authorize?client_id=%s&scope=bot";
+    private final Bot bot;
+
+    public CommandInvite(Bot bot) {
+        this.bot = bot;
+    }
 
     @Override
     public CommandTree getCommand() {
@@ -24,7 +29,7 @@ public class CommandInvite implements ICommand {
 
     private void invite(@NotNull Message message, ParsedArguments args) {
         message.getChannel().subscribe(channel ->
-            Bot.instance.getClient().getApplicationInfo().subscribe(appInfo ->
+            this.bot.getClient().getApplicationInfo().subscribe(appInfo ->
                     channel.createMessage(String.format(INVITE_URL, appInfo.getId().asString()))
             )
         );

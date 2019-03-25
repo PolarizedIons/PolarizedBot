@@ -1,12 +1,19 @@
 package net.polarizedions.polarizedbot.commands.impl;
 
 import discord4j.core.object.entity.TextChannel;
+import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 
 public class CommandSay implements ICommand {
+    private final Bot bot;
+
+    public CommandSay(Bot bot) {
+        this.bot = bot;
+    }
+
     @Override
     public CommandTree getCommand() {
         return CommandBuilder.create("Say")

@@ -4,6 +4,7 @@ import discord4j.core.object.entity.Channel;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
+import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.commands.impl.CommandAbout;
 import net.polarizedions.polarizedbot.commands.impl.CommandAnnoucer;
@@ -19,7 +20,6 @@ import net.polarizedions.polarizedbot.commands.impl.CommandUpdate;
 import net.polarizedions.polarizedbot.commands.impl.CommandWolframAlpha;
 import net.polarizedions.polarizedbot.config.GuildConfig;
 import net.polarizedions.polarizedbot.exceptions.CommandExceptions;
-import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,23 +34,26 @@ import java.util.Map;
 import java.util.Set;
 
 public class CommandManager {
-    private Logger logger = LogManager.getLogger("CommandManager");
+    private static final Logger logger = LogManager.getLogger("CommandManager");
+    private Bot bot;
     private Map<String, CommandTree> commands = new HashMap<>();
 
-    public CommandManager() {
-        this.registerCommand(new CommandAbout());
-        this.registerCommand(new CommandAnnoucer());
-        this.registerCommand(new CommandEightBall());
-        this.registerCommand(new CommandGuild());
-        this.registerCommand(new CommandHelp());
-        this.registerCommand(new CommandIgnore());
-        this.registerCommand(new CommandInvite());
-        this.registerCommand(new CommandUpdate());
-        this.registerCommand(new CommandPing());
-//        this.registerCommand(new CommandPoll());
-        this.registerCommand(new CommandShutdown());
-        this.registerCommand(new CommandSay());
-        this.registerCommand(new CommandWolframAlpha());
+    public CommandManager(Bot bot) {
+        this.bot = bot;
+
+        this.registerCommand(new CommandAbout(bot));
+        this.registerCommand(new CommandAnnoucer(bot));
+        this.registerCommand(new CommandEightBall(bot));
+        this.registerCommand(new CommandGuild(bot));
+        this.registerCommand(new CommandHelp(bot));
+        this.registerCommand(new CommandIgnore(bot));
+        this.registerCommand(new CommandInvite(bot));
+        this.registerCommand(new CommandUpdate(bot));
+        this.registerCommand(new CommandPing(bot));
+//        this.registerCommand(new CommandPoll(bot));
+        this.registerCommand(new CommandShutdown(bot));
+        this.registerCommand(new CommandSay(bot));
+        this.registerCommand(new CommandWolframAlpha(bot));
     }
 
     private void registerCommand(@NotNull ICommand command) {
@@ -70,7 +73,7 @@ public class CommandManager {
             return;
         }
 
-        GuildConfig guildConfig = GuildManager.getConfig(guild);
+        GuildConfig guildConfig = this.bot.getGuildManager().getConfig(guild);
         if (guildConfig.ignoredUsers.contains(user.getId().asLong())) {
             logger.debug("From ignored user");
             return;

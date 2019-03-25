@@ -28,6 +28,11 @@ public class CommandUpdate implements ICommand {
     private static final Logger logger = LogManager.getLogger("CommandUpdate");
     private static final String REPO = BotInfo.githubRepo.replaceAll("https?://github.com/", "");
     private static boolean inProgress = false;
+    private final Bot bot;
+
+    public CommandUpdate(Bot bot) {
+        this.bot = bot;
+    }
 
     @Override
     public CommandTree getCommand() {
@@ -120,7 +125,7 @@ public class CommandUpdate implements ICommand {
                 builder.inheritIO();
                 builder.start();
 
-                Bot.instance.shutdown();
+                this.bot.shutdown();
                 try {
                     Thread.sleep(100);
                 }

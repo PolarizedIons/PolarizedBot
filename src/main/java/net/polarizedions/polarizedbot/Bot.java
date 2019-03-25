@@ -27,7 +27,6 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class Bot {
     public static final Logger logger = LogManager.getLogger("PolarizedBot");
-    public static Bot instance;
     public final ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(Math.min(Runtime.getRuntime().availableProcessors(), 8));
     private static Instant startInstant;
     Instant connectedInstant;
@@ -35,13 +34,13 @@ public class Bot {
     private DiscordClient client;
     AnnouncerManager announcerManager;
     CommandManager commandManager;
+    GuildManager guildManager;
     ResponderManager responderManager;
     PresenceUtil presenceUtil;
 //    ReactionListener reactionListener;
 
     private Bot() {
         logger.info("Starting bot v{} ({})...", BotInfo.version, BotInfo.buildtime);
-        instance = this;
 
         try {
             ConfigManager.loadGlobalConfig();
@@ -51,10 +50,10 @@ public class Bot {
         }
 
         Localizer.init();
-        GuildManager.init();
-        this.commandManager = new CommandManager();
-        this.responderManager = new ResponderManager();
-        this.presenceUtil = new PresenceUtil(this.getGlobalConfig().presenceStrings, this.getGlobalConfig().presenceDelay * 1000);
+        this.guildManager = new GuildManager(this);
+        this.commandManager = new CommandManager(this);
+        this.responderManager = new ResponderManager(this);
+        this.presenceUtil = new PresenceUtil(this, this.getGlobalConfig().presenceStrings, this.getGlobalConfig().presenceDelay * 1000);
     }
 
     public static void main(String[] args) {
@@ -68,7 +67,7 @@ public class Bot {
 
 //        this.reactionListener = new ReactionListener(this.client);
         logger.debug("Subscribing to events");
-        EventListener listener = new EventListener(client);
+        EventListener listener = new EventListener(this);
         EventDispatcher events = this.client.getEventDispatcher();
 
         events.on(ReadyEvent.class).subscribe(listener::onReady);
@@ -76,7 +75,7 @@ public class Bot {
         events.on(GuildCreateEvent.class).subscribe(listener::onGuildCreated);
         events.on(MessageCreateEvent.class).subscribe(listener::onMessageReceived);
 
-        logger.info("Loggin in");
+        logger.info("Logging in");
         client.login().block();
     }
 
@@ -134,6 +133,10 @@ public class Bot {
 
     public ResponderManager getResponderManager() {
         return this.responderManager;
+    }
+
+    public GuildManager getGuildManager() {
+        return guildManager;
     }
 
     public Instant getStartInstant() {

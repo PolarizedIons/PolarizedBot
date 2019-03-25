@@ -1,6 +1,7 @@
 package net.polarizedions.polarizedbot.autoresponders.impl;
 
 import discord4j.core.object.entity.Message;
+import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.autoresponders.IResponder;
 import net.polarizedions.polarizedbot.autoresponders.impl.measurement_units.UnitTypes;
 import net.polarizedions.polarizedbot.util.Localizer;
@@ -13,6 +14,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class MeasurementConverter implements IResponder {
+
+    private Bot bot;
+
+    public MeasurementConverter(Bot bot) {
+        this.bot = bot;
+    }
 
     @Override
     public String getID() {

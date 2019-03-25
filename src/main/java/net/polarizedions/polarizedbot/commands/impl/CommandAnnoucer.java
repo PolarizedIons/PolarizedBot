@@ -22,6 +22,11 @@ import java.util.stream.Collectors;
 
 public class CommandAnnoucer implements ICommand {
     private static String[] subcommands = new String[] { "subscribe", "unsubscribe", "list", "guild" };
+    private final Bot bot;
+
+    public CommandAnnoucer(Bot bot) {
+        this.bot = bot;
+    }
 
     @Override
     public CommandTree getCommand() {
@@ -63,7 +68,7 @@ public class CommandAnnoucer implements ICommand {
     }
 
     private void manageSubscription(Message message, boolean isSub, String announcerID, TextChannel channel) {
-        AnnouncerManager announcerManager = Bot.instance.getAnnouncerManager();
+        AnnouncerManager announcerManager = this.bot.getAnnouncerManager();
 
         IAnnouncer announcer = announcerManager.getAnnouncer(announcerID);
         if (announcer == null) {
@@ -79,7 +84,7 @@ public class CommandAnnoucer implements ICommand {
     }
 
     private void listAnnouncements(Message message, ParsedArguments args) {
-        AnnouncerManager announcerManager = Bot.instance.getAnnouncerManager();
+        AnnouncerManager announcerManager = this.bot.getAnnouncerManager();
         Localizer loc = new Localizer(message.getGuild().block());
         String announcers = String.join(", ", Arrays.stream(announcerManager.getIDs()).map(id -> loc.localize("announcer." + id + ".name") + " (`" + id + "`)").collect(Collectors.toList()));
         MessageUtil.reply(message, "command.announce.list", announcers);
@@ -102,7 +107,7 @@ public class CommandAnnoucer implements ICommand {
     }
 
     private void listGuild(@NotNull Message message, ParsedArguments args) {
-        Map<IAnnouncer, List<TextChannel>> announcers = Bot.instance.getAnnouncerManager().getAnnouncersForGuild(message.getGuild().block());
+        Map<IAnnouncer, List<TextChannel>> announcers = this.bot.getAnnouncerManager().getAnnouncersForGuild(message.getGuild().block());
 
         if (announcers.size() == 0) {
             MessageUtil.reply(message, "command.announce.error.no_announcements");

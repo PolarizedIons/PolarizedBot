@@ -1,6 +1,7 @@
 package net.polarizedions.polarizedbot.commands.impl;
 
 import discord4j.core.object.entity.Message;
+import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
@@ -15,6 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommandPoll implements ICommand {
+    private final Bot bot;
+
+    public CommandPoll(Bot bot) {
+        this.bot = bot;
+    }
+
     @Override
     public CommandTree getCommand() {
         return CommandBuilder.create("Poll")

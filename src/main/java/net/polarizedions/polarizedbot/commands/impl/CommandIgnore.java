@@ -2,11 +2,11 @@ package net.polarizedions.polarizedbot.commands.impl;
 
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
+import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
 import net.polarizedions.polarizedbot.commands.builder.CommandTree;
 import net.polarizedions.polarizedbot.commands.builder.ParsedArguments;
-import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.UserRank;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +17,11 @@ import java.util.List;
 
 public class CommandIgnore implements ICommand {
     private static final Logger logger = LogManager.getLogger("CommandIgnore");
+    private final Bot bot;
+
+    public CommandIgnore(Bot bot) {
+        this.bot = bot;
+    }
 
     @Override
     public CommandTree getCommand() {
@@ -46,14 +51,14 @@ public class CommandIgnore implements ICommand {
     private void ignore(@NotNull Message message, @NotNull ParsedArguments args) {
         User toIgnore = args.size() == 1 ? message.getAuthor().get() : args.getAsUser(1);
 
-        if (GuildManager.getUserRank(message.getGuild().block(), toIgnore) == UserRank.GLOBAL_ADMIN) {
+        if (this.bot.getGuildManager().getUserRank(message.getGuild().block(), toIgnore) == UserRank.GLOBAL_ADMIN) {
             MessageUtil.reply(message, "command.ignore.error.global_admin");
             return;
         }
 
         logger.debug("Ignoring {}", toIgnore);
-        GuildManager.getConfig(message.getGuild().block()).ignoredUsers.add(toIgnore.getId().asLong());
-        GuildManager.saveConfig(message.getGuild().block());
+        this.bot.getGuildManager().getConfig(message.getGuild().block()).ignoredUsers.add(toIgnore.getId().asLong());
+        this.bot.getGuildManager().saveConfig(message.getGuild().block());
         MessageUtil.reply(message, "command.ignore.success.ignore", toIgnore.getUsername() + "#" + toIgnore.getDiscriminator());
     }
 
@@ -61,8 +66,8 @@ public class CommandIgnore implements ICommand {
         User toUnignore = args.getAsUser(1);
 
         logger.debug("Unignoring {}", toUnignore);
-        GuildManager.getConfig(message.getGuild().block()).ignoredUsers.remove(toUnignore.getId().asLong());
-        GuildManager.saveConfig(message.getGuild().block());
+        this.bot.getGuildManager().getConfig(message.getGuild().block()).ignoredUsers.remove(toUnignore.getId().asLong());
+        this.bot.getGuildManager().saveConfig(message.getGuild().block());
         MessageUtil.reply(message, "command.ignore.success.unignore", toUnignore.toString());
     }
 

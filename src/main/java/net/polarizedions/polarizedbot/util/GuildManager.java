@@ -12,13 +12,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GuildManager {
-    private static Map<Long, GuildConfig> configs;
+    private Bot bot;
+    private Map<Long, GuildConfig> configs;
 
-    public static void init() {
+    public GuildManager(Bot bot) {
+        this.bot = bot;
         configs = new HashMap<>();
     }
 
-    public static GuildConfig getConfig(@NotNull Guild guild) {
+    public GuildConfig getConfig(@NotNull Guild guild) {
         configs.computeIfAbsent(guild.getId().asLong(), id -> {
             try {
                 return ConfigManager.loadGuildConfig(id);
@@ -31,7 +33,7 @@ public class GuildManager {
         return configs.get(guild.getId().asLong());
     }
 
-    public static void saveConfig(Guild guild) {
+    public void saveConfig(Guild guild) {
         try {
             ConfigManager.saveGuildConfig(guild, getConfig(guild));
         }
@@ -40,15 +42,15 @@ public class GuildManager {
         }
     }
 
-    public static UserRank getUserRank(Guild guild, User user) {
-        if (Bot.instance.getGlobalConfig().globalAdmins.contains(user.getId().asLong())) {
+    public UserRank getUserRank(Guild guild, User user) {
+        if (this.bot.getGlobalConfig().globalAdmins.contains(user.getId().asLong())) {
             return UserRank.GLOBAL_ADMIN;
         }
 
         return getConfig(guild).rank.getOrDefault(user.getId().asLong(), UserRank.DEFAULT);
     }
 
-    public static void setRank(Guild guild, User user, UserRank rank) {
+    public void setRank(Guild guild, User user, UserRank rank) {
         if (rank == UserRank.DEFAULT) {
             getConfig(guild).rank.remove(user.getId().asLong());
         }
@@ -58,15 +60,15 @@ public class GuildManager {
         saveConfig(guild);
     }
 
-    public static boolean userHasRank(Message message, UserRank requiredRank) {
+    public boolean userHasRank(Message message, UserRank requiredRank) {
         return message.getAuthor().isPresent() && userHasRank(message.getGuild().block(), message.getAuthor().get(), requiredRank);
     }
 
-    public static boolean userHasRank(Guild guild, User user, UserRank requiredRank) {
+    public boolean userHasRank(Guild guild, User user, UserRank requiredRank) {
         if (guild == null) {
             return requiredRank == UserRank.DEFAULT ||
                     ( requiredRank == UserRank.GLOBAL_ADMIN &&
-                            Bot.instance.getGlobalConfig().globalAdmins.contains(user.getId().asLong())
+                            this.bot.getGlobalConfig().globalAdmins.contains(user.getId().asLong())
                     );
         }
 

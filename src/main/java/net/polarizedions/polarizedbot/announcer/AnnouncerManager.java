@@ -34,10 +34,12 @@ import java.util.stream.Collectors;
 public class AnnouncerManager {
     private static final Logger logger = LogManager.getLogger("AnnouncerManager");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private Bot bot;
     private Map<String, IAnnouncer> announcers;
     private Map<IAnnouncer, List<TextChannel>> subData;
 
-    public AnnouncerManager() {
+    public AnnouncerManager(Bot bot) {
+        this.bot = bot;
         this.announcers = new HashMap<>();
         this.subData = new HashMap<>();
 
@@ -69,7 +71,7 @@ public class AnnouncerManager {
                 }
             };
 
-            Bot.instance.threadPool.scheduleWithFixedDelay(task, 5, announcer.updateFrequency(), TimeUnit.SECONDS);
+            this.bot.threadPool.scheduleWithFixedDelay(task, 5, announcer.updateFrequency(), TimeUnit.SECONDS);
         }
     }
 
@@ -135,7 +137,7 @@ public class AnnouncerManager {
             return;
         }
 
-        DiscordClient client = Bot.instance.getClient();
+        DiscordClient client = this.bot.getClient();
 
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
             IAnnouncer announcer = getAnnouncer(entry.getKey());

@@ -17,6 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommandShutdown implements ICommand {
+    private final Bot bot;
+
+    public CommandShutdown(Bot bot) {
+        this.bot = bot;
+    }
 
     @Override
     public CommandTree getCommand() {
@@ -41,7 +46,7 @@ public class CommandShutdown implements ICommand {
     private void shutdown(Message message, ParsedArguments args) {
         Bot.logger.info("Shutting down bot...");
         MessageUtil.reply(message, "command.shutdown.success");
-        Bot.instance.shutdown();
+        this.bot.shutdown();
         try {
             Thread.sleep(500);
         }
@@ -76,7 +81,7 @@ public class CommandShutdown implements ICommand {
             builder.inheritIO();
             builder.start();
             Bot.logger.info("Hard restarting bot...");
-            Bot.instance.shutdown();
+            this.bot.shutdown();
             try {
                 Thread.sleep(100);
             }
@@ -96,6 +101,6 @@ public class CommandShutdown implements ICommand {
     private void softRestart(Message message, ParsedArguments args) {
         MessageUtil.reply(message, "command.shutdown.success.restart_soft");
         Bot.logger.info("Soft restarting bot...");
-        Bot.instance.softRestart();
+        this.bot.softRestart();
     }
 }

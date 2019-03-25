@@ -1,6 +1,7 @@
 package net.polarizedions.polarizedbot.commands.impl;
 
 import discord4j.core.object.entity.Message;
+import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.api_handlers.WolframAlphaApi;
 import net.polarizedions.polarizedbot.commands.ICommand;
 import net.polarizedions.polarizedbot.commands.builder.CommandBuilder;
@@ -16,6 +17,11 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 public class CommandWolframAlpha implements ICommand {
+    private final Bot bot;
+
+    public CommandWolframAlpha(Bot bot) {
+        this.bot = bot;
+    }
 
     @Override
     public CommandTree getCommand() {

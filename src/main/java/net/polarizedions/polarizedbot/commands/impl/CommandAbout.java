@@ -14,7 +14,6 @@ import net.polarizedions.polarizedbot.commands.builder.ParsedArguments;
 import net.polarizedions.polarizedbot.config.GlobalConfig;
 import net.polarizedions.polarizedbot.config.GuildConfig;
 import net.polarizedions.polarizedbot.util.BotInfo;
-import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
 import net.polarizedions.polarizedbot.util.TimeUtil;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +27,12 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 
 public class CommandAbout implements ICommand {
+    private final Bot bot;
+
+    public CommandAbout(Bot bot) {
+        this.bot = bot;
+    }
+
     @Override
     public CommandTree getCommand() {
         return CommandBuilder.create("About")
@@ -50,10 +55,9 @@ public class CommandAbout implements ICommand {
         Guild guild = message.getGuild().block();
         Localizer loc = new Localizer(guild);
 
-        Bot bot = Bot.instance;
         CommandManager commandManager = bot.getCommandManager();
         GlobalConfig globalConfig = bot.getGlobalConfig();
-        GuildConfig guildConfig = GuildManager.getConfig(guild);
+        GuildConfig guildConfig = this.bot.getGuildManager().getConfig(guild);
         User botOwner = bot.getClient().getApplicationInfo().block().getOwner().block();
         User botUser = bot.getClient().getSelf().block();
 
@@ -118,7 +122,7 @@ public class CommandAbout implements ICommand {
                 msgSpec.setEmbed(embedSpec -> {
                     embedSpec.addField(loc.localize("command.about.header.user"), user.getUsername() + "#" + user.getDiscriminator(), true);
                     embedSpec.addField(loc.localize("command.about.header.user_id"), user.getId().asString(), true);
-                    embedSpec.addField(loc.localize("command.about.header.rank"), loc.localize("ranks." + GuildManager.getUserRank(guild, user).name().toLowerCase()), true);
+                    embedSpec.addField(loc.localize("command.about.header.rank"), loc.localize("ranks." + this.bot.getGuildManager().getUserRank(guild, user).name().toLowerCase()), true);
 
                     embedSpec.setTitle(loc.localize("command.about.user_info", user.asMember(guild.getId()).block().getDisplayName()));
                     embedSpec.setThumbnail(user.getAvatarUrl());

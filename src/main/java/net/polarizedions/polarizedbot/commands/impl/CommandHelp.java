@@ -15,6 +15,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 
 public class CommandHelp implements ICommand {
+    private final Bot bot;
+
+    public CommandHelp(Bot bot) {
+        this.bot = bot;
+    }
+
     @Override
     public CommandTree getCommand() {
         return CommandBuilder.create("Help")
@@ -30,7 +36,7 @@ public class CommandHelp implements ICommand {
     }
 
     private void list(Message message, ParsedArguments args) {
-        Set<CommandTree> commandSet = Bot.instance.getCommandManager().getCommands();
+        Set<CommandTree> commandSet = this.bot.getCommandManager().getCommands();
         int commandLen = commandSet.parallelStream().map(tree -> tree.getName().length()).max(Integer::compareTo).orElse(10);
 
         StringBuilder resp = new StringBuilder("```\nCommands:\n=====================\n");
@@ -46,7 +52,7 @@ public class CommandHelp implements ICommand {
         String helpCommand = args.getAsString(1);
         CommandTree command = null;
         outer:
-        for (CommandTree cmd : Bot.instance.getCommandManager().getCommands()) {
+        for (CommandTree cmd : this.bot.getCommandManager().getCommands()) {
             for (String alias : cmd.getCommands()) {
                 if (alias.equalsIgnoreCase(helpCommand)) {
                     command = cmd;

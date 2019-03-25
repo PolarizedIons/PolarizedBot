@@ -10,13 +10,18 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class GoodBot implements IResponder {
+    private Bot bot;
+
+    public GoodBot(Bot bot) {
+        this.bot = bot;
+    }
+
     @Override
     public String getID() {
         return "goodbot";
     }
 
-    private boolean inReplyToUs(@NotNull Message message) {
-        User ourUser = Bot.instance.getClient().getSelf().block();
+    private boolean inReplyToUs(User ourUser, @NotNull Message message) {
         List<Message> channelMessages = message.getChannel().block().getMessagesBefore(message.getId()).collectList().block();
         boolean found = false;
         int i = 0;
@@ -43,8 +48,8 @@ public class GoodBot implements IResponder {
     @Override
     public void run(Message message) {
         String content = message.getContent().orElse("").toLowerCase();
-        User ourUser = Bot.instance.getClient().getSelf().block();
-        boolean isInReplyToUs = this.inReplyToUs(message);
+        User ourUser = this.bot.getClient().getSelf().block();
+        boolean isInReplyToUs = this.inReplyToUs(ourUser, message);
 
         if (( isInReplyToUs && content.startsWith("good bot") ) ||
                 ( content.startsWith("good " + ourUser.getMention() )) ||

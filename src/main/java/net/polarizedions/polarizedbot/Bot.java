@@ -7,7 +7,6 @@ import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.lifecycle.ReconnectEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.event.domain.message.MessageEvent;
 import net.polarizedions.polarizedbot.announcer.AnnouncerManager;
 import net.polarizedions.polarizedbot.autoresponders.ResponderManager;
 import net.polarizedions.polarizedbot.commands.CommandManager;
@@ -68,6 +67,7 @@ public class Bot {
         this.client = createClient();
 
 //        this.reactionListener = new ReactionListener(this.client);
+        logger.debug("Subscribing to events");
         EventListener listener = new EventListener(client);
         EventDispatcher events = this.client.getEventDispatcher();
 
@@ -76,11 +76,7 @@ public class Bot {
         events.on(GuildCreateEvent.class).subscribe(listener::onGuildCreated);
         events.on(MessageCreateEvent.class).subscribe(listener::onMessageReceived);
 
-        this.client.getEventDispatcher().on(MessageEvent.class).subscribe(event -> System.out.println("nesssage"));
-        System.out.println("events subscibed");
-
-
-        System.out.println("loggging in client");
+        logger.info("Loggin in");
         client.login().block();
     }
 
@@ -98,7 +94,8 @@ public class Bot {
             logger.error("Please enter the required value(s) in the config!");
             System.exit(1);
         }
-        System.out.println("creating client");
+
+        logger.debug("Creating client");
         this.client = new DiscordClientBuilder(config.botToken).build();
         return this.client;
     }

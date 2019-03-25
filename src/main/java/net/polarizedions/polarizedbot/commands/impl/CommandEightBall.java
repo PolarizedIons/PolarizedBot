@@ -26,7 +26,6 @@ public class CommandEightBall implements ICommand {
     }
 
     private void run(Message message, @NotNull ParsedArguments args) {
-        System.out.println(args);
         if (!args.getAsString(1).endsWith("?")) {
             MessageUtil.reply(message, "command.8ball.error.no_question");
             return;

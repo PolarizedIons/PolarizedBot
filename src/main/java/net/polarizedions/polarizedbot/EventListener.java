@@ -25,7 +25,6 @@ public class EventListener {
     }
 
     public void onReady(ReadyEvent event) {
-        System.out.println("ready event");
         User us = event.getClient().getSelf().block();
         Bot.logger.info("Ready to go as {} ({})!", us.getUsername() + "#" + us.getDiscriminator(), us.getId().asString());
 
@@ -45,7 +44,6 @@ public class EventListener {
     }
 
     public void onGuildCreated(GuildCreateEvent event) {
-        System.out.println("guild created event");
         Guild guild = event.getGuild();
         User guildOwner = guild.getOwner().block();
         if (! GuildManager.userHasRank(guild, guildOwner, UserRank.LOCAL_ADMIN)) {
@@ -55,7 +53,6 @@ public class EventListener {
     }
 
     public void onMessageReceived(MessageCreateEvent event) {
-        System.out.println("message reveiced ievent");
         Message message = event.getMessage();
         User user = message.getAuthor().isPresent() ? message.getAuthor().get() : null;
         event.getGuild().subscribe(guild ->
@@ -68,12 +65,11 @@ public class EventListener {
                             channel.getId().asString(),
                             message.getId().asString(),
                             author.getUsername() + "#" + author.getDiscriminator(),
-                            message.getContent()
+                            message.getContent().isPresent() ? message.getContent().get() : ""
                     );
 
                     Bot.instance.commandManager.messageHandler(guild, user, channel, message);
                     Bot.instance.responderManager.messageHandler(guild, user, channel, message);
-
                 })
         );
     }

@@ -12,17 +12,22 @@ import java.util.LinkedList;
 
 public class WolframAlphaApi {
     private static final String API_URL = "http://api.wolframalpha.com/v2/query?input=%s&appid=%s&format=plaintext&output=json";
-    private static String API_KEY = null;
+    private String API_KEY = null;
+    private Bot bot;
 
-    public static boolean hasApiKey() {
+    public WolframAlphaApi(Bot bot) {
+        this.bot = bot;
+    }
+
+    private boolean hasApiKey() {
         if (API_KEY == null) {
-            API_KEY = Bot.instance.getGlobalConfig().wolframAlphaApi;
+            API_KEY = bot.getGlobalConfig().wolframAlphaApi;
         }
 
         return !API_KEY.isEmpty();
     }
 
-    public static WolframAlphaReply fetch(String input) throws ApiException {
+    public WolframAlphaReply fetch(String input) throws ApiException {
         if (!hasApiKey()) {
             throw new ApiException("no_api_key");
         }

@@ -25,7 +25,7 @@ public class CommandShutdown implements ICommand {
 
     @Override
     public CommandTree getCommand() {
-        return CommandBuilder.create("Shutdown")
+        return CommandBuilder.create(bot, "Shutdown")
                 .setRank(UserRank.GLOBAL_ADMIN)
                 .command("shutdown", "exit", shutdown -> shutdown.onExecute(this::shutdown))
                 .command("restart", restart -> restart

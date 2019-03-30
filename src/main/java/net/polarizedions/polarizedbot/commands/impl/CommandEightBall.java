@@ -22,7 +22,7 @@ public class CommandEightBall implements ICommand {
 
     @Override
     public CommandTree getCommand() {
-        return CommandBuilder.create("EightBall")
+        return CommandBuilder.create(bot, "EightBall")
                 .command("8ball", "eightball", command -> command
                         .swallow(false)
                         .onExecute(this::run)

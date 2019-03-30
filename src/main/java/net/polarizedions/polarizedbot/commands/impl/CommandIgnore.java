@@ -25,7 +25,7 @@ public class CommandIgnore implements ICommand {
 
     @Override
     public CommandTree getCommand() {
-        return CommandBuilder.create("Ignore")
+        return CommandBuilder.create(bot, "Ignore")
                 .command("ignore", ignore ->
                         ignore.pingArg(pingNode -> pingNode
                                 .rank(UserRank.LOCAL_ADMIN)

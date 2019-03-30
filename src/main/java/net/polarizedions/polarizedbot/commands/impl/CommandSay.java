@@ -16,7 +16,7 @@ public class CommandSay implements ICommand {
 
     @Override
     public CommandTree getCommand() {
-        return CommandBuilder.create("Say")
+        return CommandBuilder.create(bot, "Say")
                 .command("say", say -> say
                         .channelArg(channelNode -> channelNode
                                 .swallow(false)

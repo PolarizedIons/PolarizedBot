@@ -8,6 +8,7 @@ import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.lifecycle.ReconnectEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import net.polarizedions.polarizedbot.announcer.AnnouncerManager;
+import net.polarizedions.polarizedbot.api_handlers.WolframAlphaApi;
 import net.polarizedions.polarizedbot.autoresponders.ResponderManager;
 import net.polarizedions.polarizedbot.commands.CommandManager;
 import net.polarizedions.polarizedbot.config.GlobalConfig;
@@ -39,6 +40,8 @@ public class Bot {
     PresenceUtil presenceUtil;
 //    ReactionListener reactionListener;
 
+    WolframAlphaApi wolframAlphaApi;
+
     private Bot() {
         logger.info("Starting bot v{} ({})...", BotInfo.version, BotInfo.buildtime);
 
@@ -48,6 +51,8 @@ public class Bot {
         catch (IOException ex) {
             throw new RuntimeException("Cannot load config!", ex);
         }
+
+        wolframAlphaApi = new WolframAlphaApi(this);
 
         Localizer.init();
         this.guildManager = new GuildManager(this);
@@ -150,4 +155,9 @@ public class Bot {
 //    public ReactionListener getReactionListener() {
 //        return this.reactionListener;
 //    }
+
+
+    public WolframAlphaApi getWolframAlphaApi() {
+        return wolframAlphaApi;
+    }
 }

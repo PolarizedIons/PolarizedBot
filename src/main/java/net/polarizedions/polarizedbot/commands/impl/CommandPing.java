@@ -21,7 +21,7 @@ public class CommandPing implements ICommand {
 
     @Override
     public CommandTree getCommand() {
-        return CommandBuilder.create("Ping")
+        return CommandBuilder.create(bot, "Ping")
                 .command("ping", ping -> ping
                         .onExecute(this::ping)
                         .setHelp("command.ping.help.pingpong")
@@ -43,7 +43,7 @@ public class CommandPing implements ICommand {
     }
 
     void run(Message message, String replyKey) {
-        Localizer loc = new Localizer(message.getGuild().block());
+        Localizer loc = new Localizer(bot.getGuildManager().getConfig(message.getGuild().block()).lang);
 
         Instant ping = Instant.now();
 

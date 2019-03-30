@@ -64,7 +64,7 @@ public class MeasurementConverter implements IResponder {
             cursor++;
         }
 
-        Localizer localizer = new Localizer(message.getGuild().block());
+        Localizer localizer = new Localizer(bot.getGuildManager().getConfig(message.getGuild().block()).lang);
         StringBuilder response = new StringBuilder("```\n");
         for (Pair<Double, UnitTypes.IUnit<? extends UnitTypes.IUnit>> unit : foundUnits) {
             Double from = unit.one;

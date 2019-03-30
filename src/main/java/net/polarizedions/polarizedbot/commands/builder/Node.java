@@ -4,7 +4,6 @@ import discord4j.core.object.entity.Message;
 import net.polarizedions.polarizedbot.exceptions.CommandExceptions;
 import net.polarizedions.polarizedbot.exceptions.NeedPermission;
 import net.polarizedions.polarizedbot.exceptions.UnknownFail;
-import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.UserRank;
 import org.apache.logging.log4j.util.TriConsumer;
 
@@ -36,11 +35,11 @@ public class Node {
     }
 
     public Node pingArg(Consumer<Node> optionNode) {
-        return this.addArgument(CommandArg.ping(), optionNode);
+        return this.addArgument(CommandArg.ping(builder.bot), optionNode);
     }
 
     public Node channelArg(Consumer<Node> optionNode) {
-        return this.addArgument(CommandArg.channel(), optionNode);
+        return this.addArgument(CommandArg.channel(builder.bot), optionNode);
     }
 
     public Node captureArg(Consumer<Node> optionNode) {
@@ -84,7 +83,7 @@ public class Node {
     }
 
     void executeTree(List<String> treeOptions, Message command, ParsedArguments parsedArgs) throws CommandExceptions {
-        if (!GuildManager.userHasRank(command, this.rank)) {
+        if (!builder.bot.getGuildManager().userHasRank(command, this.rank)) {
             throw new NeedPermission(this.rank);
         }
 

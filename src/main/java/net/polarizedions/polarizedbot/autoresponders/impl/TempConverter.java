@@ -40,7 +40,7 @@ public class TempConverter implements IResponder {
 
     @Override
     public void run(Message message) {
-        Localizer loc = new Localizer(message.getGuild().block());
+        Localizer loc = new Localizer(bot.getGuildManager().getConfig(message.getGuild().block()).lang);
         Matcher m = TEMPERATURE_REGEX.matcher(message.getContent().orElse(""));
         boolean match = false;
         StringBuilder builder = new StringBuilder("```\n");

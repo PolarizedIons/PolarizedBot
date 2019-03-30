@@ -33,11 +33,11 @@ public class CommandArg {
 
     @NotNull
     @Contract(" -> new")
-    public static CommandArg ping() {
+    public static CommandArg ping(Bot bot) {
         return new CommandArg((in) -> {
             Matcher m = USER_PING_PATTERN.matcher(in);
             if (m.matches()) {
-                return Bot.instance.getClient().getUserById(Snowflake.of(Long.parseLong(m.group(1))));
+                return bot.getClient().getUserById(Snowflake.of(Long.parseLong(m.group(1))));
             }
 
             return null;
@@ -46,11 +46,11 @@ public class CommandArg {
 
     @NotNull
     @Contract(" -> new")
-    public static CommandArg channel() {
+    public static CommandArg channel(Bot bot) {
         return new CommandArg((in) -> {
             Matcher m = CHANNEL_PATTERN.matcher(in);
             if (m.matches()) {
-                return Bot.instance.getClient().getChannelById(Snowflake.of(Long.parseLong(m.group(1))));
+                return bot.getClient().getChannelById(Snowflake.of(Long.parseLong(m.group(1))));
             }
 
             return null;

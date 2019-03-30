@@ -1,5 +1,6 @@
 package net.polarizedions.polarizedbot.commands.builder;
 
+import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.util.UserRank;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -8,16 +9,18 @@ import java.util.function.Consumer;
 
 public class CommandBuilder {
     CommandTree command;
+    Bot bot;
 
-    private CommandBuilder(String name) {
+    private CommandBuilder(Bot bot, String name) {
+        this.bot = bot;
         this.command = new CommandTree();
         this.command.name = name;
     }
 
     @NotNull
     @Contract("_ -> new")
-    public static CommandBuilder create(String commandName) {
-        return new CommandBuilder(commandName);
+    public static CommandBuilder create(Bot bot, String commandName) {
+        return new CommandBuilder(bot, commandName);
     }
 
     public CommandBuilder setHelp(String helpKey) {

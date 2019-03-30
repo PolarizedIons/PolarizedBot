@@ -23,7 +23,7 @@ public class CommandHelp implements ICommand {
 
     @Override
     public CommandTree getCommand() {
-        return CommandBuilder.create("Help")
+        return CommandBuilder.create(bot, "Help")
                 .command("help", help -> help
                         .captureArg(cmd -> cmd
                                 .onExecute(this::cmd)
@@ -66,7 +66,7 @@ public class CommandHelp implements ICommand {
             return;
         }
 
-        Localizer loc = new Localizer(message.getGuild().block());
+        Localizer loc = new Localizer(bot.getGuildManager().getConfig(message.getGuild().block()).lang);
         StringBuilder resp = new StringBuilder("```\n")
                 .append(command.getName())
                 .append("\n  - ");

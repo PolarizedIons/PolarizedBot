@@ -25,7 +25,7 @@ public class CommandWolframAlpha implements ICommand {
 
     @Override
     public CommandTree getCommand() {
-        return CommandBuilder.create("WolframAlpha")
+        return CommandBuilder.create(bot, "WolframAlpha")
                 .command("wolf", wolf -> wolf
                         .swallow(false)
                         .onExecute(this::replyFull)
@@ -55,7 +55,7 @@ public class CommandWolframAlpha implements ICommand {
     private WolframAlphaApi.WolframAlphaReply get(Message message, @NotNull ParsedArguments args) {
         WolframAlphaApi.WolframAlphaReply data;
         try {
-            data = WolframAlphaApi.fetch(args.getAsString(1));
+            data = bot.getWolframAlphaApi().fetch(args.getAsString(1));
         }
         catch (ApiException ex) {
             MessageUtil.reply(message, "command.wolfram.error." + ex.getError(), ex.getErrorContext());

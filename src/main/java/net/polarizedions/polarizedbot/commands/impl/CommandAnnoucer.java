@@ -30,7 +30,7 @@ public class CommandAnnoucer implements ICommand {
 
     @Override
     public CommandTree getCommand() {
-        return CommandBuilder.create("Announcer")
+        return CommandBuilder.create(bot, "Announcer")
                 .setRank(UserRank.LOCAL_ADMIN)
                 .setHelp("announces things")
                 .command("announce", announce -> announce
@@ -78,14 +78,14 @@ public class CommandAnnoucer implements ICommand {
 
         BiConsumer<IAnnouncer, TextChannel> method = isSub ? announcerManager::addSub : announcerManager::forgetSub;
         method.accept(announcer, channel);
-        Localizer loc = new Localizer(message.getGuild().block());
+        Localizer loc = new Localizer(bot.getGuildManager().getConfig(message.getGuild().block()).lang);
         String name = loc.localize("announcer." + announcer.getID() + ".name");
         MessageUtil.reply(message, "command.announce.success." + ( isSub ? "sub" : "unsub" ), name, channel.toString());
     }
 
     private void listAnnouncements(Message message, ParsedArguments args) {
         AnnouncerManager announcerManager = this.bot.getAnnouncerManager();
-        Localizer loc = new Localizer(message.getGuild().block());
+        Localizer loc = new Localizer(bot.getGuildManager().getConfig(message.getGuild().block()).lang);
         String announcers = String.join(", ", Arrays.stream(announcerManager.getIDs()).map(id -> loc.localize("announcer." + id + ".name") + " (`" + id + "`)").collect(Collectors.toList()));
         MessageUtil.reply(message, "command.announce.list", announcers);
     }

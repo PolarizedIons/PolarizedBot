@@ -24,7 +24,7 @@ public class CommandPoll implements ICommand {
 
     @Override
     public CommandTree getCommand() {
-        return CommandBuilder.create("Poll")
+        return CommandBuilder.create(bot, "Poll")
                 .command("poll", poll ->
                     poll
                         .swallow(false)
@@ -53,7 +53,7 @@ public class CommandPoll implements ICommand {
 
     @Nullable
     private Pair<String, List<String>> parsePollQuestion(@NotNull Message message, @NotNull String input) {
-        Localizer loc = new Localizer(message.getGuild().block());
+        Localizer loc = new Localizer(bot.getGuildManager().getConfig(message.getGuild().block()).lang);
         int questionMarkIndex = input.indexOf("?");
 
         if (questionMarkIndex == -1) {

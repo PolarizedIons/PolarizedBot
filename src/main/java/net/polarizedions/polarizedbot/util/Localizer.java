@@ -3,7 +3,6 @@ package net.polarizedions.polarizedbot.util;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import discord4j.core.object.entity.Guild;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
@@ -34,10 +33,6 @@ public class Localizer {
 
     public Localizer() {
         this(DEFAULT_LANGUAGE);
-    }
-
-    public Localizer(Guild guild) {
-        this(guild == null ? DEFAULT_LANGUAGE : GuildManager.getConfig(guild).lang);
     }
 
     public Localizer(String lang) {

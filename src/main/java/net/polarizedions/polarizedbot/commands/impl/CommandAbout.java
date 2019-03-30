@@ -35,7 +35,7 @@ public class CommandAbout implements ICommand {
 
     @Override
     public CommandTree getCommand() {
-        return CommandBuilder.create("About")
+        return CommandBuilder.create(bot, "About")
                 .command("about", about -> about
                         .onExecute(this::about)
                         .setHelp("command.about.help.about")
@@ -53,7 +53,7 @@ public class CommandAbout implements ICommand {
 
     private void about(Message message, ParsedArguments args) {
         Guild guild = message.getGuild().block();
-        Localizer loc = new Localizer(guild);
+        Localizer loc = new Localizer(bot.getGuildManager().getConfig(guild).lang);
 
         CommandManager commandManager = bot.getCommandManager();
         GlobalConfig globalConfig = bot.getGlobalConfig();
@@ -115,7 +115,7 @@ public class CommandAbout implements ICommand {
 
     private void info(@NotNull Message message, @NotNull User user) {
         Guild guild = message.getGuild().block();
-        Localizer loc = new Localizer(guild);
+        Localizer loc = new Localizer(bot.getGuildManager().getConfig(guild).lang);
 
         message.getChannel().subscribe(channel -> {
             channel.createMessage(msgSpec -> {

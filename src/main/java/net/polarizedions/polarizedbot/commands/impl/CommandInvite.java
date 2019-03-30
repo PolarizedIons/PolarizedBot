@@ -18,7 +18,7 @@ public class CommandInvite implements ICommand {
 
     @Override
     public CommandTree getCommand() {
-        return CommandBuilder.create("Invite")
+        return CommandBuilder.create(bot, "Invite")
                 .command("invite", invite -> invite
                         .onExecute(this::invite)
                         .setHelp("command.invite.help")

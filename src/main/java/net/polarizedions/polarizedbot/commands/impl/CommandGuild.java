@@ -28,7 +28,7 @@ public class CommandGuild implements ICommand {
 
     @Override
     public CommandTree getCommand() {
-        return CommandBuilder.create("Guild")
+        return CommandBuilder.create(bot, "Guild")
                 .setRank(UserRank.LOCAL_ADMIN)
                 .command("guild", guild -> guild
                         .stringArg("set", set -> set

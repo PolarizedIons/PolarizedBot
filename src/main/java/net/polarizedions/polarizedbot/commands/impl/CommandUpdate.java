@@ -36,7 +36,7 @@ public class CommandUpdate implements ICommand {
 
     @Override
     public CommandTree getCommand() {
-        return CommandBuilder.create("Update")
+        return CommandBuilder.create(bot, "Update")
                 .setRank(UserRank.GLOBAL_ADMIN)
                 .command("update", update -> update.onExecute(this::update))
                 .setHelp("command.update.help")

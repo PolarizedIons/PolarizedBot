@@ -43,7 +43,7 @@ public class AnnouncerManager {
         this.announcers = new HashMap<>();
         this.subData = new HashMap<>();
 
-        this.registerAnnouncer(new AnnouncerMcNotifier());
+        this.registerAnnouncer(new AnnouncerMcNotifier(bot));
         this.registerAnnouncer(new AnnouncerGW2Update());
     }
 

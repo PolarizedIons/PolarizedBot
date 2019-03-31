@@ -17,6 +17,7 @@ import net.polarizedions.polarizedbot.util.BotInfo;
 import net.polarizedions.polarizedbot.util.ConfigManager;
 import net.polarizedions.polarizedbot.util.GuildManager;
 import net.polarizedions.polarizedbot.util.Localizer;
+import net.polarizedions.polarizedbot.util.MessageUtil;
 import net.polarizedions.polarizedbot.util.PresenceUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -79,6 +80,8 @@ public class Bot {
         events.on(ReconnectEvent.class).subscribe(listener::onReconnected);
         events.on(GuildCreateEvent.class).subscribe(listener::onGuildCreated);
         events.on(MessageCreateEvent.class).subscribe(listener::onMessageReceived);
+
+        MessageUtil.initBot(this);
 
         logger.info("Logging in");
         client.login().block();

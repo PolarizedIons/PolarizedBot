@@ -4,6 +4,7 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.PrivateChannel;
 import discord4j.core.object.entity.TextChannel;
+import net.polarizedions.polarizedbot.Bot;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
@@ -13,6 +14,13 @@ public class MessageUtil {
     // Only used for unit testing. don't change these >.>
     @SuppressWarnings("FieldCanBeLocal")
     private static int MAX_MESSAGE_LENGTH = Message.MAX_CONTENT_LENGTH;
+
+    // TODO: bad
+    private static Bot bot;
+
+    public static void initBot(Bot bot) {
+        MessageUtil.bot = bot;
+    }
 
     public static void sendAutosplit(@NotNull Message msg, String message) {
         msg.getChannel().subscribe(channel -> sendAutosplit((TextChannel)channel, message));
@@ -57,7 +65,7 @@ public class MessageUtil {
 
     public static void reply(@NotNull TextChannel channel, String localizationKey, Object... context) {
             channel.getGuild().subscribe(guild ->
-                channel.createMessage(new Localizer(guild).localize(localizationKey, context))
+                channel.createMessage(new Localizer(bot.getGuildManager().getConfig(guild).lang).localize(localizationKey, context))
             );
     }
 

@@ -25,6 +25,7 @@ public class PresenceUtil {
     private long delayMs;
 
     public PresenceUtil(Bot bot, String[] presences, long delayMs) {
+        this.bot = bot;
         this.index = -1;
         this.presences = presences;
         this.formatter = new Formatter();
@@ -38,8 +39,7 @@ public class PresenceUtil {
         this.delayMs = delayMs;
     }
 
-    public void init() {
-        DiscordClient client = this.bot.getClient();
+    public void init(DiscordClient client) {
         client.getSelf().subscribe(botUser ->
                 client.getApplicationInfo().subscribe(appInfo -> appInfo.getOwner().subscribe(ownerUser -> {
                     this.formatter.addArg("bot-name", botUser.getUsername())

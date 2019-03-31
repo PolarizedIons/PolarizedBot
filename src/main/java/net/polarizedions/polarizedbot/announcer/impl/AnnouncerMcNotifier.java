@@ -1,6 +1,7 @@
 package net.polarizedions.polarizedbot.announcer.impl;
 
 import discord4j.core.object.entity.TextChannel;
+import net.polarizedions.polarizedbot.Bot;
 import net.polarizedions.polarizedbot.announcer.IAnnouncer;
 import net.polarizedions.polarizedbot.api_handlers.MojangApi;
 import net.polarizedions.polarizedbot.util.Localizer;
@@ -10,8 +11,14 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class AnnouncerMcNotifier implements IAnnouncer {
+    private Bot bot;
+
     private MojangApi.MinecraftVersions prevVersions;
     private boolean newSnapshot, newRelease;
+
+    public AnnouncerMcNotifier(Bot bot) {
+        this.bot = bot;
+    }
 
     @Override
     public String getID() {
@@ -56,7 +63,7 @@ public class AnnouncerMcNotifier implements IAnnouncer {
                         embedSpec.setThumbnail(imageUrl);
                         embedSpec.setColor(color);
 
-                        Localizer loc = new Localizer(guild);
+                        Localizer loc = new Localizer(bot.getGuildManager().getConfig(guild).lang);
                         embedSpec.setTitle(loc.localize("announcer.minecraft.header.title"));
                         embedSpec.addField(loc.localize("announcer.minecraft.header." + releaseType), loc.localize("announcer.minecraft.version", version), false);
 

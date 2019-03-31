@@ -32,7 +32,8 @@ public class EventListener {
         this.bot.announcerManager = new AnnouncerManager(this.bot);
         this.bot.announcerManager.load();
         this.bot.announcerManager.initAnnouncers();
-        this.bot.presenceUtil.init();
+
+        this.bot.presenceUtil.init(event.getClient());
 
         this.bot.connectedInstant = Instant.now();
     }

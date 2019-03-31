@@ -57,7 +57,7 @@ public class PresenceUtil {
 
     private void updatePresence() {
         this.index = random.nextInt(this.presences.length);
-        this.bot.getClient().updatePresence(Presence.online(Activity.playing(this.formatter.format(this.presences[this.index]))));
+        this.bot.getClient().updatePresence(Presence.online(Activity.playing(this.formatter.format(this.presences[this.index])))).block();
     }
 
     public void stop() {
